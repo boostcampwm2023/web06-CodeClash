@@ -79,7 +79,7 @@ jobs:
             docker rm ${{ env.DOCKER_CONTAINER }} || true
             docker rmi ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest || true
 
-            docker login ${{ env.REGISTRY }} -u ${{ github.actor }} -p ${{ secrets.GIT_TOKEN }}
+            docker login ${{ env.REGISTRY }} -u ${{ secrets.GIT_ID }} -p ${{ secrets.GIT_TOKEN }}
             docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
             docker run -d \
               -p 3000:3000 \
