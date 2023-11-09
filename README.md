@@ -1,4 +1,6 @@
-# Not Collaboration
+# Code Clash
+
+![Code Clash](https://user-images.githubusercontent.com/43944581/281335955-aa2882f9-c134-40a3-b506-b7ab42815543.png)
 
 > 협력이 아닌 경쟁을 통해 성장한다!
 
