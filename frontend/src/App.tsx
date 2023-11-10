@@ -1,5 +1,5 @@
 import React from "react";
-import Provider from "./components/provider";
+import Provider from "./components/Provider";
 
 const App = () => {
     return (
