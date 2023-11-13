@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-const SCORING_SERVER = 'http://106.10.57.235:3000';
+const SCORING_SERVER = 'http://10.41.177.25:3000';
 @Injectable()
 export class ScoresService {
   async grade(code: string, language: string, problemNumber: number) {
