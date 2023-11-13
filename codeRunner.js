@@ -55,6 +55,6 @@ app.post("/v2/scoring", (req, res) => {
   attatchChildProcessEvents(child, res, timer, startTime);
 });
 
-app.listen(3001, () => {
+app.listen(3000, () => {
   console.log("Server is listening on port 3000");
 });
