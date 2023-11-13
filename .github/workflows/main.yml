@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - scoring-server-main
+      - scoring-server-dev
 
 env:
   # 도커 레지스트리 및 이미지 정보, 컨테이너 이름
