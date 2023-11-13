@@ -69,8 +69,8 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
-          port: ${{ secrets.REMOTE_PORT }}
-          password: ${{ secrets.REMOTE_PASSWORD }}
+          port: ${{ secrets.SCORING_PORT }}
+          password: ${{ secrets.SCORING_PASSWORD }}
           script: |
             docker stop ${{ env.DOCKER_CONTAINER }} || true
             docker rm ${{ env.DOCKER_CONTAINER }} || true
