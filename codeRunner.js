@@ -33,9 +33,6 @@ const attatchChildProcessEvents = (child, res, timer, startTime) => {
 app.post("/v2/scoring", (req, res) => {
   const { code, testcase } = req.body;
   let userCode = code;
-  // testcase.parameters = "[1, 2]"
-  // convert "[1, 2]" to 1, 2
-  testcase.parameters = JSON.parse(testcase.parameters);
   userCode += `\nconsole.log(solution(${testcase.parameters.join(", ")}));`;
 
   fs.writeFileSync("userCode.js", userCode);
@@ -58,6 +55,6 @@ app.post("/v2/scoring", (req, res) => {
   attatchChildProcessEvents(child, res, timer, startTime);
 });
 
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log("Server is listening on port 3000");
 });
