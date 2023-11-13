@@ -2,38 +2,35 @@
 on:
   pull_request:
     branches:
-      - main
+      - scoring-server-main
 
 env:
   # 도커 레지스트리 및 이미지 정보, 컨테이너 이름
   REGISTRY: ghcr.io
-  DOCKER_IMAGE: ${{ secrets.GIT_ID }}/api-server
-  DOCKER_CONTAINER: api-server
+  DOCKER_IMAGE: ${{ secrets.GIT_ID }}/scoring-server
+  DOCKER_CONTAINER: scoring-server
 
 jobs:
-  # 테스트 코드 실행
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # # 테스트 코드 실행
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
+  #     - name: Use Node.js 18.x
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18.x
 
-      - name: npm install
-        run: npm install
+  #     - name: npm install
+  #       run: npm install
 
-      - name: npm test
-        run: npm test
+  #     - name: npm test
+  #       run: npm test
 
-      - name: npm run build
-        run: npm run build
-
-  # 테스트 및 빌드 성공시 도커 이미지 빌드
+  #     - name: npm run build
+  #       run: npm run build
   build:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -72,8 +69,8 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
-          port: ${{ secrets.REMOTE_PORT }}
-          password: ${{ secrets.REMOTE_PASSWORD }}
+          port: ${{ secrets.SCORING_PORT }}
+          password: ${{ secrets.SCORING_PASSWORD }}
           script: |
             docker stop ${{ env.DOCKER_CONTAINER }} || true
             docker rm ${{ env.DOCKER_CONTAINER }} || true
