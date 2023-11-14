@@ -11,8 +11,8 @@ export class AuthController {
   @Post('login/email')
   @UseGuards(BasicTokenGuard)
   loginByEmail(@User() user) {
-    const { email, password } = user;
-    return this.authService.loginWithEmail({ email, password });
+    const { email, id } = user;
+    return this.authService.loginUser({ email, id });
   }
 
   @Post('register/email')
