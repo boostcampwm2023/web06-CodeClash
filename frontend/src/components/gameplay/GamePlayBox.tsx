@@ -1,5 +1,5 @@
 import GameDefaultBox from "./GameDefaultBox";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, DragEventHandler } from "react";
 import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
 
@@ -30,6 +30,13 @@ const GamePlayBox: React.FC = () => {
   const [codeBoxHeight, setCodeBoxHeight] = useState<number>(70);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>();
 
+  const dragProblemBoxHandler: DragEventHandler<HTMLDivElement> = e => {
+    if (e.clientX > 0 && e.clientX < window.innerWidth) setProblemBoxWidth((e.clientX / window.innerWidth) * 100);
+  };
+
+  const dragCodeBoxHandler: DragEventHandler<HTMLDivElement> = e => {
+    if (e.clientY > 0 && e.clientY < window.innerHeight) setCodeBoxHeight((e.clientY / window.innerHeight) * 100);
+  };
   return (
     <div className="flex flex-row w-full h-full">
       <div
@@ -42,12 +49,7 @@ const GamePlayBox: React.FC = () => {
         </GameDefaultBox>
       </div>
 
-      <div
-        className="w-2 flex items-center justify-center cursor-pointer"
-        onDrag={e => {
-          if (e.clientX > 0 && e.clientX < window.innerWidth) setProblemBoxWidth((e.clientX / window.innerWidth) * 100);
-        }}
-      ></div>
+      <div className="w-2 flex items-center justify-center cursor-pointer" onDrag={dragProblemBoxHandler}></div>
       <div
         className="flex flex-col w-full h-full"
         style={{
@@ -86,14 +88,7 @@ const GamePlayBox: React.FC = () => {
             ></Editor>
           </GameDefaultBox>
         </div>
-        <div
-          className="h-2 items-center justify-center cursor-pointer"
-          onDrag={e => {
-            console.log(e.clientY);
-            if (e.clientY > 0 && e.clientY < window.innerHeight)
-              setCodeBoxHeight((e.clientY / window.innerHeight) * 100);
-          }}
-        ></div>
+        <div className="h-2 items-center justify-center cursor-pointer" onDrag={dragCodeBoxHandler}></div>
         <div
           style={{
             height: `${100 - codeBoxHeight}%`,
