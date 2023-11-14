@@ -7,7 +7,7 @@ const GameFooterBox: React.FC = () => {
       <div className="absolute h-full w-full bg-black rounded-tl-md skew-x-left -left-2 z-0"></div>
       <div className="relative bg-black px-2 py-1 flex flex-row text-[24px] gap-12 z-10">
         <div className="flex flex-row ">
-          <GameItemButton item="swap" />
+          <GameItemButton item="swap" className="mr-1" />
           <GameItemButton item="swap" />
           <div className="ml-1 text-[10px] text-[#AAAAAA] flex flex-col items-start justify-end">
             <p>아이콘을 눌러</p>

@@ -1,6 +1,6 @@
 interface GameDefaultBoxProps {
   children: React.ReactNode;
-  className?: String;
+  className?: string;
 }
 
 const GameDefaultBox: React.FC<GameDefaultBoxProps> = ({ children, className = "" }) => {
