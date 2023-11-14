@@ -27,10 +27,18 @@ const attatchChildProcessEvents = (child, res, timer, startTime) => {
       output,
       error,
     });
+
+    app.set("idle", true);
   });
 };
 
+app.get("/v2/avaliable", (req, res) => {
+  res.send({ avaliable: app.get("idle") });
+});
+
 app.post("/v2/scoring", (req, res) => {
+  app.set("idle", false);
+
   const { code, testcase } = req.body;
   let userCode = code;
   userCode += `\nconsole.log(solution(${testcase.parameters.join(", ")}));`;
@@ -50,6 +58,8 @@ app.post("/v2/scoring", (req, res) => {
       output: "",
       error: "Time Limit Exceeded",
     });
+
+    app.set("idle", true);
   }, 2000);
 
   attatchChildProcessEvents(child, res, timer, startTime);
