@@ -25,6 +25,10 @@ module.exports = {
         left: "-7.5deg",
         right: "7.5deg",
       },
+      padding: {
+        "screen-min": "64px",
+        "screen-max": "128px",
+      },
     },
   },
   plugins: [],
