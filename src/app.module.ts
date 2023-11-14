@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ScoresModule } from './scores/scores.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { UserTable } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -19,9 +21,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASSWORD_DEV,
       database: process.env.DB_DATABASE_DEV,
       synchronize: true,
-      entities: [],
+      entities: [UserTable],
     }),
     ScoresModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
