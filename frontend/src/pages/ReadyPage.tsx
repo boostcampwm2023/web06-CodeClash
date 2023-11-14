@@ -1,12 +1,11 @@
 import { useState } from "react";
 import UserCard from "../components/ready/UserCard";
-import EmptyCard from "../components/ready/EmptyCard";
 import ChatBox from "../components/ready/ChatBox";
 import ButtonBox from "../components/ready/ButtonBox";
 
 interface IUserInfo {
   isHost: boolean;
-  username?: string;
+  username: string;
   readyState: boolean;
 }
 
@@ -53,12 +52,9 @@ const ReadyPage: React.FC = () => {
   const [userList, setUserList] = useState<IUserInfo[]>(tempUserList);
   // const [userList, setUserList] = useState<IUserInfo[]>(Array(6).fill({ isUser: false }));
 
-  const users = userList.map(({ isHost, username, readyState }, index) => {
-    if (!username) {
-      return <EmptyCard key={index} />;
-    }
-    return <UserCard username={username} isHost={isHost} readyState={readyState} key={username + index} />;
-  });
+  const users = userList.map(({ isHost, username, readyState }, index) => (
+    <UserCard username={username} isHost={isHost} readyState={readyState} key={username + index} />
+  ));
 
   return (
     <div className="flex justify-center items-center w-full h-full gap-3">
