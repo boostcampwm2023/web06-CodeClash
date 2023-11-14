@@ -3,9 +3,10 @@ interface ButtonProps {
   title: string;
   subTitle?: string;
   onClick?: () => void;
+  className?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ color, title, subTitle = "", onClick }) => {
+const Button: React.FC<ButtonProps> = ({ color, title, subTitle = "", onClick, className = "" }) => {
   const colorVariants = {
     skyblue: "bg-skyblue",
     pink: "bg-pink",
@@ -14,14 +15,15 @@ const Button: React.FC<ButtonProps> = ({ color, title, subTitle = "", onClick })
   return (
     <div
       className={
-        "px-4 py-3 w-fit text-white text-center font-bold text-xl rounded-xl hover:cursor-pointer border-8 border-white" +
+        "px-4 py-3 text-white text-center font-bold rounded-md hover:cursor-pointer border-8 border-white flex flex-col items-center justify-center " +
+        colorVariants[color] +
         " " +
-        colorVariants[color]
+        className
       }
       onClick={onClick}
     >
-      <p className="drop-shadow-textShadow">{title}</p>
-      {subTitle && <p className="text-[0.5rem] drop-shadow-textShadow h-[0.5rem] leading-[0.6rem]">{subTitle}</p>}
+      <p className="drop-shadow-textShadow h-4 flex items-center justify-center">{title}</p>
+      {subTitle && <p className="text-[0.5em] drop-shadow-textShadow h-2 leading-[1em]">{subTitle}</p>}
     </div>
   );
 };
