@@ -1,20 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-
-interface IUserSubmission {
-  code: string;
-  language: string;
-  problemNumber: number;
-}
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { User } from 'src/users/decorators/user.decorator';
+import { ScoreSubmissionDto } from './dto/score-submission.dto';
 
 @Controller('v2/scores')
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
 
   @Post('/grade')
-  async grade(@Body() submission: IUserSubmission) {
-    const { code, language, problemNumber } = submission;
-
-    return await this.scoresService.grade(code, language, problemNumber);
+  @UseGuards(AccessTokenGuard)
+  async grade(@Body() submission: ScoreSubmissionDto, @User() user) {
+    return await this.scoresService.grade(submission, user);
   }
 }
