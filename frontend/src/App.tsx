@@ -5,7 +5,7 @@ import GamePlayPage from "./pages/GamePlayPage";
 
 const App: React.FC = () => {
   return (
-    <div className="bg-defaultPattern h-[100vh] w-[100vw]">
+    <div className="bg-defaultPattern h-[100vh] w-[100vw] min-w-[1180px]">
       <BrowserRouter>
         <Routes>
           <Route path="/lobby" element={<LobbyPage />} />
