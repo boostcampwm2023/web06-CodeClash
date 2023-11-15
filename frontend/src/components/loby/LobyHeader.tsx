@@ -8,7 +8,7 @@ enum HeaderStatus {
   ROOM = "room",
 }
 
-const LobyHeader: React.FC = () => {
+const LobbyHeader: React.FC = () => {
   const [selectedHeader, setSelectedHeader] = useState<HeaderStatus>(HeaderStatus.LOBY);
   return (
     <div className="absolute top-0 -translate-x-[50%] left-[50%] ">
@@ -44,4 +44,4 @@ const LobyHeader: React.FC = () => {
   );
 };
 
-export default LobyHeader;
+export default LobbyHeader;

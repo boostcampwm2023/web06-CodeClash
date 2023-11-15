@@ -1,11 +1,11 @@
-import LobyHeader from "../components/loby/LobyHeader";
+import LobbyHeader from "../components/loby/LobyHeader";
 
-const LobyPage: React.FC = () => {
+const LobbyPage: React.FC = () => {
   return (
     <>
-      <LobyHeader />
+      <LobbyHeader />
     </>
   );
 };
 
-export default LobyPage;
+export default LobbyPage;
