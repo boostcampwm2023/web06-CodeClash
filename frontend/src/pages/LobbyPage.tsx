@@ -1,4 +1,4 @@
-import LobbyHeader from "../components/loby/LobyHeader";
+import LobbyHeader from "../components/loby/LobbyHeader";
 
 const LobbyPage: React.FC = () => {
   return (

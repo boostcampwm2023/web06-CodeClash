@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LobbyPage from "./pages/LobyPage";
+import LobbyPage from "./pages/LobbyPage";
 import ReadyPage from "./pages/ReadyPage";
 import GamePlayPage from "./pages/GamePlayPage";
 
