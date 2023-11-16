@@ -85,4 +85,5 @@ jobs:
               -p 3000:3000 \
               --name ${{ env.DOCKER_CONTAINER }} \
               --restart=always \
+              --add-host host.docker.internal:host-gateway \
               ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
