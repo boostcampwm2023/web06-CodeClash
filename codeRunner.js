@@ -3,7 +3,8 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 
 const app = express();
-app.set("idle", true);
+
+var isRunning = false;
 
 app.use(express.json());
 
@@ -29,25 +30,26 @@ const attatchChildProcessEvents = (child, res, timer, startTime, memoryLimit) =>
       error = "Memory Limit Exceeded";
     }
 
-    if (timer.isTriggered) return;
+    if (!timer.isTriggered) {
+      clearTimeout(timer);
+      res.send({
+        runTime,
+        memory: memoryUsage,
+        output,
+        error,
+      });
 
-    clearTimeout(timer);
-    res.send({
-      runTime,
-      memory: memoryUsage,
-      output,
-      error,
-    });
-
-    app.set("idle", true);
+      isRunning = false;
+    }
   });
 };
-app.get("/v2/avaliable", (req, res) => {
-  res.send({ avaliable: app.get("idle") });
-});
 
 app.post("/v2/scoring", (req, res) => {
-  app.set("idle", false);
+  if (isRunning) {
+    res.status(503).send({ error: "Server is busy" });
+    return;
+  }
+  isRunning = true;
 
   const { code, testcase, timeLimit, memoryLimit } = req.body;
   let userCode = code;
@@ -75,7 +77,7 @@ app.post("/v2/scoring", (req, res) => {
       error: "Time Limit Exceeded",
     });
 
-    app.set("idle", true);
+    isRunning = false;
   }, timeLimit);
 
   attatchChildProcessEvents(child, res, timer, startTime, memoryLimit);
