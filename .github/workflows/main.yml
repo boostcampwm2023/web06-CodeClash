@@ -83,7 +83,7 @@ jobs:
             docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
             docker run -d \
               -p 3000:3000 \
-              -p 443:443 \
               --name ${{ env.DOCKER_CONTAINER }} \
               --restart=always \
+              --add-host host.docker.internal:host-gateway \
               ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest

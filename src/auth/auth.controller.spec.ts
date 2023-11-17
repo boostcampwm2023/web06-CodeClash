@@ -1,24 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ScoresController } from './scores.controller';
-import { ScoresService } from './scores.service';
-import { AuthService } from 'src/auth/auth.service';
-import { UsersService } from 'src/users/users.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from 'src/users/users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserTable } from 'src/users/entities/user.entity';
 import { UsersMockRepository } from 'src/users/mocks/repository.mock';
 
-describe('ScoresController', () => {
-  let controller: ScoresController;
+describe('AuthController', () => {
+  let controller: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ScoresController],
+      controllers: [AuthController],
       providers: [
-        ScoresService,
         AuthService,
-        UsersService,
         JwtService,
+        UsersService,
         {
           provide: getRepositoryToken(UserTable),
           useClass: UsersMockRepository,
@@ -26,7 +24,7 @@ describe('ScoresController', () => {
       ],
     }).compile();
 
-    controller = module.get<ScoresController>(ScoresController);
+    controller = module.get<AuthController>(AuthController);
   });
 
   it('should be defined', () => {
