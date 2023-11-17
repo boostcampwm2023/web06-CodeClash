@@ -1,12 +1,11 @@
 const express = require("express");
 const { spawn } = require("child_process");
-const fs = require("fs");
+const queue = require("express-queue");
 
 const app = express();
 
-var isRunning = false;
-
 app.use(express.json());
+app.use(queue({ activeLimit: 1, queuedLimit: -1 }));
 
 const attatchChildProcessEvents = (child, res, timer, startTime, memoryLimit) => {
   let output = "";
@@ -38,31 +37,19 @@ const attatchChildProcessEvents = (child, res, timer, startTime, memoryLimit) =>
         output,
         error,
       });
-
-      isRunning = false;
     }
   });
 };
 
 app.post("/v2/scoring", (req, res) => {
-  if (isRunning) {
-    res.status(503).send({ error: "Server is busy" });
-    return;
-  }
-  isRunning = true;
-
   const { code, testcase, timeLimit, memoryLimit } = req.body;
   let userCode = code;
 
   userCode += `\nconsole.log(solution(${testcase.parameters.join(", ")}));`;
   userCode += `\nprocess.send(process.memoryUsage());`;
 
-  fs.writeFileSync("userCode.js", userCode);
-
-  // delete cashe
-  delete require.cache[require.resolve("./userCode")];
   const startTime = Date.now();
-  const child = spawn("node", ["./userCode.js"], {
+  const child = spawn("node", ["-e", userCode], {
     stdio: ["pipe", "pipe", "pipe", "ipc"],
   });
 
@@ -76,8 +63,6 @@ app.post("/v2/scoring", (req, res) => {
       output: "",
       error: "Time Limit Exceeded",
     });
-
-    isRunning = false;
   }, timeLimit);
 
   attatchChildProcessEvents(child, res, timer, startTime, memoryLimit);
