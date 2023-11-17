@@ -4,13 +4,8 @@ import {
   Length,
   ValidationArguments,
 } from 'class-validator';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseTable } from 'src/common/entities/base-table.entity';
+import { Column, Entity } from 'typeorm';
 
 enum Role {
   USER = 'user',
@@ -18,16 +13,7 @@ enum Role {
 }
 
 @Entity({ name: 'users' })
-export class UserTable {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
+export class UserTable extends BaseTable {
   @Column({ length: 500, unique: true })
   @IsString({
     message: (args: ValidationArguments) => {
