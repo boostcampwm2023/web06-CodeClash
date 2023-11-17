@@ -9,6 +9,7 @@ import { UserTable } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { ProblemsModule } from './problems/problems.module';
 import { ProblemTable } from './problems/entities/problem.entity';
+import { TestcasesModule } from './testcases/testcases.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ProblemTable } from './problems/entities/problem.entity';
     UsersModule,
     AuthModule,
     ProblemsModule,
+    TestcasesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
