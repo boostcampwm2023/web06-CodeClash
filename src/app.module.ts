@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProblemsModule } from './problems/problems.module';
 import { ProblemTable } from './problems/entities/problem.entity';
 import { TestcasesModule } from './testcases/testcases.module';
+import { TestcaseTable } from './testcases/entities/testcase.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { TestcasesModule } from './testcases/testcases.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       synchronize: true,
-      entities: [UserTable, ProblemTable],
+      entities: [UserTable, ProblemTable, TestcaseTable],
     }),
     ScoresModule,
     UsersModule,

@@ -1,6 +1,7 @@
 import { IsNumber } from 'class-validator';
 import { BaseTable } from 'src/common/entities/base-table.entity';
-import { Column, Entity } from 'typeorm';
+import { TestcaseTable } from 'src/testcases/entities/testcase.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'problems' })
 export class ProblemTable extends BaseTable {
@@ -21,4 +22,9 @@ export class ProblemTable extends BaseTable {
   @Column()
   @IsNumber()
   memoryLimit: number;
+
+  @OneToMany(() => TestcaseTable, (testcase) => testcase.problem, {
+    cascade: true,
+  })
+  testcases: TestcaseTable[];
 }

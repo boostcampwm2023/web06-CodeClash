@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TestcaseTable } from './entities/testcase.entity';
+import { Repository } from 'typeorm';
 import { CreateTestcaseDto } from './dto/create-testcase.dto';
 import { UpdateTestcaseDto } from './dto/update-testcase.dto';
 
 @Injectable()
 export class TestcasesService {
-  create(createTestcaseDto: CreateTestcaseDto) {
-    return 'This action adds a new testcase';
+  constructor(
+    @InjectRepository(TestcaseTable)
+    private readonly testcasesRepository: Repository<TestcaseTable>,
+  ) {}
+
+  async getTestcases(problemNumber: number) {
+    return await this.testcasesRepository.find({
+      where: { problem: { problemNumber: problemNumber } },
+    });
   }
 
-  findAll() {
-    return `This action returns all testcases`;
+  async createTestcase(createTestcaseDto: CreateTestcaseDto) {
+    return await this.testcasesRepository.save(createTestcaseDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} testcase`;
+  async updateTestcase(
+    problemNumber: number,
+    testcaseId: number,
+    updateTestcaseDto: UpdateTestcaseDto,
+  ) {
+    return await this.testcasesRepository.update(
+      { problem: { problemNumber: problemNumber }, id: testcaseId },
+      updateTestcaseDto,
+    );
   }
 
-  update(id: number, updateTestcaseDto: UpdateTestcaseDto) {
-    return `This action updates a #${id} testcase`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} testcase`;
+  async deleteTestcase(problemNumber: number, testcaseId: number) {
+    return await this.testcasesRepository.delete({
+      problem: { problemNumber: problemNumber },
+      id: testcaseId,
+    });
   }
 }
