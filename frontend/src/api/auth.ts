@@ -1,31 +1,22 @@
 import axios from "axios";
+import { baseAxios } from "./baseAxios";
 
 export const postLoginRequest = (email: string, password: string) => {
-  const authAxios = axios.create({
-    baseURL: "https://codeclash.site",
+  return baseAxios({
+    method: "post",
+    url: "/auth/login/email",
     headers: {
-      "Content-Type": "application/json; charset=UTF-8",
-      WithCredentials: "true",
       authorization: "Basic " + btoa(email + ":" + password),
     },
-  });
-
-  return authAxios.post("/auth/login/email", {
-    email,
-    password,
+    data: {
+      email,
+      password,
+    },
   });
 };
 
 export const postRegisterRequest = (name: string, email: string, password: string) => {
-  const authAxios = axios.create({
-    baseURL: "https://codeclash.site",
-    headers: {
-      "Content-Type": "application/json; charset=UTF-8",
-      WithCredentials: "true",
-    },
-  });
-
-  return authAxios.post("/auth/register/email", {
+  return baseAxios.post("/auth/register/email", {
     name,
     email,
     password,

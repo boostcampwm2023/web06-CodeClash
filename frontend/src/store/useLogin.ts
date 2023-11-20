@@ -14,6 +14,7 @@ interface LoginAction {
   setNickname: (nickname: string) => void;
   setInitialize: () => void;
   setAccessToken: (accessToken: string) => void;
+  setLogin: (email: string, nickname: string, accessToken: string) => void;
 }
 
 export interface LoginStore extends LoginState, LoginAction {}
@@ -41,6 +42,13 @@ export const useLoginStore = create<LoginStore>(
           accessToken: "",
         })),
       setAccessToken: accessToken => set(state => ({ accessToken: accessToken })),
+      setLogin: (email, nickname, accessToken) =>
+        set(state => ({
+          email: email,
+          nickname: nickname,
+          isLogin: true,
+          accessToken: accessToken,
+        })),
     }),
     { name: "loginStore" },
   ),
