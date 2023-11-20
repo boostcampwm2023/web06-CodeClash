@@ -8,10 +8,6 @@ export const postLoginRequest = (email: string, password: string) => {
     headers: {
       Authorization: "Basic " + btoa(email + ":" + password),
     },
-    data: {
-      email,
-      password,
-    },
   });
 };
 
