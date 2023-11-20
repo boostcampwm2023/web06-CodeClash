@@ -13,7 +13,7 @@ import { TestcasesModule } from './testcases/testcases.module';
 import { TestcaseTable } from './testcases/entities/testcase.entity';
 import { SubmissionsModule } from './submissions/submissions.module';
 import { SubmissionTable } from './submissions/entities/submission.entity';
-import { LobbyModule } from './lobby/lobby.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import { LobbyModule } from './lobby/lobby.module';
     ProblemsModule,
     TestcasesModule,
     SubmissionsModule,
-    LobbyModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
