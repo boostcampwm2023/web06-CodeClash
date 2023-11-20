@@ -78,9 +78,24 @@ jobs:
 
             docker login ${{ env.REGISTRY }} -u ${{ secrets.GIT_ID }} -p ${{ secrets.GIT_TOKEN }}
             docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+
+            # scoring server 1
             docker run -d \
               -p 3000:3000 \
-              -p 443:443 \
+              --name ${{ env.DOCKER_CONTAINER }} \
+              --restart=always \
+              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+
+            # scoring server 2
+            docker run -d \
+              -p 3001:3000 \
+              --name ${{ env.DOCKER_CONTAINER }} \
+              --restart=always \
+              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+
+            # scoring server 3
+            docker run -d \
+              -p 3002:3000 \
               --name ${{ env.DOCKER_CONTAINER }} \
               --restart=always \
               ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
