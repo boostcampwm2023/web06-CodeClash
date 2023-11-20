@@ -73,12 +73,10 @@ export class RoomsGateway {
       ...roomInfo,
     });
 
-    this.server
-      .in('lobby')
-      .emit('user_create_room', {
-        ...this.roomsService.getGameRoom(roomInfo.roomId),
-        userName: client.data.user.name,
-      });
+    this.server.in('lobby').emit('user_create_room', {
+      ...this.roomsService.getGameRoom(roomInfo.roomId),
+      userName: client.data.user.name,
+    });
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
@@ -107,6 +105,11 @@ export class RoomsGateway {
       message: `${client.data.user.name} 님이 ${
         this.roomsService.getGameRoom(roomId).roomName
       } 방에 접속했습니다.`,
+    });
+
+    this.server.in('lobby').emit('lobby_exit', {
+      userName: client.data.user.name,
+      message: `${client.data.user.name} is disconnected from lobby`,
     });
   }
 
