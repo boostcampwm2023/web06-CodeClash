@@ -23,11 +23,11 @@ export class SubmissionTable extends BaseTable {
 
   @Column()
   @IsNumber()
-  timeLimit: number;
+  timeElapsed: number;
 
   @Column()
   @IsNumber()
-  memoryLimit: number;
+  memoryUsed: number;
 
   @ManyToOne(() => UserTable, (user) => user.submissions)
   user: UserTable;
