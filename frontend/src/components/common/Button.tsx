@@ -1,5 +1,5 @@
 interface ButtonProps {
-  color: "skyblue" | "pink" | "yellow";
+  color: "skyblue" | "pink" | "yellow" | "black";
   title: string;
   subTitle?: string;
   onClick?: () => void;
@@ -11,6 +11,7 @@ const Button: React.FC<ButtonProps> = ({ color, title, subTitle = "", onClick, c
     skyblue: "bg-skyblue",
     pink: "bg-pink",
     yellow: "bg-yellow",
+    black: "bg-black",
   };
   return (
     <div

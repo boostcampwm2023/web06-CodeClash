@@ -9,6 +9,10 @@
   font-style: normal;
 }
 
+input[type="password"] {
+  font-family: sans-serif;
+}
+
 @layer base {
   :root {
     font-size: 32px;
