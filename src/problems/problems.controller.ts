@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProblemsService } from './problems.service';
@@ -18,10 +20,18 @@ import { AdminGuard } from 'src/auth/guard/admin.guard';
 export class ProblemsController {
   constructor(private readonly problemsService: ProblemsService) {}
 
-  @Get(':problemId')
+  @Get('')
   @UseGuards(AccessTokenGuard)
-  getProblem(@Param('problemId', ParseIntPipe) problemId: number) {
-    return this.problemsService.getProblem(problemId);
+  getProblem(@Query('problemId') problemId: number) {
+    if (!problemId) {
+      return this.problemsService.getAllProblems();
+    } else {
+      if (isNaN(problemId)) {
+        throw new BadRequestException('problemId must be a number');
+      }
+
+      return this.problemsService.getProblem(problemId);
+    }
   }
 
   @Post('new')

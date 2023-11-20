@@ -18,6 +18,10 @@ export class ProblemsService {
     });
   }
 
+  async getAllProblems() {
+    return await this.problemsRepository.find();
+  }
+
   async createProblem(createProblemDto: CreateProblemDto) {
     return await this.problemsRepository.save(createProblemDto);
   }

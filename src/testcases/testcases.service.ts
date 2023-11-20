@@ -18,24 +18,26 @@ export class TestcasesService {
     });
   }
 
+  async getAllTestcases() {
+    return await this.testcasesRepository.find();
+  }
+
   async createTestcase(createTestcaseDto: CreateTestcaseDto) {
     return await this.testcasesRepository.save(createTestcaseDto);
   }
 
   async updateTestcase(
-    problemId: number,
     testcaseId: number,
     updateTestcaseDto: UpdateTestcaseDto,
   ) {
     return await this.testcasesRepository.update(
-      { problem: { id: problemId }, id: testcaseId },
+      { id: testcaseId },
       updateTestcaseDto,
     );
   }
 
-  async deleteTestcase(problemId: number, testcaseId: number) {
+  async deleteTestcase(testcaseId: number) {
     return await this.testcasesRepository.delete({
-      problem: { id: problemId },
       id: testcaseId,
     });
   }
