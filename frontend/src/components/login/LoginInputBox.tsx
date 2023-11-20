@@ -1,16 +1,40 @@
-import { useState } from "react";
+import { useRef } from "react";
+import { postLoginRequest, postRegisterRequest } from "../../api/auth";
+import { useLogin } from "../../store/useLogin";
+
+const handleSignup = (name: string = "", email: string, password: string) => {
+  console.log(name, email, password);
+  postRegisterRequest(name, email, password).then(res => {
+    console.log(res);
+  });
+};
+
+const handleLogin = async (email: string, password: string) => {
+  postLoginRequest(email, password).then(res => {
+    console.log(res);
+  });
+};
 
 const LoginInputBox: React.FC = () => {
-  const [loggedin, setLoggedIn] = useState(false);
-
+  const { isLogin } = useLogin();
+  const userInfo = useRef({
+    email: "",
+    password: "",
+  });
   return (
     <>
-      {!loggedin ? (
+      {!isLogin ? (
         <div className="flex flex-col items-start">
-          <label className="text-white ">아이디</label>
-          <input className="rounded-full border-[3px] border-white text-[0.75rem] p-1 outline-none bg-[#D9D9D9] w-[15rem]"></input>
+          <label className="text-white ">이메일</label>
+          <input
+            className="rounded-full border-[3px] border-white text-[0.75rem] p-1 outline-none bg-[#D9D9D9] w-[15rem]"
+            onChange={e => (userInfo.current.email = e.target.value)}
+          ></input>
           <label className="text-white ">비밀번호</label>
-          <input className="rounded-full border-[3px] border-white text-[0.75rem] p-1 outline-none bg-[#D9D9D9] w-[15rem] mb-2"></input>
+          <input
+            className="rounded-full border-[3px] border-white text-[0.75rem] p-1 outline-none bg-[#D9D9D9] w-[15rem] mb-2"
+            onChange={e => (userInfo.current.password = e.target.value)}
+          ></input>
 
           <div className="w-full flex flex-row items-center justify-between text-[0.75rem] px-2 text-white mb-4">
             <div className="flex flex-row items-center gap-2">
@@ -22,7 +46,7 @@ const LoginInputBox: React.FC = () => {
 
           <button
             className=" text-center w-full rounded-full bg-pink text-[0.75rem] text-white py-1"
-            onClick={() => setLoggedIn(true)}
+            onClick={() => handleLogin(userInfo.current.email, userInfo.current.password)}
           >
             로그인
           </button>
