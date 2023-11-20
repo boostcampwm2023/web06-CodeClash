@@ -5,7 +5,8 @@ import {
   ValidationArguments,
 } from 'class-validator';
 import { BaseTable } from 'src/common/entities/base-table.entity';
-import { Column, Entity } from 'typeorm';
+import { SubmissionTable } from 'src/submissions/entities/submission.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 enum Role {
   USER = 'user',
@@ -58,4 +59,7 @@ export class UserTable extends BaseTable {
 
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
+
+  @OneToMany(() => SubmissionTable, (submission) => submission.user)
+  submissions: SubmissionTable[];
 }

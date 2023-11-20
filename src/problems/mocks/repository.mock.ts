@@ -7,7 +7,6 @@ export class ProblemsMockRepository {
       id: 1,
       createdAt: new Date(),
       updatedAt: new Date(),
-      problemNumber: 1,
       title: 'title',
       description: 'description',
       input: 'input',
@@ -20,7 +19,6 @@ export class ProblemsMockRepository {
       id: 1,
       createdAt: new Date(),
       updatedAt: new Date(),
-      problemNumber: createProblemDto.problemNumber,
       title: createProblemDto.title,
       description: createProblemDto.description,
       timeLimit: createProblemDto.timeLimit,
@@ -34,7 +32,7 @@ export class ProblemsMockRepository {
   }
   async exist(createProblemDto) {
     const problem = this.problems.find(
-      (problem) => problem.problemNumber === createProblemDto.problemNumber,
+      (problem) => problem.title === createProblemDto.title,
     );
     return problem ? true : false;
   }

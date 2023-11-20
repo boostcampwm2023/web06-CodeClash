@@ -22,12 +22,16 @@ export class TestcasesController {
   constructor(private readonly testcasesService: TestcasesService) {}
   @Get()
   @UseGuards(AccessTokenGuard)
-  getTestcases(@Query('problemNumber', ParseIntPipe) problemNumber: number) {
-    if (!problemNumber) {
-      throw new BadRequestException('must provide problemNumber');
-    }
+  getTestcases(@Query('problemId') problemId: number) {
+    if (!problemId) {
+      return this.testcasesService.getAllTestcases();
+    } else {
+      if (isNaN(problemId)) {
+        throw new BadRequestException('problemId must be a number');
+      }
 
-    return this.testcasesService.getTestcases(problemNumber);
+      return this.testcasesService.getTestcases(problemId);
+    }
   }
 
   @Post('new')
@@ -36,26 +40,18 @@ export class TestcasesController {
     return this.testcasesService.createTestcase(createTestcaseDto);
   }
 
-  @Patch(':testcaseId/problems/:problemNumber')
+  @Patch(':testcaseId')
   @UseGuards(AdminGuard)
   updateTestcase(
-    @Param('problemNumber', ParseIntPipe) problemNumber: number,
     @Param('testcaseId', ParseIntPipe) testcaseId: number,
     @Body() updateTestcaseDto: UpdateTestcaseDto,
   ) {
-    return this.testcasesService.updateTestcase(
-      problemNumber,
-      testcaseId,
-      updateTestcaseDto,
-    );
+    return this.testcasesService.updateTestcase(testcaseId, updateTestcaseDto);
   }
 
-  @Delete(':testcaseId/problems/:problemNumber')
+  @Delete(':testcaseId')
   @UseGuards(AdminGuard)
-  deleteTestcase(
-    @Param('problemNumber', ParseIntPipe) problemNumber: number,
-    @Param('testcaseId', ParseIntPipe) testcaseId: number,
-  ) {
-    return this.testcasesService.deleteTestcase(problemNumber, testcaseId);
+  deleteTestcase(@Param('testcaseId', ParseIntPipe) testcaseId: number) {
+    return this.testcasesService.deleteTestcase(testcaseId);
   }
 }

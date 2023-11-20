@@ -11,30 +11,31 @@ export class ProblemsService {
     private readonly problemsRepository: Repository<ProblemTable>,
   ) {}
 
-  async getProblem(problemNumber: number) {
+  async getProblem(problemId: number) {
     return await this.problemsRepository.findOne({
-      where: { problemNumber: problemNumber },
+      where: { id: problemId },
       relations: ['testcases'],
     });
+  }
+
+  async getAllProblems() {
+    return await this.problemsRepository.find();
   }
 
   async createProblem(createProblemDto: CreateProblemDto) {
     return await this.problemsRepository.save(createProblemDto);
   }
 
-  async updateProblem(
-    problemNumber: number,
-    updateProblemDto: CreateProblemDto,
-  ) {
+  async updateProblem(problemId: number, updateProblemDto: CreateProblemDto) {
     return await this.problemsRepository.update(
-      { problemNumber: problemNumber },
+      { id: problemId },
       updateProblemDto,
     );
   }
 
-  async deleteProblem(problemNumber: number) {
+  async deleteProblem(problemId: number) {
     return await this.problemsRepository.delete({
-      problemNumber: problemNumber,
+      id: problemId,
     });
   }
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProblemsService } from './problems.service';
@@ -18,10 +20,18 @@ import { AdminGuard } from 'src/auth/guard/admin.guard';
 export class ProblemsController {
   constructor(private readonly problemsService: ProblemsService) {}
 
-  @Get(':problemNumber')
+  @Get('')
   @UseGuards(AccessTokenGuard)
-  getProblem(@Param('problemNumber', ParseIntPipe) problemNumber: number) {
-    return this.problemsService.getProblem(problemNumber);
+  getProblem(@Query('problemId') problemId: number) {
+    if (!problemId) {
+      return this.problemsService.getAllProblems();
+    } else {
+      if (isNaN(problemId)) {
+        throw new BadRequestException('problemId must be a number');
+      }
+
+      return this.problemsService.getProblem(problemId);
+    }
   }
 
   @Post('new')
@@ -30,18 +40,18 @@ export class ProblemsController {
     return this.problemsService.createProblem(createProblemDto);
   }
 
-  @Patch(':problemNumber')
+  @Patch(':problemId')
   @UseGuards(AdminGuard)
   updateProblem(
-    @Param('problemNumber', ParseIntPipe) problemNumber: number,
+    @Param('problemId', ParseIntPipe) problemId: number,
     @Body() updateProblemDto: CreateProblemDto,
   ) {
-    return this.problemsService.updateProblem(problemNumber, updateProblemDto);
+    return this.problemsService.updateProblem(problemId, updateProblemDto);
   }
 
-  @Delete(':problemNumber')
+  @Delete(':problemId')
   @UseGuards(AdminGuard)
-  deleteProblem(@Param('problemNumber', ParseIntPipe) problemNumber: number) {
-    return this.problemsService.deleteProblem(problemNumber);
+  deleteProblem(@Param('problemId', ParseIntPipe) problemId: number) {
+    return this.problemsService.deleteProblem(problemId);
   }
 }

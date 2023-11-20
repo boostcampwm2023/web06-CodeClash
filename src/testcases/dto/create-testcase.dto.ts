@@ -6,5 +6,5 @@ export class CreateTestcaseDto extends PickType(TestcaseTable, [
   'output',
   'isExample',
 ]) {
-  problemNumber: number;
+  problemId: number;
 }
