@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Response } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BasicTokenGuard } from './guard/basic-token.guard';
@@ -12,14 +12,36 @@ export class AuthController {
 
   @Post('login/email')
   @UseGuards(BasicTokenGuard)
-  loginByEmail(@User() user) {
+  async loginByEmail(@User() user, @Response() res) {
     const { email, id } = user;
-    return this.authService.loginUser({ email, id });
+
+    const { accessToken, refreshToken } = await this.authService.loginUser({
+      email,
+      id,
+    });
+
+    res
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        path: '/',
+      })
+      .send({ accessToken });
   }
 
   @Post('register/email')
-  registerByEmail(@Body() registerByEmailDto: RegisterUserDto) {
-    return this.authService.registerWithEmail(registerByEmailDto);
+  async registerByEmail(
+    @Body() registerByEmailDto: RegisterUserDto,
+    @Response() res,
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.registerWithEmail(registerByEmailDto);
+
+    res
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        path: '/',
+      })
+      .send({ accessToken });
   }
 
   @Post('token/access')

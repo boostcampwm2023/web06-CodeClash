@@ -12,7 +12,7 @@ export class BasicTokenGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const rawToken = req.headers.authorization;
+    const rawToken = req.headers.Authorization;
 
     if (!rawToken) {
       throw new UnauthorizedException('No token provided');

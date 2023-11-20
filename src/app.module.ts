@@ -13,6 +13,7 @@ import { TestcasesModule } from './testcases/testcases.module';
 import { TestcaseTable } from './testcases/entities/testcase.entity';
 import { SubmissionsModule } from './submissions/submissions.module';
 import { SubmissionTable } from './submissions/entities/submission.entity';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { SubmissionTable } from './submissions/entities/submission.entity';
     ProblemsModule,
     TestcasesModule,
     SubmissionsModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
