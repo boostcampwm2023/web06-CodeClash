@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { postLoginRequest, postRegisterRequest } from "../../api/auth";
 import { useLoginStore } from "../../store/useLogin";
 import Modal from "../common/Modal";
@@ -10,6 +10,21 @@ const LoginInputBox: React.FC = () => {
   const [isModalOpened, setModalOpened] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isLogin) {
+        e.preventDefault();
+        e.stopPropagation();
+        navigate("/lobby");
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isLogin]);
   const userLoginInput = useRef({
     email: "",
     password: "",
