@@ -84,11 +84,7 @@ const LobbyHeader: React.FC = () => {
         />
       </div>
       {isModalOpened ? (
-        <Modal
-          title="초대 리스트"
-          closeModal={closeModal}
-          className="min-w-[1000px] h-[600px] px-2 flex flex-col overflow-scroll"
-        >
+        <Modal title="초대 리스트" closeModal={closeModal} className="h-[600px] px-2 flex flex-col overflow-scroll">
           {inviteList.map(({ roomName, host }) => (
             <div className="flex justify-between skew-x-right rounded-lg px-4 text-white text-sm hover:bg-lightskyblue hover:text-black">
               <div className="grid w-[550px] p-2 skew-x-left">
