@@ -75,7 +75,10 @@ export class RoomsGateway {
 
     this.server
       .in('lobby')
-      .emit('user_create_room', this.roomsService.getGameRoom(roomInfo.roomId));
+      .emit('user_create_room', {
+        ...this.roomsService.getGameRoom(roomInfo.roomId),
+        userName: client.data.user.name,
+      });
   }
 
   @UseFilters(HttpToSocketExceptionFilter)

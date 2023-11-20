@@ -20,6 +20,11 @@ export class RoomsService {
     client.data.roomId = roomId;
     client.rooms.clear();
     client.join(roomId);
+    this.roomList.lobby.userList = this.roomList.lobby.userList.filter(
+      (user) => {
+        user.id !== client.id;
+      },
+    );
     this.roomList[roomId] = {
       roomId,
       roomName,
