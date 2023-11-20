@@ -44,7 +44,7 @@ const CodeViewerBox: React.FC = () => {
   return (
     <div className="flex flex-col w-full h-full">
       <div className="flex">{titles}</div>
-      <GameDefaultBox className="w-full h-[633px] rounded-tl-none text-[0.5rem]">
+      <GameDefaultBox className="w-full min-h-[633px] rounded-tl-none text-[0.5rem]">
         {codeList.length > tabIndex ? codeList[tabIndex].code : ""}
       </GameDefaultBox>
     </div>
