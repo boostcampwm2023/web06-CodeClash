@@ -6,7 +6,7 @@ export const postLoginRequest = (email: string, password: string) => {
     method: "post",
     url: "/auth/login/email",
     headers: {
-      authorization: "Basic " + btoa(email + ":" + password),
+      Authorization: "Basic " + btoa(email + ":" + password),
     },
     data: {
       email,
@@ -15,10 +15,15 @@ export const postLoginRequest = (email: string, password: string) => {
   });
 };
 
-export const postRegisterRequest = (name: string, email: string, password: string) => {
-  return baseAxios.post("/auth/register/email", {
+export const postRegisterRequest = async (name: string, email: string, password: string) => {
+  const res = await baseAxios.post("/auth/register/email", {
     name,
     email,
     password,
   });
+
+  if (res.status) {
+    return res.data;
+  }
+  throw new Error("error");
 };

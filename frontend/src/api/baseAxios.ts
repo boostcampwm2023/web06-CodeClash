@@ -6,6 +6,6 @@ export const baseAxios = axios.create({
   headers: {
     "Content-Type": "application/json; charset=UTF-8",
     WithCredentials: "true",
-    authorization: "Bearer " + useLoginStore.getState().accessToken,
+    Authorization: "Bearer " + useLoginStore.getState().accessToken,
   },
 });

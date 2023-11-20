@@ -3,14 +3,16 @@ import { postLoginRequest, postRegisterRequest } from "../../api/auth";
 import { useLoginStore } from "../../store/useLogin";
 
 const LoginInputBox: React.FC = () => {
-  const { isLogin, setIsLogin, setEmail, setNickname, setAccessToken, setLogin } = useLoginStore();
+  const { isLogin, setLogin } = useLoginStore();
   const userInfo = useRef({
     email: "",
     password: "",
   });
 
   const handleSignup = (name: string = "", email: string, password: string) => {
-    postRegisterRequest(name, email, password);
+    postRegisterRequest(name, email, password).then(res => {
+      console.log(res.data);
+    });
   };
 
   const handleLogin = (email: string, password: string) => {
@@ -54,7 +56,7 @@ const LoginInputBox: React.FC = () => {
 
           <button
             className=" text-center w-full rounded-full bg-pink text-[0.75rem] text-white py-1"
-            onClick={() => handleLogin(userInfo.current.email, userInfo.current.password)}
+            onClick={() => handleSignup("123sefojnsef", userInfo.current.email, userInfo.current.password)}
           >
             로그인
           </button>
