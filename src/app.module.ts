@@ -7,6 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { UserTable } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { ProblemsModule } from './problems/problems.module';
+import { ProblemTable } from './problems/entities/problem.entity';
+import { TestcasesModule } from './testcases/testcases.module';
+import { TestcaseTable } from './testcases/entities/testcase.entity';
 
 @Module({
   imports: [
@@ -22,11 +26,13 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       synchronize: true,
-      entities: [UserTable],
+      entities: [UserTable, ProblemTable, TestcaseTable],
     }),
     ScoresModule,
     UsersModule,
     AuthModule,
+    ProblemsModule,
+    TestcasesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
