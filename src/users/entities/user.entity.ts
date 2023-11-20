@@ -4,13 +4,9 @@ import {
   Length,
   ValidationArguments,
 } from 'class-validator';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseTable } from 'src/common/entities/base-table.entity';
+import { SubmissionTable } from 'src/submissions/entities/submission.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 enum Role {
   USER = 'user',
@@ -18,16 +14,7 @@ enum Role {
 }
 
 @Entity({ name: 'users' })
-export class UserTable {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
+export class UserTable extends BaseTable {
   @Column({ length: 500, unique: true })
   @IsString({
     message: (args: ValidationArguments) => {
@@ -72,4 +59,7 @@ export class UserTable {
 
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
+
+  @OneToMany(() => SubmissionTable, (submission) => submission.user)
+  submissions: SubmissionTable[];
 }
