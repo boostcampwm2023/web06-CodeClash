@@ -1,26 +1,32 @@
 import { useRef } from "react";
 import { postLoginRequest, postRegisterRequest } from "../../api/auth";
-import { useLogin } from "../../store/useLogin";
-
-const handleSignup = (name: string = "", email: string, password: string) => {
-  console.log(name, email, password);
-  postRegisterRequest(name, email, password).then(res => {
-    console.log(res);
-  });
-};
-
-const handleLogin = async (email: string, password: string) => {
-  postLoginRequest(email, password).then(res => {
-    console.log(res);
-  });
-};
+import { useLoginStore } from "../../store/useLogin";
 
 const LoginInputBox: React.FC = () => {
-  const { isLogin } = useLogin();
+  const { isLogin, setIsLogin, setEmail, setNickname, setAccessToken } = useLoginStore();
   const userInfo = useRef({
     email: "",
     password: "",
   });
+
+  const handleSignup = (name: string = "", email: string, password: string) => {
+    console.log(name, email, password);
+    postRegisterRequest(name, email, password);
+  };
+
+  const handleLogin = (email: string, password: string) => {
+    postLoginRequest(email, password)
+      .then(res => {
+        if (res.status === 201) {
+          setIsLogin(true);
+          setEmail(email);
+          setNickname(res.data.nickname);
+          setAccessToken(res.data.accessToken);
+        }
+      })
+      .catch(err => alert(err));
+  };
+
   return (
     <>
       {!isLogin ? (
