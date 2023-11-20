@@ -18,10 +18,10 @@ import { AdminGuard } from 'src/auth/guard/admin.guard';
 export class ProblemsController {
   constructor(private readonly problemsService: ProblemsService) {}
 
-  @Get(':problemNumber')
+  @Get(':problemId')
   @UseGuards(AccessTokenGuard)
-  getProblem(@Param('problemNumber', ParseIntPipe) problemNumber: number) {
-    return this.problemsService.getProblem(problemNumber);
+  getProblem(@Param('problemId', ParseIntPipe) problemId: number) {
+    return this.problemsService.getProblem(problemId);
   }
 
   @Post('new')
@@ -30,18 +30,18 @@ export class ProblemsController {
     return this.problemsService.createProblem(createProblemDto);
   }
 
-  @Patch(':problemNumber')
+  @Patch(':problemId')
   @UseGuards(AdminGuard)
   updateProblem(
-    @Param('problemNumber', ParseIntPipe) problemNumber: number,
+    @Param('problemId', ParseIntPipe) problemId: number,
     @Body() updateProblemDto: CreateProblemDto,
   ) {
-    return this.problemsService.updateProblem(problemNumber, updateProblemDto);
+    return this.problemsService.updateProblem(problemId, updateProblemDto);
   }
 
-  @Delete(':problemNumber')
+  @Delete(':problemId')
   @UseGuards(AdminGuard)
-  deleteProblem(@Param('problemNumber', ParseIntPipe) problemNumber: number) {
-    return this.problemsService.deleteProblem(problemNumber);
+  deleteProblem(@Param('problemId', ParseIntPipe) problemId: number) {
+    return this.problemsService.deleteProblem(problemId);
   }
 }

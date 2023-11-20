@@ -12,9 +12,9 @@ export class TestcasesService {
     private readonly testcasesRepository: Repository<TestcaseTable>,
   ) {}
 
-  async getTestcases(problemNumber: number) {
+  async getTestcases(problemId: number) {
     return await this.testcasesRepository.find({
-      where: { problem: { problemNumber: problemNumber } },
+      where: { problem: { id: problemId } },
     });
   }
 
@@ -23,19 +23,19 @@ export class TestcasesService {
   }
 
   async updateTestcase(
-    problemNumber: number,
+    problemId: number,
     testcaseId: number,
     updateTestcaseDto: UpdateTestcaseDto,
   ) {
     return await this.testcasesRepository.update(
-      { problem: { problemNumber: problemNumber }, id: testcaseId },
+      { problem: { id: problemId }, id: testcaseId },
       updateTestcaseDto,
     );
   }
 
-  async deleteTestcase(problemNumber: number, testcaseId: number) {
+  async deleteTestcase(problemId: number, testcaseId: number) {
     return await this.testcasesRepository.delete({
-      problem: { problemNumber: problemNumber },
+      problem: { id: problemId },
       id: testcaseId,
     });
   }
