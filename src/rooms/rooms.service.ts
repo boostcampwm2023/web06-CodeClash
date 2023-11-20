@@ -17,12 +17,19 @@ export class RoomsService {
   createRoom(client: Socket, roomName: string, capacity: number) {
     const roomId = uuid();
 
+    client.data.roomId = roomId;
     client.rooms.clear();
     client.join(roomId);
     this.roomList[roomId] = {
       roomId,
       roomName,
       userList: [client],
+      capacity,
+    };
+
+    return {
+      roomId,
+      roomName,
       capacity,
     };
   }
@@ -32,7 +39,9 @@ export class RoomsService {
     client.join(roomId);
 
     this.roomList.lobby.userList = this.roomList.lobby.userList.filter(
-      (user) => user.id !== client.id,
+      (user) => {
+        user.id !== client.id;
+      },
     );
 
     this.roomList[roomId].userList.push(client);
@@ -41,7 +50,7 @@ export class RoomsService {
   exitRoom(client: Socket, roomId: string) {
     client.rooms.clear();
     this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
-      (userId) => userId !== client.id,
+      (user) => user.data.id !== client.data.id,
     );
 
     if (this.roomList[roomId].userList.length === 0) {
@@ -49,19 +58,26 @@ export class RoomsService {
     }
 
     client.join('lobby');
-    this.roomList.lobby.userList.push(client.id);
+    this.roomList.lobby.userList.push(client);
   }
 
   exitLobby(client: Socket) {
     client.to('lobby_exit');
 
     this.roomList.lobby.userList = this.roomList.lobby.userList.filter(
-      (user) => user.id !== client.id,
+      (user) => user.data.id !== client.data.id,
     );
   }
 
   getGameRoom(roomId: string) {
-    return this.roomList[roomId];
+    const room = this.roomList[roomId];
+
+    return {
+      roomId,
+      roomName: room.roomName,
+      capacity: room.capacity,
+      userCount: room.userList.length,
+    };
   }
 
   getAllGameRoom() {
@@ -77,6 +93,6 @@ export class RoomsService {
   }
 
   getAllClient(roomId: string) {
-    return this.roomList[roomId].userList.map((Socket) => Socket.user.name);
+    return this.roomList[roomId].userList.map((user) => user.data.user.name);
   }
 }
