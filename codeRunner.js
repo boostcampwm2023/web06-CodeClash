@@ -41,7 +41,8 @@ const attatchChildProcessEvents = (
       res.send({
         runTime,
         memory: memoryUsage,
-        output: output.trim() == answer ? "Accepted" : "Wrong Answer",
+        status: output.trim() == answer ? "pass" : "fail",
+        output: output.trim(),
         error,
       });
     }
@@ -69,6 +70,7 @@ app.post("/v2/scoring", (req, res) => {
     res.send({
       runTime: timeLimit,
       memory: 0,
+      status: "fail",
       output: "",
       error: "Time Limit Exceeded",
     });
