@@ -1,5 +1,11 @@
+import { IGameRoom } from "../../pages/LobbyPage";
+
+interface LobbyRoomListBoxProps {
+  gameRoomList: IGameRoom[];
+}
+
 interface LobbyRoomListItemProps {
-  id: number;
+  id: string;
   name: string;
   capacity: number;
   usercount: number;
@@ -22,17 +28,17 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ id, name, capacit
   );
 };
 
-const testRoomList = new Array(20)
-  .fill(0)
-  .map((_, i) => <LobbyRoomListItem key={i} id={i} capacity={4} name="1:1 파이썬 초보만@@@@@@@@@@@@" usercount={2} />);
-
-const LobbyRoomListBox: React.FC = () => {
+const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => {
   return (
     <div className="h-full flex flex-col flex-grow gap-4 border-[3px] border-white rounded-lg bg-skyblue p-4 ">
       <div className="skew-x-right bg-black rounded-sm text-white px-2 py-1">
         <div className="skew-x-left">방 리스트</div>
       </div>
-      <div className=" overflow-scroll p-1">{testRoomList}</div>
+      <div className=" overflow-scroll p-1">
+        {gameRoomList.map(({ roomId, roomName, capacity, userCount }) => (
+          <LobbyRoomListItem key={roomId} id={roomId} capacity={capacity} name={roomName} usercount={userCount} />
+        ))}
+      </div>
     </div>
   );
 };
