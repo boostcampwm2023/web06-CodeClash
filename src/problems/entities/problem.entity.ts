@@ -20,6 +20,9 @@ export class ProblemTable extends BaseTable {
   @IsNumber()
   memoryLimit: number;
 
+  @Column({ type: 'text' })
+  sampleCode: string;
+
   @OneToMany(() => TestcaseTable, (testcase) => testcase.problem, {
     cascade: true,
   })
