@@ -33,7 +33,7 @@ export class UsersService {
   async getUserByName(name: string) {
     return await this.usersRepository.findOne({
       where: { name },
-      relations: ['submission'],
+      relations: ['submissions'],
     });
   }
 }
