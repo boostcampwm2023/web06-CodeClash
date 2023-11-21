@@ -24,11 +24,12 @@ const LobbyPage: React.FC = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("lobby_connect", handleLobbyConnect);
+      socket.on("connection", handleLobbyConnect);
     }
     return () => {
       if (socket) {
-        socket.off("lobby_connect", handleLobbyConnect);
+        socket.off("connection", handleLobbyConnect);
+        socket.disconnect();
       }
     };
   }, [socket]);
