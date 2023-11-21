@@ -4,7 +4,7 @@ interface ChatContentProps {
   content: string;
 }
 
-const ChatContent: React.FC<ChatContentProps> = ({ username, createdAt, content }) => {
+const ReadyChatContent: React.FC<ChatContentProps> = ({ username, createdAt, content }) => {
   return (
     <div className="flex relative mt-4 mb-1 mx-2 p-2 border rounded-xl border-white">
       <div className="w-full flex absolute top-[-16px]">
@@ -16,4 +16,4 @@ const ChatContent: React.FC<ChatContentProps> = ({ username, createdAt, content 
   );
 };
 
-export default ChatContent;
+export default ReadyChatContent;

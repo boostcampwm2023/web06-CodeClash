@@ -1,6 +1,6 @@
 import Button from "../components/common/Button";
-import GameFooterBox from "../components/gameplay/GameFooterBox";
-import GameHeaderBox from "../components/gameplay/GameHeaderBox";
+import GameFooterBox from "../components/gameplay/FooterBox";
+import GameHeaderBox from "../components/gameplay/HeaderBox";
 import GamePlayBox from "../components/gameplay/GamePlayBox";
 import GameProblemIdx from "../components/gameplay/GameProblemIdx";
 

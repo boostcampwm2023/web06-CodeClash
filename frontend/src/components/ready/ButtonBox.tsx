@@ -1,6 +1,6 @@
 import Button from "../common/Button";
 
-const ButtonBox: React.FC = () => {
+const ReadyButtonBox: React.FC = () => {
   return (
     <div className="grid grid-cols-3 gap-2 w-full">
       <Button color="pink" title="READY!" subTitle="난투 시작" />
@@ -10,4 +10,4 @@ const ButtonBox: React.FC = () => {
   );
 };
 
-export default ButtonBox;
+export default ReadyButtonBox;
