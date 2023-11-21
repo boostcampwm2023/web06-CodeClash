@@ -6,7 +6,7 @@ import Button from "../common/Button";
 import { useNavigate } from "react-router-dom";
 
 const LoginInputBox: React.FC = () => {
-  const { isLogin, setLogin } = useLoginStore();
+  const { isLogin, setLoginInitial: setLogin } = useLoginStore();
   const [isModalOpened, setModalOpened] = useState(false);
 
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ const LoginInputBox: React.FC = () => {
         navigate("/lobby");
       })
       .catch(err => {
-        err.response.status === 401 && alert("이메일 또는 비밀번호가 일치하지 않습니다.");
+        alert(err.response?.data?.message || "로그인에 실패했습니다.");
       });
   };
 
