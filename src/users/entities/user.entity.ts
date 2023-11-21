@@ -13,7 +13,7 @@ enum Role {
   ADMIN = 'amdin',
 }
 
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export class UserTable extends BaseTable {
   @Column({ length: 500, unique: true })
   @IsString({
