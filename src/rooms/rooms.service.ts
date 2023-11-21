@@ -12,20 +12,23 @@ export class RoomsService {
     },
   };
 
+  userNameSocketMapper = new Map();
+
   constructor() {}
 
   createRoom(client: Socket, roomName: string, capacity: number) {
     const roomId = uuid();
 
-    client.data.roomId = roomId;
-    client.rooms.clear();
-    client.join(roomId);
+    this.exitRoom(client, 'lobby');
+
     this.roomList[roomId] = {
       roomId,
       roomName,
-      userList: [client],
+      userList: [],
       capacity,
     };
+
+    this.enterRoom(client, roomId);
 
     return {
       roomId,
@@ -35,38 +38,13 @@ export class RoomsService {
   }
 
   enterRoom(client: Socket, roomId: string) {
-    client.rooms.clear();
     client.join(roomId);
-
-    this.roomList.lobby.userList = this.roomList.lobby.userList.filter(
-      (user) => {
-        user.id !== client.id;
-      },
-    );
-
     this.roomList[roomId].userList.push(client);
   }
 
   exitRoom(client: Socket, roomId: string) {
-    client.rooms.clear();
-    this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
-      (user) => user.data.id !== client.data.id,
-    );
-
-    if (this.roomList[roomId].userList.length === 0) {
-      delete this.roomList[roomId];
-    }
-
-    client.join('lobby');
-    this.roomList.lobby.userList.push(client);
-  }
-
-  exitLobby(client: Socket) {
-    client.to('lobby_exit');
-
-    this.roomList.lobby.userList = this.roomList.lobby.userList.filter(
-      (user) => user.data.id !== client.data.id,
-    );
+    client.leave(roomId);
+    this.deleteUserFromList(client, roomId);
   }
 
   getGameRoom(roomId: string) {
@@ -92,7 +70,37 @@ export class RoomsService {
     });
   }
 
+  changeReadyStatus(client: Socket) {
+    client.data.user.isReady = !client.data.user.isReady;
+
+    return client.data.user.isReady;
+  }
+
+  checkUsersReady(roomId: string) {
+    return this.roomList[roomId].userList.every(
+      (user) => user.data.user.isReady,
+    );
+  }
+
   getAllClient(roomId: string) {
     return this.roomList[roomId].userList.map((user) => user.data.user.name);
+  }
+
+  registerUserSocket(client: Socket, userName: string) {
+    this.userNameSocketMapper.set(userName, client);
+  }
+
+  getUserSocket(userName: string) {
+    return this.userNameSocketMapper.get(userName);
+  }
+
+  deleteUserSocket(userName: string) {
+    this.userNameSocketMapper.delete(userName);
+  }
+
+  deleteUserFromList(client: Socket, roomId: string) {
+    this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
+      (user) => user.id !== client.id,
+    );
   }
 }

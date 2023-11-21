@@ -50,7 +50,7 @@ export class AuthController {
     const newToken = this.authService.rotateToken(token, false);
 
     return {
-      refreshToken: newToken,
+      accessToken: newToken,
     };
   }
 }
