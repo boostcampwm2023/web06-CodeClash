@@ -9,7 +9,6 @@ const LobbyPage: React.FC = () => {
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
         <LobbyUserListBox />
-
         <LobbyMyInfo />
       </div>
 
