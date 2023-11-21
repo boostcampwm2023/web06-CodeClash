@@ -72,30 +72,15 @@ jobs:
           port: ${{ secrets.SCORING_PORT }}
           password: ${{ secrets.SCORING_PASSWORD }}
           script: |
-            docker stop ${{ env.DOCKER_CONTAINER }} || true
-            docker rm ${{ env.DOCKER_CONTAINER }} || true
             docker rmi ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest || true
 
-            docker login ${{ env.REGISTRY }} -u ${{ secrets.GIT_ID }} -p ${{ secrets.GIT_TOKEN }}
-            docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # scoring server 1
-            docker run -d \
-              -p 3000:3000 \
-              --name ${{ env.DOCKER_CONTAINER }} \
-              --restart=always \
-              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # scoring server 2
-            docker run -d \
-              -p 3001:3000 \
-              --name ${{ env.DOCKER_CONTAINER }} \
-              --restart=always \
-              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # scoring server 3
-            docker run -d \
-              -p 3002:3000 \
-              --name ${{ env.DOCKER_CONTAINER }} \
-              --restart=always \
-              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+            for i in 1 2 3
+            do
+              docker stop ${{ env.DOCKER_CONTAINER }}_$i || true
+              docker rm ${{ env.DOCKER_CONTAINER }}_$i || true
+              docker run -d \
+                -p $((3000 + i - 1)):3000 \
+                --name ${{ env.DOCKER_CONTAINER }}_$i \
+                --restart=always \
+                ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+            done

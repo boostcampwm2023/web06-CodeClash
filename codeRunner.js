@@ -7,7 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(queue({ activeLimit: 1, queuedLimit: -1 }));
 
-const attatchChildProcessEvents = (child, res, timer, startTime, memoryLimit) => {
+const attatchChildProcessEvents = (
+  child,
+  res,
+  timer,
+  startTime,
+  memoryLimit,
+  answer
+) => {
   let output = "";
   let error = "";
   let memoryUsage = 0;
@@ -34,7 +41,7 @@ const attatchChildProcessEvents = (child, res, timer, startTime, memoryLimit) =>
       res.send({
         runTime,
         memory: memoryUsage,
-        output,
+        output: output.trim() == answer ? "Accepted" : "Wrong Answer",
         error,
       });
     }
@@ -45,7 +52,9 @@ app.post("/v2/scoring", (req, res) => {
   const { code, testcase, timeLimit, memoryLimit } = req.body;
   let userCode = code;
 
-  userCode += `\nconsole.log(solution(${testcase.parameters.join(", ")}));`;
+  console.log(testcase);
+
+  userCode += `\nconsole.log(solution(${testcase.input.join(", ")}));`;
   userCode += `\nprocess.send(process.memoryUsage());`;
 
   const startTime = Date.now();
@@ -65,7 +74,14 @@ app.post("/v2/scoring", (req, res) => {
     });
   }, timeLimit);
 
-  attatchChildProcessEvents(child, res, timer, startTime, memoryLimit);
+  attatchChildProcessEvents(
+    child,
+    res,
+    timer,
+    startTime,
+    memoryLimit,
+    testcase.output
+  );
 });
 
 app.listen(3000, () => {
