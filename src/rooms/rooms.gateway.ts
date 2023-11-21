@@ -42,6 +42,11 @@ export class RoomsGateway {
       const token = this.authService.extractTokenFromHeader(rawToken, true);
       const payload = this.authService.verifyToken(token);
       const user = await this.usersService.getUserByEmail(payload.email);
+
+      if (this.roomsService.isConnctedUser(user.name)) {
+        socket.disconnect();
+      }
+
       socket.data.user = user;
       socket.data.user.ready = false;
       socket.data.token = token;
@@ -68,21 +73,22 @@ export class RoomsGateway {
   }
 
   async handleDisconnect(socket: Socket) {
-    if (socket.data.roomId == 'lobby') {
-      this.server.in(socket.data.roomId).emit('user_exit_lobby', {
-        userName: socket.data.user.name,
-        message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
-      });
-    } else {
-      this.server.in(socket.data.roomId).emit('user_exit_room', {
-        userName: socket.data.user.name,
-        message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
-      });
+    if (socket.data.roomId) {
+      if (socket.data.roomId === 'lobby') {
+        this.server.in(socket.data.roomId).emit('user_exit_lobby', {
+          userName: socket.data.user.name,
+          message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
+        });
+      } else {
+        this.server.in(socket.data.roomId).emit('user_exit_room', {
+          userName: socket.data.user.name,
+          message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
+        });
+      }
+
+      this.roomsService.exitRoom(socket, socket.data.roomId);
+      this.roomsService.deleteUserSocket(socket.data.user.name);
     }
-
-    this.roomsService.exitRoom(socket, socket.data.roomId);
-
-    this.roomsService.deleteUserSocket(socket.data.user.name);
 
     socket.disconnect();
   }
@@ -202,10 +208,15 @@ export class RoomsGateway {
     if (!targetUser) {
       client.emit('dm', {
         status: 'fail',
-        message: '존재하지 않는 유저입니다.',
+        message: '접속하지 않은 유저입니다.',
       });
     } else {
-      targetUser.emit('dm', {
+      client.emit('dm', {
+        status: 'success',
+        message: 'DM을 보냈습니다.',
+      });
+
+      targetUser.emit('user_dm', {
         userName: client.data.user.name,
         message,
       });
