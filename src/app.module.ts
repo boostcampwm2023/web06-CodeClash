@@ -32,6 +32,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       synchronize: true,
       entities: [UserTable, ProblemTable, TestcaseTable, SubmissionTable],
       namingStrategy: new SnakeNamingStrategy(),
+      charset: 'utf8mb4',
     }),
     ScoresModule,
     UsersModule,
