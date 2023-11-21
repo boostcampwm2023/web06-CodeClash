@@ -74,32 +74,13 @@ jobs:
           script: |
             docker rmi ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest || true
 
-            docker stop ${{ env.DOCKER_CONTAINER }}_1|| true
-            docker rm ${{ env.DOCKER_CONTAINER }}_1 || true
-
-            docker stop ${{ env.DOCKER_CONTAINER }}_2 || true
-            docker rm ${{ env.DOCKER_CONTAINER }}_2 || true
-
-            docker stop ${{ env.DOCKER_CONTAINER }}_3 || true
-            docker rm ${{ env.DOCKER_CONTAINER }}_3 || true
-
-            # scoring server 1
-            docker run -d \
-              -p 3000:3000 \
-              --name ${{ env.DOCKER_CONTAINER }}_1 \
-              --restart=always \
-              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # scoring server 2
-            docker run -d \
-              -p 3001:3000 \
-              --name ${{ env.DOCKER_CONTAINER }}_2 \
-              --restart=always \
-              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # scoring server 3
-            docker run -d \
-              -p 3002:3000 \
-              --name ${{ env.DOCKER_CONTAINER }}_3 \
-              --restart=always \
-              ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+            for i in 1 2 3
+            do
+              docker stop ${{ env.DOCKER_CONTAINER }}_$i || true
+              docker rm ${{ env.DOCKER_CONTAINER }}_$i || true
+              docker run -d \
+                -p $((3000 + i - 1)):3000 \
+                --name ${{ env.DOCKER_CONTAINER }}_$i \
+                --restart=always \
+                ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+            done
