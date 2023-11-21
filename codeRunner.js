@@ -53,9 +53,9 @@ app.post("/v2/scoring", (req, res) => {
   const { code, testcase, timeLimit, memoryLimit } = req.body;
   let userCode = code;
 
-  console.log(testcase);
+  const input = JSON.parse(testcase.input);
 
-  userCode += `\nconsole.log(solution(${testcase.input.join(", ")}));`;
+  userCode += `\nconsole.log(solution(${input.join(", ")}));`;
   userCode += `\nprocess.send(process.memoryUsage());`;
 
   const startTime = Date.now();
