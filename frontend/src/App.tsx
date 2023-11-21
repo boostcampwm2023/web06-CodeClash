@@ -4,7 +4,6 @@ import ReadyPage from "./pages/ReadyPage";
 import GamePlayPage from "./pages/GamePlayPage";
 import ResultPage from "./pages/ResultPage";
 import LoginPage from "./pages/LoginPage";
-import { useLoginStore } from "./store/useLogin";
 import ProtectRoute from "./components/protectroute/ProtectRoute";
 
 const App: React.FC = () => {
