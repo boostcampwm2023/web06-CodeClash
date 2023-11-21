@@ -1,4 +1,4 @@
-import GameDefaultBox from "./GameDefaultBox";
+import GameDefaultBox from "./DefaultBox";
 import { useState, useRef, DragEventHandler } from "react";
 import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
