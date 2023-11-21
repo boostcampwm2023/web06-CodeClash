@@ -14,7 +14,7 @@ export class ProblemsService {
   async getProblem(problemId: number) {
     return await this.problemsRepository.findOne({
       where: { id: problemId },
-      relations: ['testcases'],
+      relations: ['testcase'],
     });
   }
 
