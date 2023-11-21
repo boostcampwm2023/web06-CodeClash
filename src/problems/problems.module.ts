@@ -10,5 +10,6 @@ import { UsersModule } from 'src/users/users.module';
   controllers: [ProblemsController],
   providers: [ProblemsService],
   imports: [TypeOrmModule.forFeature([ProblemTable]), AuthModule, UsersModule],
+  exports: [ProblemsService],
 })
 export class ProblemsModule {}

@@ -14,5 +14,6 @@ import { UsersModule } from 'src/users/users.module';
     AuthModule,
     UsersModule,
   ],
+  exports: [SubmissionsService],
 })
 export class SubmissionsModule {}
