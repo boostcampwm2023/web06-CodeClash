@@ -1,8 +1,8 @@
 import Button from "../components/common/Button";
 import GameFooterBox from "../components/gameplay/FooterBox";
 import GameHeaderBox from "../components/gameplay/HeaderBox";
-import GamePlayBox from "../components/gameplay/GamePlayBox";
-import GameProblemIdx from "../components/gameplay/GameProblemIdx";
+import GamePlayBox from "../components/gameplay/PlayBox";
+import GameProblemIdx from "../components/gameplay/ProblemIdx";
 
 const GamePlayPage: React.FC = () => {
   return (

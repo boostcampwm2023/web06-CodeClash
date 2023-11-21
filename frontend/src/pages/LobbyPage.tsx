@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import LobbyHeader from "../components/lobby/LobbyHeader";
-import LobbyMyInfo from "../components/lobby/LobbyMyInfo";
-import LobbyRoomListBox from "../components/lobby/LobbyRoomListBox";
-import LobbyUserListBox from "../components/lobby/LobbyUserListBox";
+import LobbyHeader from "../components/lobby/Header";
+import LobbyMyInfo from "../components/lobby/MyInfo";
+import LobbyRoomListBox from "../components/lobby/RoomListBox";
+import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
 
 export interface IGameRoom {
@@ -22,14 +22,25 @@ const LobbyPage: React.FC = () => {
     setGameRoomList(gameRoomList);
   };
 
+  const handleUserEnterLobby = ({ userName }: { userName: string }) => {
+    setUserList(prev => prev.concat(userName));
+  };
+
+  const handleUserExitLobby = ({ userName }: { userName: string }) => {
+    setUserList(prev => prev.filter(name => name !== userName));
+  };
+
   useEffect(() => {
     if (socket) {
       socket.on("connection", handleLobbyConnect);
+      socket.on("user_enter_lobby", handleUserEnterLobby);
+      socket.on("user_exit_lobby", handleUserExitLobby);
     }
     return () => {
       if (socket) {
         socket.off("connection", handleLobbyConnect);
-        socket.disconnect();
+        socket.off("user_enter_lobby", handleUserEnterLobby);
+        socket.off("user_exit_lobby", handleUserExitLobby);
       }
     };
   }, [socket]);

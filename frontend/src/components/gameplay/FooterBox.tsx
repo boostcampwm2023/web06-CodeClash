@@ -1,5 +1,5 @@
 import Button from "../common/Button";
-import GameItemButton from "./GameItemButton";
+import GameItemButton from "./ItemButton";
 
 const GameFooterBox: React.FC = () => {
   return (

@@ -16,6 +16,7 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ id, name, capacit
   return (
     <div
       className="skew-x-right rounded-sm px-2 py-1 cursor-pointer text-white hover:bg-lightskyblue hover:text-black"
+      key={id}
       onClick={onClick}
     >
       <div className="skew-x-left flex flex-row items-center justify-between">

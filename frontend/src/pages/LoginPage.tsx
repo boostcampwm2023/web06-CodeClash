@@ -1,4 +1,4 @@
-import LoginInputBox from "../components/login/LoginInputBox";
+import LoginInputBox from "../components/login/InputBox";
 import LoginLogo from "../components/login/LoginLogo";
 
 const LoginPage: React.FC = () => {

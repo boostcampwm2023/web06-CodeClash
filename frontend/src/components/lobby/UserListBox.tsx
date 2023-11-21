@@ -3,8 +3,8 @@ interface LobbyUserListBoxProps {
 }
 
 const LobbyUserListBox: React.FC<LobbyUserListBoxProps> = ({ userList }) => {
-  const userListItems = userList.map(user => (
-    <div className="text-[0.75rem] cursor-pointer" key={user}>
+  const userListItems = userList.map((user, idx) => (
+    <div className="text-[0.75rem] cursor-pointer" key={user + String(idx)}>
       {user}
     </div>
   ));
