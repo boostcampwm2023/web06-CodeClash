@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.2.14",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.2",
+    "framer-motion": "^10.16.5",
     "monaco-editor": "^0.44.0",
     "prettier": "^3.1.0",
     "react": "^18.2.0",
