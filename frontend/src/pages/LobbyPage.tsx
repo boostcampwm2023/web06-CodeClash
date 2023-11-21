@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import LobbyHeader from "../components/lobby/LobbyHeader";
-import LobbyMyInfo from "../components/lobby/LobbyMyInfo";
-import LobbyRoomListBox from "../components/lobby/LobbyRoomListBox";
-import LobbyUserListBox from "../components/lobby/LobbyUserListBox";
+import LobbyHeader from "../components/lobby/Header";
+import LobbyMyInfo from "../components/lobby/MyInfo";
+import LobbyRoomListBox from "../components/lobby/RoomListBox";
+import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
 
 export interface IGameRoom {

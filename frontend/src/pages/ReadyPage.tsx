@@ -1,7 +1,7 @@
 import { useState } from "react";
-import UserCard from "../components/ready/UserCard";
-import ChatBox from "../components/ready/ChatBox";
-import ButtonBox from "../components/ready/ButtonBox";
+import ReadyUserCard from "../components/ready/UserCard";
+import ReadyChatBox from "../components/ready/ChatBox";
+import ReadyButtonBox from "../components/ready/ButtonBox";
 
 interface IUserInfo {
   isHost: boolean;
@@ -53,15 +53,15 @@ const ReadyPage: React.FC = () => {
   // const [userList, setUserList] = useState<IUserInfo[]>(Array(6).fill({ isUser: false }));
 
   const users = userList.map(({ isHost, username, readyState }, index) => (
-    <UserCard username={username} isHost={isHost} readyState={readyState} key={username + index} />
+    <ReadyUserCard username={username} isHost={isHost} readyState={readyState} key={username + index} />
   ));
 
   return (
     <div className="flex justify-center items-center w-full h-full gap-3">
       <div className="w-[800px] grid grid-cols-3 gap-2">{users}</div>
       <div className="w-[600px] flex flex-col items-center gap-3">
-        <ChatBox />
-        <ButtonBox />
+        <ReadyChatBox />
+        <ReadyButtonBox />
       </div>
     </div>
   );

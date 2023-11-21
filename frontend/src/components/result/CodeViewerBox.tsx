@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../common/Button";
-import GameDefaultBox from "../gameplay/GameDefaultBox";
+import GameDefaultBox from "../gameplay/DefaultBox";
 
 interface ICodeContent {
   title: string;

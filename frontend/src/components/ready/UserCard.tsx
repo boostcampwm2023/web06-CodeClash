@@ -6,7 +6,7 @@ interface UserCardProps {
   readyState: boolean;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ username, isHost, readyState }) => {
+const ReadyUserCard: React.FC<UserCardProps> = ({ username, isHost, readyState }) => {
   return (
     <div className="text-center relative p-2 h-[391px] border-8 border-white rounded-lg bg-skyblue text-white">
       <div className="border-b-8 border-white">{username ? (isHost ? "방장" : "플레이어") : "대기중"}</div>
@@ -23,4 +23,4 @@ const UserCard: React.FC<UserCardProps> = ({ username, isHost, readyState }) => 
   );
 };
 
-export default UserCard;
+export default ReadyUserCard;

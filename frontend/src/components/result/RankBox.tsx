@@ -1,5 +1,5 @@
 import { useState } from "react";
-import RankItem from "./RankItem";
+import ResultRankItem from "./RankItem";
 
 interface IUserList {
   username: string;
@@ -40,15 +40,15 @@ const tempUserList = [
   },
 ];
 
-const RankBox: React.FC = () => {
+const ResultRankBox: React.FC = () => {
   const [userList, setUserList] = useState<IUserList[]>(tempUserList);
   // const [userList, setUserList] = useState<IUserList[]>([]);
 
   const rankContents = userList.map(({ username, message, score }) => (
-    <RankItem username={username} message={message} score={score} key={username} />
+    <ResultRankItem username={username} message={message} score={score} key={username} />
   ));
 
   return <div className="flex flex-col h-[500px] overflow-scroll py-2 my-2">{rankContents}</div>;
 };
 
-export default RankBox;
+export default ResultRankBox;

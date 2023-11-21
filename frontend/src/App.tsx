@@ -6,10 +6,12 @@ import ResultPage from "./pages/ResultPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectRoute from "./components/protectroute/ProtectRoute";
 import SocketProvider from "./components/SocketProvider";
+import MusicPlayer from "./components/player/MusicPlayer";
 
 const App: React.FC = () => {
   return (
     <div className="bg-defaultPattern h-[100vh] w-[100vw] min-w-[1180px]">
+      <MusicPlayer />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />

@@ -4,7 +4,7 @@ interface RankItemProps {
   score: number;
 }
 
-const RankItem: React.FC<RankItemProps> = ({ username, message, score }) => {
+const ResultRankItem: React.FC<RankItemProps> = ({ username, message, score }) => {
   return (
     <div className="relative flex justify-between items-center p-2 mb-4 border-4 bg-black rounded-lg border-white text-xs">
       <div className="absolute top-[-20px] text-[0.5rem] bg-yellow px-1 rounded">{username}</div>
@@ -32,4 +32,4 @@ const RankItem: React.FC<RankItemProps> = ({ username, message, score }) => {
   );
 };
 
-export default RankItem;
+export default ResultRankItem;

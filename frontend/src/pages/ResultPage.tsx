@@ -1,6 +1,6 @@
-import GameHeaderBox from "../components/gameplay/GameHeaderBox";
+import GameHeaderBox from "../components/gameplay/HeaderBox";
 import CodeViewerBox from "../components/result/CodeViewerBox";
-import ResultSummaryBox from "../components/result/ResultSummaryBox";
+import ResultSummaryBox from "../components/result/SummaryBox";
 
 const ResultPage: React.FC = () => {
   return (
