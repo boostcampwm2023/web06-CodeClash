@@ -3,7 +3,7 @@ import { ProblemTable } from 'src/problems/entities/problem.entity';
 import { UserTable } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-@Entity({ name: 'submissions' })
+@Entity({ name: 'submission' })
 export class SubmissionTable extends BaseTable {
   @Column()
   language: string;

@@ -14,6 +14,7 @@ import { TestcaseTable } from './testcases/entities/testcase.entity';
 import { SubmissionsModule } from './submissions/submissions.module';
 import { SubmissionTable } from './submissions/entities/submission.entity';
 import { RoomsModule } from './rooms/rooms.module';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { RoomsModule } from './rooms/rooms.module';
       database: process.env.DB_DATABASE,
       synchronize: true,
       entities: [UserTable, ProblemTable, TestcaseTable, SubmissionTable],
+      namingStrategy: new SnakeNamingStrategy(),
     }),
     ScoresModule,
     UsersModule,
