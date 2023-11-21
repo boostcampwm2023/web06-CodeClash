@@ -4,7 +4,7 @@ import LobbyMyInfo from "../components/lobby/LobbyMyInfo";
 import LobbyRoomListBox from "../components/lobby/LobbyRoomListBox";
 import LobbyUserListBox from "../components/lobby/LobbyUserListBox";
 import { useSocketStore } from "../store/useSocket";
-
+import { motion } from "framer-motion";
 export interface IGameRoom {
   roomId: string;
   roomName: string;
@@ -35,14 +35,28 @@ const LobbyPage: React.FC = () => {
   }, [socket]);
 
   return (
-    <div className="p-16 w-full h-full flex flex-row">
+    <motion.div
+      className="p-16 w-full h-full flex flex-row"
+      initial={{
+        x: "-100%",
+      }}
+      animate={{
+        x: 0,
+      }}
+      exit={{
+        x: "100%",
+      }}
+      transition={{
+        duration: 0.5,
+      }}
+    >
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
         <LobbyUserListBox userList={userList} />
         <LobbyMyInfo />
       </div>
       <LobbyRoomListBox gameRoomList={gameRoomList} />
-    </div>
+    </motion.div>
   );
 };
 
