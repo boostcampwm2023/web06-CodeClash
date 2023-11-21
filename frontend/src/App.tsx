@@ -5,6 +5,7 @@ import GamePlayPage from "./pages/GamePlayPage";
 import ResultPage from "./pages/ResultPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectRoute from "./components/protectroute/ProtectRoute";
+import SocketProvider from "./components/SocketProvider";
 
 const App: React.FC = () => {
   return (
@@ -14,10 +15,12 @@ const App: React.FC = () => {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectRoute to="/login" />}>
-            <Route path="/lobby" element={<LobbyPage />} />
-            <Route path="/room" element={<ReadyPage />} />
-            <Route path="/game" element={<GamePlayPage />} />
-            <Route path="/result" element={<ResultPage />} />
+            <Route element={<SocketProvider />}>
+              <Route path="/lobby" element={<LobbyPage />} />
+              <Route path="/room" element={<ReadyPage />} />
+              <Route path="/game" element={<GamePlayPage />} />
+              <Route path="/result" element={<ResultPage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

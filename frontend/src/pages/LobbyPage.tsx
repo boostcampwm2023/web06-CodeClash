@@ -22,13 +22,25 @@ const LobbyPage: React.FC = () => {
     setGameRoomList(gameRoomList);
   };
 
+  const handleUserEnterLobby = ({ userName }: { userName: string }) => {
+    setUserList(prev => prev.concat(userName));
+  };
+
+  const handleUserExitLobby = ({ userName }: { userName: string }) => {
+    setUserList(prev => prev.filter(name => name !== userName));
+  };
+
   useEffect(() => {
     if (socket) {
-      socket.on("lobby_connect", handleLobbyConnect);
+      socket.on("connection", handleLobbyConnect);
+      socket.on("user_enter_lobby", handleUserEnterLobby);
+      socket.on("user_exit_lobby", handleUserExitLobby);
     }
     return () => {
       if (socket) {
-        socket.off("lobby_connect", handleLobbyConnect);
+        socket.off("connection", handleLobbyConnect);
+        socket.off("user_enter_lobby", handleUserEnterLobby);
+        socket.off("user_exit_lobby", handleUserExitLobby);
       }
     };
   }, [socket]);
