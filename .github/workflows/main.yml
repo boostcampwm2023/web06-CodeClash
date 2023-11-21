@@ -72,12 +72,17 @@ jobs:
           port: ${{ secrets.SCORING_PORT }}
           password: ${{ secrets.SCORING_PASSWORD }}
           script: |
-            docker rmi ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest || true
-
             for i in 1 2 3
             do
               docker stop ${{ env.DOCKER_CONTAINER }}_$i || true
               docker rm ${{ env.DOCKER_CONTAINER }}_$i || true
+            done
+
+            docker rmi ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest || true
+            docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+
+            for i in 1 2 3
+            do
               docker run -d \
                 -p $((3000 + i - 1)):3000 \
                 --name ${{ env.DOCKER_CONTAINER }}_$i \
