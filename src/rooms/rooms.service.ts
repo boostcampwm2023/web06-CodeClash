@@ -39,6 +39,7 @@ export class RoomsService {
 
   enterRoom(client: Socket, roomId: string) {
     client.join(roomId);
+    client.data.roomId = roomId;
     this.roomList[roomId].userList.push(client);
   }
 

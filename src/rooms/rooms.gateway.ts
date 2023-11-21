@@ -68,27 +68,23 @@ export class RoomsGateway {
   }
 
   async handleDisconnect(socket: Socket) {
-    socket.rooms.forEach((room) => {
-      if (room === 'lobby') {
-        this.roomsService.exitRoom(socket, 'lobby');
+    if (socket.data.roomId == 'lobby') {
+      this.server.in(socket.data.roomId).emit('user_exit_lobby', {
+        userName: socket.data.user.name,
+        message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
+      });
+    } else {
+      this.server.in(socket.data.roomId).emit('user_exit_room', {
+        userName: socket.data.user.name,
+        message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
+      });
+    }
 
-        this.server.in('lobby').emit('user_exit_lobby', {
-          userName: socket.data.user.name,
-          message: `${socket.data.user.name} is disconnected from lobby`,
-        });
-      } else {
-        this.roomsService.exitRoom(socket, room);
-
-        this.server.in(room).emit('user_exit_room', {
-          userName: socket.data.user.name,
-          message: `${socket.data.user.name} 님이 ${
-            this.roomsService.getGameRoom(room).roomName
-          } 방에서 나갔습니다.`,
-        });
-      }
-    });
+    this.roomsService.exitRoom(socket, socket.data.roomId);
 
     this.roomsService.deleteUserSocket(socket.data.user.name);
+
+    socket.disconnect();
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
