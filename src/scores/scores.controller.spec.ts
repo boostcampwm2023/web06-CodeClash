@@ -7,6 +7,12 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserTable } from 'src/users/entities/user.entity';
 import { UsersMockRepository } from 'src/users/mocks/repository.mock';
+import { ProblemsService } from 'src/problems/problems.service';
+import { SubmissionsService } from 'src/submissions/submissions.service';
+import { ProblemTable } from 'src/problems/entities/problem.entity';
+import { ProblemsMockRepository } from 'src/problems/mocks/repository.mock';
+import { SubmissionTable } from 'src/submissions/entities/submission.entity';
+import { SubmissionsMockRepository } from 'src/submissions/mocks/repository.mock';
 
 describe('ScoresController', () => {
   let controller: ScoresController;
@@ -19,9 +25,19 @@ describe('ScoresController', () => {
         AuthService,
         UsersService,
         JwtService,
+        ProblemsService,
+        SubmissionsService,
         {
           provide: getRepositoryToken(UserTable),
           useClass: UsersMockRepository,
+        },
+        {
+          provide: getRepositoryToken(ProblemTable),
+          useClass: ProblemsMockRepository,
+        },
+        {
+          provide: getRepositoryToken(SubmissionTable),
+          useClass: SubmissionsMockRepository,
         },
       ],
     }).compile();

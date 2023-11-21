@@ -2,7 +2,7 @@ import { BaseTable } from 'src/common/entities/base-table.entity';
 import { ProblemTable } from 'src/problems/entities/problem.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-@Entity({ name: 'testcases' })
+@Entity({ name: 'testcase' })
 export class TestcaseTable extends BaseTable {
   @Column({ type: 'text' })
   input: string;
