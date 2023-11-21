@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 
 @Injectable()
 export class RoomsService {
-  roomList = {
+  private roomList = {
     lobby: {
       roomId: 'lobby',
       roomName: '로비',
@@ -12,7 +12,7 @@ export class RoomsService {
     },
   };
 
-  userNameSocketMapper = new Map();
+  private userNameSocketMapper = new Map();
 
   constructor() {}
 
@@ -72,15 +72,13 @@ export class RoomsService {
   }
 
   changeReadyStatus(client: Socket) {
-    client.data.user.isReady = !client.data.user.isReady;
+    client.data.user.ready = !client.data.user.ready;
 
-    return client.data.user.isReady;
+    return client.data.user.ready;
   }
 
   checkUsersReady(roomId: string) {
-    return this.roomList[roomId].userList.every(
-      (user) => user.data.user.isReady,
-    );
+    return this.roomList[roomId].userList.every((user) => user.data.user.ready);
   }
 
   getAllClient(roomId: string) {
@@ -103,5 +101,9 @@ export class RoomsService {
     this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
       (user) => user.id !== client.id,
     );
+  }
+
+  isConnctedUser(userName: string) {
+    return this.userNameSocketMapper.has(userName);
   }
 }
