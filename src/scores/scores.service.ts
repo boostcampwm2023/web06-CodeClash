@@ -47,13 +47,15 @@ export class ScoresService {
       ? 'pass'
       : 'fail';
 
-    await this.submissionsService.createSubmission({
-      code,
-      language,
-      status,
+    await this.submissionsService.createSubmission(
+      {
+        code,
+        language,
+        status,
+      } as CreateSubmissionDto,
       problemId,
-      userId: user.id,
-    } as CreateSubmissionDto);
+      user.id,
+    );
 
     return results;
   }
