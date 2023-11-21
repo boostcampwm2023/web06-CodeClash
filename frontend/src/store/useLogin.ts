@@ -23,9 +23,9 @@ interface LoginAction {
   setExpireTime: (expireAt: number) => void;
 }
 
-export interface LoginStore extends LoginState, LoginAction {}
+interface LoginStore extends LoginState, LoginAction {}
 
-export type LoginStatePersist = (
+type LoginStatePersist = (
   config: StateCreator<LoginStore>,
   options: PersistOptions<LoginState>,
 ) => StateCreator<LoginStore>;
