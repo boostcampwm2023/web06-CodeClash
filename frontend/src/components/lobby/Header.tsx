@@ -1,6 +1,6 @@
 import Button from "../common/Button";
-import { useEffect, useState } from "react";
-import Modal from "../common/Modal";
+import { useState } from "react";
+import InviteModal from "./InviteModal";
 
 enum HeaderStatus {
   LOBBY = "lobby",
@@ -9,7 +9,7 @@ enum HeaderStatus {
   ROOM = "room",
 }
 
-interface Iinvite {
+export interface Iinvite {
   roomName: string;
   host: string;
 }
@@ -39,19 +39,11 @@ const tempInviteList = [
 
 const LobbyHeader: React.FC = () => {
   const [selectedHeader, setSelectedHeader] = useState<HeaderStatus>(HeaderStatus.LOBBY);
-  const [isModalOpened, setModalOpened] = useState(false);
   const [inviteList, setInviteList] = useState<Iinvite[]>(tempInviteList);
 
   const closeModal = () => {
-    setModalOpened(false);
     setSelectedHeader(HeaderStatus.LOBBY);
   };
-
-  useEffect(() => {
-    if (selectedHeader === HeaderStatus.NOTIFICATION) {
-      setModalOpened(true);
-    }
-  }, [selectedHeader]);
 
   return (
     <div className="absolute top-0 -translate-x-[50%] left-[50%] ">
@@ -83,22 +75,7 @@ const LobbyHeader: React.FC = () => {
           onClick={() => setSelectedHeader(HeaderStatus.ROOM)}
         />
       </div>
-      {isModalOpened ? (
-        <Modal title="초대 리스트" closeModal={closeModal} className="h-[600px] px-2 flex flex-col overflow-scroll">
-          {inviteList.map(({ roomName, host }) => (
-            <div className="flex justify-between skew-x-right rounded-lg px-4 text-white text-sm hover:bg-lightskyblue hover:text-black">
-              <div className="grid w-[550px] p-2 skew-x-left">
-                <div className="truncate">{roomName}</div>
-                <div className="justify-self-end">{host}</div>
-              </div>
-              <div className="flex gap-2 p-2 skew-x-left">
-                <Button color="black" title="수락" />
-                <Button color="pink" title="거절" />
-              </div>
-            </div>
-          ))}
-        </Modal>
-      ) : null}
+      {selectedHeader === HeaderStatus.NOTIFICATION && <InviteModal closeModal={closeModal} inviteList={inviteList} />}
     </div>
   );
 };
