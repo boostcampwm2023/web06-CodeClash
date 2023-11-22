@@ -50,7 +50,7 @@ const LobbyPage: React.FC = () => {
   };
 
   const handleUserEnterLobby = ({ userName }: { userName: string }) => {
-    setUserList(prev => prev.concat([{ userName }]));
+    setUserList(prev => prev.concat({ userName }));
   };
 
   const handleUserExitLobby = ({ name }: { name: string }) => {
