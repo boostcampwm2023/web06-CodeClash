@@ -7,42 +7,8 @@ interface IChatMessage {
   content: string;
 }
 
-const tempChatMessageList = [
-  {
-    username: "유저A",
-    createdAt: "오후 17:00",
-    content: "glhf",
-  },
-  {
-    username: "유저B",
-    createdAt: "오후 17:01",
-    content: "아무리 긴 글을 쳐도 괜찮게 나오도록 할 수 있도록 하는 것이 목표입니다.",
-  },
-  {
-    username: "유저C",
-    createdAt: "오후 17:02",
-    content: "오버플로우가 발생해도 알아서 잘 안보이게 해주세요.",
-  },
-  {
-    username: "유저D",
-    createdAt: "오후 17:03",
-    content: "새로 챗을 쳤을 때 하단 고정하는 것은 api 추가할 때 하죠.",
-  },
-  {
-    username: "유저E",
-    createdAt: "오후 17:04",
-    content: "이쯤 되면 넘칠 때도 되었지?",
-  },
-  {
-    username: "유저F",
-    createdAt: "오후 17:05",
-    content: "이제 진짜 마지막 챗",
-  },
-];
-
 const ReadyChatBox: React.FC = () => {
-  const [chatList, setChatList] = useState<IChatMessage[]>(tempChatMessageList);
-  // const [chatList, setChatList] = useState<IChatMessage[]>([]);
+  const [chatList, setChatList] = useState<IChatMessage[]>([]);
   const chatScroll = useRef<HTMLDivElement>(null);
 
   const chatContents = chatList.map(({ username, createdAt, content }, index) => {

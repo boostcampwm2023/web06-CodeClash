@@ -1,59 +1,78 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReadyUserCard from "../components/ready/UserCard";
 import ReadyChatBox from "../components/ready/ChatBox";
 import ReadyButtonBox from "../components/ready/ButtonBox";
+import { useSocketStore } from "../store/useSocket";
+import { useLocation, useNavigate } from "react-router-dom";
+import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
 
-interface IUserInfo {
+export interface IUserInfo {
   isHost: boolean;
-  username: string;
-  readyState: boolean;
+  userName: string;
+  ready: boolean;
 }
 
-const tempUserList = [
-  {
-    isUser: true,
-    isHost: true,
-    username: "지현배",
-    readyState: false,
-  },
-  {
-    isUser: true,
-    isHost: false,
-    username: "이근성",
-    readyState: true,
-  },
-  {
-    isUser: true,
-    isHost: false,
-    username: "이동하",
-    readyState: true,
-  },
-  {
-    isUser: true,
-    isHost: false,
-    username: "현찬우",
-    readyState: false,
-  },
-  {
-    isUser: false,
-    isHost: false,
-    username: "",
-    readyState: false,
-  },
-  {
-    isUser: false,
-    isHost: false,
-    username: "",
-    readyState: false,
-  },
-];
+interface IRoomInfo {
+  roomId: string;
+  roomName: string;
+  capacity: number;
+}
+
+interface IExitRoomResponse {
+  status: "success" | "fail";
+  userList: string[];
+  gameRoomList: IGameRoom[];
+}
 
 const ReadyPage: React.FC = () => {
-  const [userList, setUserList] = useState<IUserInfo[]>(tempUserList);
-  // const [userList, setUserList] = useState<IUserInfo[]>(Array(6).fill({ isUser: false }));
+  const [userList, setUserList] = useState<IUserInfo[]>([]);
+  const [roomInfo, setRoomInfo] = useState<IRoomInfo>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { socket } = useSocketStore();
 
-  const users = userList.map(({ isHost, username, readyState }, index) => (
-    <ReadyUserCard username={username} isHost={isHost} readyState={readyState} key={username + index} />
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/login");
+      return;
+    }
+    const { userList, roomId, roomName, capacity } = location.state.data;
+    setUserList(
+      userList.map(({ userName, ready }: ILobbyUserInfo, index: number) => ({
+        isHost: index === 0,
+        userName,
+        ready,
+      })),
+    );
+    setRoomInfo({ roomId, roomName, capacity });
+  }, [location]);
+
+  const handleExitRoom = () => {
+    if (socket) {
+      socket.emit("exit_room", { roomId: roomInfo?.roomId });
+    }
+  };
+
+  const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
+    if (status === "success") {
+      navigate("/lobby", { state: { data: { userList, gameRoomList } } });
+    }
+  };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("exit_room", handleEnterLobby);
+    }
+    return () => {
+      if (socket) {
+        socket.off("exit_room", handleEnterLobby);
+      }
+      handleExitRoom();
+    };
+  }, [socket]);
+
+  const users = userList.map(({ isHost, userName, ready }, index) => (
+    <ReadyUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
   ));
 
   return (
@@ -61,7 +80,7 @@ const ReadyPage: React.FC = () => {
       <div className="w-[800px] grid grid-cols-3 gap-2">{users}</div>
       <div className="w-[600px] flex flex-col items-center gap-3">
         <ReadyChatBox />
-        <ReadyButtonBox />
+        <ReadyButtonBox exitRoom={handleExitRoom} />
       </div>
     </div>
   );

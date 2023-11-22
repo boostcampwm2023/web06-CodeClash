@@ -4,25 +4,21 @@ interface LobbyRoomListBoxProps {
   gameRoomList: IGameRoom[];
 }
 
-interface LobbyRoomListItemProps {
-  id: string;
-  name: string;
-  capacity: number;
-  usercount: number;
+interface LobbyRoomListItemProps extends IGameRoom {
   onClick?: () => void;
 }
 
-const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ id, name, capacity, usercount, onClick }) => {
+const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName, capacity, userCount, onClick }) => {
   return (
     <div
       className="skew-x-right rounded-sm px-2 py-1 cursor-pointer text-white hover:bg-lightskyblue hover:text-black"
-      key={id}
+      key={roomId}
       onClick={onClick}
     >
       <div className="skew-x-left flex flex-row items-center justify-between">
-        <div className="text-[0.75rem]">{name}</div>
+        <div className="text-[0.75rem]">{roomName}</div>
         <div className="text-[0.75rem]">
-          {usercount}/{capacity}
+          {userCount}/{capacity}
         </div>
       </div>
     </div>
@@ -36,9 +32,18 @@ const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => 
         <div className="skew-x-left">방 리스트</div>
       </div>
       <div className=" overflow-scroll p-1">
-        {gameRoomList.map(({ roomId, roomName, capacity, userCount }) => (
-          <LobbyRoomListItem key={roomId} id={roomId} capacity={capacity} name={roomName} usercount={userCount} />
-        ))}
+        {gameRoomList
+          .filter(({ state }) => state === "waiting")
+          .map(({ roomId, roomName, capacity, userCount, state }) => (
+            <LobbyRoomListItem
+              key={roomId}
+              roomId={roomId}
+              capacity={capacity}
+              roomName={roomName}
+              userCount={userCount}
+              state={state}
+            />
+          ))}
       </div>
     </div>
   );
