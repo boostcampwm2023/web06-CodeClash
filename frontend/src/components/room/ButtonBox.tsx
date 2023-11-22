@@ -1,10 +1,10 @@
 import Button from "../common/Button";
 
-interface ReadyButtonBoxProps {
+interface RoomButtonBoxProps {
   exitRoom: () => void;
 }
 
-const ReadyButtonBox: React.FC<ReadyButtonBoxProps> = ({ exitRoom }) => {
+const RoomButtonBox: React.FC<RoomButtonBoxProps> = ({ exitRoom }) => {
   return (
     <div className="grid grid-cols-3 gap-2 w-full">
       <Button color="pink" title="READY!" subTitle="난투 시작" />
@@ -14,4 +14,4 @@ const ReadyButtonBox: React.FC<ReadyButtonBoxProps> = ({ exitRoom }) => {
   );
 };
 
-export default ReadyButtonBox;
+export default RoomButtonBox;

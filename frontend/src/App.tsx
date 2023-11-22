@@ -1,6 +1,6 @@
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import LobbyPage from "./pages/LobbyPage";
-import ReadyPage from "./pages/ReadyPage";
+import RoomPage from "./pages/RoomPage";
 import GamePlayPage from "./pages/GamePlayPage";
 import ResultPage from "./pages/ResultPage";
 import LoginPage from "./pages/LoginPage";
@@ -21,7 +21,7 @@ const App: React.FC = () => {
           <Route element={<ProtectRoute to="/login" />}>
             <Route element={<SocketProvider />}>
               <Route path="/lobby" element={<LobbyPage />} />
-              <Route path="/room" element={<ReadyPage />} />
+              <Route path="/room" element={<RoomPage />} />
               <Route path="/game" element={<GamePlayPage />} />
               <Route path="/result" element={<ResultPage />} />
             </Route>

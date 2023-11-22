@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import ReadyUserCard from "../components/ready/UserCard";
-import ReadyChatBox from "../components/ready/ChatBox";
-import ReadyButtonBox from "../components/ready/ButtonBox";
+import RoomUserCard from "../components/room/UserCard";
+import RoomChatBox from "../components/room/ChatBox";
+import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
@@ -24,7 +24,7 @@ interface IExitRoomResponse {
   gameRoomList: IGameRoom[];
 }
 
-const ReadyPage: React.FC = () => {
+const RoomPage: React.FC = () => {
   const [userList, setUserList] = useState<IUserInfo[]>([]);
   const [roomInfo, setRoomInfo] = useState<IRoomInfo>();
   const navigate = useNavigate();
@@ -72,18 +72,18 @@ const ReadyPage: React.FC = () => {
   }, [socket]);
 
   const users = userList.map(({ isHost, userName, ready }, index) => (
-    <ReadyUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
+    <RoomUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
   ));
 
   return (
     <div className="flex justify-center items-center w-full h-full gap-3">
       <div className="w-[800px] grid grid-cols-3 gap-2">{users}</div>
       <div className="w-[600px] flex flex-col items-center gap-3">
-        <ReadyChatBox />
-        <ReadyButtonBox exitRoom={handleExitRoom} />
+        <RoomChatBox />
+        <RoomButtonBox exitRoom={handleExitRoom} />
       </div>
     </div>
   );
 };
 
-export default ReadyPage;
+export default RoomPage;
