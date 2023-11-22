@@ -241,7 +241,7 @@ export class RoomsGateway {
         message: '게임을 시작합니다.',
       });
 
-      this.roomsService.changeRoomStatus(roomId, 'playing');
+      this.roomsService.changeRoomState(roomId, 'playing');
     }
   }
 
