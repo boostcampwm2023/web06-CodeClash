@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import ScreenBlock from "./ScreenBlock";
 import { useSocketStore } from "../../../store/useSocket";
-import { reverseLanguage, swapRandomLine } from "./codeHandler";
 import GameFooterBox from "../FooterBox";
 import CodeEditor from "../CodeEditor";
 import { GameItemType, IGameItem, gameItemTypes } from "./gameItemType";
@@ -9,13 +8,13 @@ import { gameItemReducer, initialGameItemState } from "./gameItemReducer";
 
 const GameEventHandler: React.FC = () => {
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
-  const [code, setCode] = useState<string>("");
+  const [code, setCode] = useState("");
   const { socket } = useSocketStore();
 
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (gameItems.length < 2) {
         setGameItems(prev => [...prev, gameItemTypes[Math.floor(Math.random() * gameItemTypes.length)]]);
       }
@@ -23,12 +22,12 @@ const GameEventHandler: React.FC = () => {
     //dev
     const keyDownHandler = (e: KeyboardEvent) => {
       if (e.key === "Control") {
-        swapRandomLine(setCode);
       }
     };
     document.addEventListener("keydown", keyDownHandler);
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -36,15 +35,14 @@ const GameEventHandler: React.FC = () => {
     const gameItemHandler = (data: { type: GameItemType }) => {
       switch (data.type) {
         case GameItemType.SWAP:
-          swapRandomLine(setCode);
           break;
       }
     };
 
-    socket && socket.on("game-item", gameItemHandler);
+    socket?.on("game-item", gameItemHandler);
 
     return () => {
-      socket && socket.off("game-item");
+      socket?.off("game-item");
     };
   }, [socket]);
 

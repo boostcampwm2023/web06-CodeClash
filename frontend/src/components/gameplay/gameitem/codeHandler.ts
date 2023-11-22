@@ -1,7 +1,7 @@
 import { engToKor, korToEng } from "korsearch";
 import { GameItemType } from "./gameItemType";
 
-export const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<string>>) => {
+const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<string>>) => {
   setCode(code => {
     const codeLine = code.split("\n");
     const wholeLineCount = codeLine.length;
@@ -12,14 +12,12 @@ export const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<stri
         return acc.concat(idx);
       }, [])
       .sort(() => Math.random() - 0.5);
-    const temp = codeLine[firstLine];
-    codeLine[firstLine] = codeLine[secondLine];
-    codeLine[secondLine] = temp;
+    [codeLine[firstLine], codeLine[secondLine]] = [codeLine[secondLine], codeLine[firstLine]];
     return codeLine.join("\n");
   });
 };
 
-export const reverseLanguage = (
+const reverseLanguage = (
   setCode: React.Dispatch<React.SetStateAction<string>>,
   dispatch: React.Dispatch<{
     type: GameItemType;
@@ -32,4 +30,40 @@ export const reverseLanguage = (
     setCode(code => korToEng(code));
     dispatch({ type: GameItemType.REVERSELANGUAGE, act: "off" });
   }, 1000 * 12);
+};
+
+const tinyCode = (
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+) => {
+  dispatch({ type: GameItemType.TINYCODE, act: "on" });
+  setTimeout(() => {
+    dispatch({ type: GameItemType.TINYCODE, act: "off" });
+  }, 1000 * 10);
+};
+
+const screenBlock = (
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+) => {
+  dispatch({ type: GameItemType.SCREENBLOCK, act: "on" });
+  setTimeout(() => {
+    dispatch({ type: GameItemType.SCREENBLOCK, act: "off" });
+  }, 1000 * 8);
+};
+
+const typeBlock = (
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+) => {
+  dispatch({ type: GameItemType.TYPEBLOCK, act: "on" });
+  setTimeout(() => {
+    dispatch({ type: GameItemType.TYPEBLOCK, act: "off" });
+  }, 1000 * 5);
 };

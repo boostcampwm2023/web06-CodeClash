@@ -40,6 +40,7 @@ export const gameItemReducer = (
       return {
         ...state,
         isTinyCode: action.act === "on",
+        fontSize: action.act === "on" ? 8 : 16,
       };
     case GameItemType.CRAZYMUSIC:
       return {
