@@ -9,6 +9,7 @@ export class RoomsService {
       roomId: 'lobby',
       roomName: '로비',
       userList: [],
+      capacity: 1000,
     },
   };
 
@@ -60,11 +61,12 @@ export class RoomsService {
   }
 
   getAllGameRoom() {
-    return Object.values(this.roomList).filter((room) => {
+    return Object.values(this.roomList).map((room) => {
       if (room.roomId !== 'lobby') {
         return {
           roomId: room.roomId,
           roomName: room.roomName,
+          capacity: room.capacity,
           userCount: room.userList.length,
         };
       }
