@@ -3,7 +3,7 @@ import ReadyUserCard from "../components/ready/UserCard";
 import ReadyChatBox from "../components/ready/ChatBox";
 import ReadyButtonBox from "../components/ready/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
 
 export interface IUserInfo {
@@ -29,25 +29,27 @@ const ReadyPage: React.FC = () => {
   const [roomInfo, setRoomInfo] = useState<IRoomInfo>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { roomId } = useParams();
   const { socket } = useSocketStore();
 
   useEffect(() => {
-    if (location) {
-      const { userList, roomId, roomName, capacity } = location.state.data;
-      setUserList(
-        userList.map(({ userName, ready }: ILobbyUserInfo, index: number) => ({
-          isHost: index === 0,
-          userName,
-        })),
-      );
-      setRoomInfo({ roomId, roomName, capacity });
+    if (!location.state) {
+      navigate("/login");
+      return;
     }
+    const { userList, roomId, roomName, capacity } = location.state.data;
+    setUserList(
+      userList.map(({ userName, ready }: ILobbyUserInfo, index: number) => ({
+        isHost: index === 0,
+        userName,
+        ready,
+      })),
+    );
+    setRoomInfo({ roomId, roomName, capacity });
   }, [location]);
 
   const handleExitRoom = () => {
     if (socket) {
-      socket.emit("exit_room", { roomId });
+      socket.emit("exit_room", { roomId: roomInfo?.roomId });
     }
   };
 

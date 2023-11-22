@@ -32,11 +32,11 @@ const LobbyPage: React.FC = () => {
   const { socket } = useSocketStore();
 
   useEffect(() => {
-    if (location.state.data) {
+    if (location.state) {
       setUserList(prev => location.state.data.userList || prev);
       setGameRoomList(prev => location.state.data.gameRoomList || prev);
     }
-  }, [location.state.data]);
+  }, [location.state]);
 
   const handleLobbyConnect = ({
     gameRoomList,
@@ -63,7 +63,7 @@ const LobbyPage: React.FC = () => {
 
   const handleRoomCreated = ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
     if (status === "success") {
-      navigate("/room/" + roomId, { state: { data: { roomId, roomName, userList, capacity } } });
+      navigate("/room", { state: { data: { roomId, roomName, userList, capacity } } });
     }
   };
 

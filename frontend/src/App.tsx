@@ -19,7 +19,7 @@ const App: React.FC = () => {
           <Route element={<ProtectRoute to="/login" />}>
             <Route element={<SocketProvider />}>
               <Route path="/lobby" element={<LobbyPage />} />
-              <Route path="/room/:roomId" element={<ReadyPage />} />
+              <Route path="/room" element={<ReadyPage />} />
               <Route path="/game" element={<GamePlayPage />} />
               <Route path="/result" element={<ResultPage />} />
             </Route>
