@@ -134,6 +134,14 @@ export class RoomsGateway {
       return;
     }
 
+    if (roomInfo.state !== 'waiting') {
+      client.emit('enter_room', {
+        status: 'fail',
+        message: '이미 시작된 방입니다.',
+      });
+      return;
+    }
+
     this.roomsService.exitRoom(client, 'lobby');
     this.server.in('lobby').emit('user_exit_lobby', {
       userName: client.data.user.name,
@@ -232,6 +240,8 @@ export class RoomsGateway {
         status: 'start',
         message: '게임을 시작합니다.',
       });
+
+      this.roomsService.changeRoomStatus(roomId, 'playing');
     }
   }
 
