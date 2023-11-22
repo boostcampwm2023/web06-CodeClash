@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import ReadyChatContent from "./ChatContent";
+import RoomChatContent from "./ChatContent";
 
 interface IChatMessage {
   username: string;
@@ -7,12 +7,12 @@ interface IChatMessage {
   content: string;
 }
 
-const ReadyChatBox: React.FC = () => {
+const RoomChatBox: React.FC = () => {
   const [chatList, setChatList] = useState<IChatMessage[]>([]);
   const chatScroll = useRef<HTMLDivElement>(null);
 
   const chatContents = chatList.map(({ username, createdAt, content }, index) => {
-    return <ReadyChatContent username={username} createdAt={createdAt} content={content} key={username + index} />;
+    return <RoomChatContent username={username} createdAt={createdAt} content={content} key={username + index} />;
   });
 
   useEffect(() => {
@@ -40,4 +40,4 @@ const ReadyChatBox: React.FC = () => {
   );
 };
 
-export default ReadyChatBox;
+export default RoomChatBox;

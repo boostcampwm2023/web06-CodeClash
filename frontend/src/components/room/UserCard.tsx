@@ -1,7 +1,7 @@
-import { IUserInfo } from "../../pages/ReadyPage";
+import { IUserInfo } from "../../pages/RoomPage";
 import ReadyMark from "./ReadyMark";
 
-const ReadyUserCard: React.FC<IUserInfo> = ({ userName, isHost, ready }) => {
+const RoomUserCard: React.FC<IUserInfo> = ({ userName, isHost, ready }) => {
   return (
     <div className="text-center relative p-2 h-[391px] border-8 border-white rounded-lg bg-skyblue text-white">
       <div className="border-b-8 border-white">{userName ? (isHost ? "방장" : "플레이어") : "대기중"}</div>
@@ -18,4 +18,4 @@ const ReadyUserCard: React.FC<IUserInfo> = ({ userName, isHost, ready }) => {
   );
 };
 
-export default ReadyUserCard;
+export default RoomUserCard;

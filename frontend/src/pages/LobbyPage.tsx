@@ -22,7 +22,7 @@ export interface ILobbyUserInfo {
 
 interface ICreateRoomResponse extends IGameRoom {
   status: "success" | "fail";
-  userList: any[];
+  userList: ILobbyUserInfo[];
 }
 
 const LobbyPage: React.FC = () => {
