@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import LobbyPage from "./pages/LobbyPage";
 import ReadyPage from "./pages/ReadyPage";
 import GamePlayPage from "./pages/GamePlayPage";
@@ -7,13 +7,15 @@ import LoginPage from "./pages/LoginPage";
 import ProtectRoute from "./components/protectroute/ProtectRoute";
 import SocketProvider from "./components/SocketProvider";
 import MusicPlayer from "./components/player/MusicPlayer";
+import { AnimatePresence } from "framer-motion";
 
 const App: React.FC = () => {
+  const location = useLocation();
   return (
     <div className="bg-defaultPattern h-[100vh] w-[100vw] min-w-[1180px]">
       <MusicPlayer />
-      <BrowserRouter>
-        <Routes>
+      <AnimatePresence initial={false} mode="wait">
+        <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectRoute to="/login" />}>
@@ -25,7 +27,7 @@ const App: React.FC = () => {
             </Route>
           </Route>
         </Routes>
-      </BrowserRouter>
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import Button from "./Button";
-
+import { motion } from "framer-motion";
 interface ModalProps {
   title: string;
   closeModal: () => void;
@@ -11,7 +11,18 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ title, closeModal, children, className = "" }) => {
   return createPortal(
     <div className="absolute top-0 flex justify-center items-center w-screen h-screen bg-black/50" onClick={closeModal}>
-      <div
+      <motion.div
+        initial={{
+          scale: 0.25,
+        }}
+        animate={{
+          scale: 1,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 20,
+        }}
         className="relative flex flex-col items-center text-white bg-skyblue p-2 rounded-xl border-8 border-white"
         onClick={e => e.stopPropagation()}
       >
@@ -24,7 +35,7 @@ const Modal: React.FC<ModalProps> = ({ title, closeModal, children, className = 
           title="닫기"
           onClick={closeModal}
         />
-      </div>
+      </motion.div>
     </div>,
     document.body,
   );

@@ -1,8 +1,21 @@
 import Logo from "../../assets/svg/Logo";
-
+import { motion } from "framer-motion";
 const LoginLogo: React.FC = () => {
   return (
-    <div className="relative my-[4rem] scale-75">
+    <motion.div
+      className="relative my-[4rem]"
+      initial={{
+        scale: 0.25,
+      }}
+      animate={{
+        scale: 0.75,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+      }}
+    >
       <Logo className="relative z-10" />
       <div className="absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%] z-0 rotate-[30deg]">
         <div className="flex flex-row items-center">
@@ -14,7 +27,7 @@ const LoginLogo: React.FC = () => {
           <div className="w-[3rem] h-[6rem] rounded-full bg-pink"></div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
