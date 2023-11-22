@@ -4,7 +4,6 @@ import {
   SubscribeMessage,
   ConnectedSocket,
   MessageBody,
-  WsException,
 } from '@nestjs/websockets';
 import { RoomsService } from './rooms.service';
 import { Server, Socket } from 'socket.io';
@@ -232,6 +231,51 @@ export class RoomsGateway {
       this.server.in(roomId).emit('start', {
         status: 'start',
         message: '게임을 시작합니다.',
+      });
+    }
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('kick')
+  kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { userName, roomId } = data;
+    const targetUser = this.roomsService.getUserSocket(userName);
+
+    if (!targetUser) {
+      client.emit('kick', {
+        status: 'fail',
+        message: '접속하지 않은 유저입니다.',
+      });
+    } else {
+      client.emit('kick', {
+        status: 'success',
+        message: '유저를 강퇴했습니다.',
+      });
+
+      this.server.to(targetUser.id).emit('kick', {
+        status: 'success',
+        message: '강퇴당했습니다.',
+      });
+
+      this.roomsService.exitRoom(targetUser, roomId);
+      this.server.in(roomId).emit('user_exit_room', {
+        userName: targetUser.data.user.name,
+        message: `${targetUser.data.user.name} 님이 ${
+          this.roomsService.getGameRoom(roomId).roomName
+        } 방에서 나갔습니다.`,
+      });
+
+      this.server.in('lobby').emit('user_enter_lobby', {
+        userName: targetUser.data.user.name,
+        message: `${targetUser.data.user.name} is connected to lobby`,
+      });
+
+      this.roomsService.enterRoom(targetUser, 'lobby');
+      targetUser.emit('exit_room', {
+        status: 'success',
+        message: '방에서 강퇴되었습니다..',
+        userList: this.roomsService.getAllClient('lobby'),
+        gameRoomList: this.roomsService.getAllGameRoom(),
       });
     }
   }
