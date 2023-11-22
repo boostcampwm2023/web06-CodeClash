@@ -23,7 +23,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
   const handleCreateRoom = () => {
     if (!socket) return;
     socket.emit("create_room", createRoomInput.current);
-    // TODO: Navigate to room
+    closeModal();
   };
 
   const capacityInput = Array(5)
