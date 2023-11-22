@@ -11,3 +11,17 @@ export interface Room {
 export interface RoomList {
   [key: string]: Room;
 }
+
+export interface RoomInfo {
+  roomId: string;
+  roomName: string;
+  capacity: number;
+  userCount: number;
+  state: 'waiting' | 'playing';
+}
+
+export interface CreateRoomInfo {
+  roomId: string;
+  roomName: string;
+  capacity: number;
+}
