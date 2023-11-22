@@ -24,4 +24,6 @@ export interface CreateRoomInfo {
   roomId: string;
   roomName: string;
   capacity: number;
+  userList: string[];
+  state: 'waiting' | 'playing';
 }
