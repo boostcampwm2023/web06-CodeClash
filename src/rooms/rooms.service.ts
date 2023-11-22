@@ -6,6 +6,7 @@ import {
   Room,
   RoomInfo,
   RoomList,
+  User,
 } from './entities/room.entity';
 
 @Injectable()
@@ -60,6 +61,7 @@ export class RoomsService {
 
   exitRoom(client: Socket, roomId: string) {
     client.leave(roomId);
+    client.data.user.ready = false;
     this.deleteUserFromList(client, roomId);
   }
 
@@ -105,8 +107,13 @@ export class RoomsService {
     return this.roomList[roomId].userList.every((user) => user.data.user.ready);
   }
 
-  getAllClient(roomId: string) {
-    return this.roomList[roomId].userList.map((user) => user.data.user.name);
+  getAllClient(roomId: string): User[] {
+    return this.roomList[roomId].userList.map((user) => {
+      return {
+        userName: user.data.user.name,
+        ready: user.data.user.ready,
+      };
+    });
   }
 
   registerUserSocket(client: Socket, userName: string) {
