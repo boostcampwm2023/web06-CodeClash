@@ -28,23 +28,31 @@ export class RoomsGateway {
   server: Server;
 
   async handleConnection(socket: Socket) {
+    const rawToken = socket.handshake.headers.authorization;
+
+    if (!rawToken) {
+      socket.emit('connection', {
+        status: 'fail',
+        message: 'Token not found',
+      });
+
+      socket.disconnect();
+      return;
+    }
+
     try {
-      const rawToken = socket.handshake.headers.authorization;
-
-      if (!rawToken) {
-        socket.emit('error', {
-          status: 'fail',
-          message: 'Token not found',
-        });
-
-        return;
-      }
       const token = this.authService.extractTokenFromHeader(rawToken, true);
       const payload = this.authService.verifyToken(token);
       const user = await this.usersService.getUserByEmail(payload.email);
 
       if (this.roomsService.isConnctedUser(user.name)) {
+        socket.emit('connection', {
+          status: 'fail',
+          message: 'Already connected user',
+        });
+
         socket.disconnect();
+        return;
       }
 
       socket.data.user = user;
@@ -67,8 +75,12 @@ export class RoomsGateway {
         gameRoomList: this.roomsService.getAllGameRoom(),
       });
     } catch (e) {
-      console.log(e);
-      throw new WsException('Token is invalid');
+      socket.emit('connection', {
+        status: 'fail',
+        message: 'Token is invalid',
+      });
+
+      socket.disconnect();
     }
   }
 
@@ -89,8 +101,6 @@ export class RoomsGateway {
       this.roomsService.exitRoom(socket, socket.data.roomId);
       this.roomsService.deleteUserSocket(socket.data.user.name);
     }
-
-    socket.disconnect();
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
@@ -126,24 +136,23 @@ export class RoomsGateway {
     }
 
     this.roomsService.exitRoom(client, 'lobby');
-    this.roomsService.enterRoom(client, roomId);
-
-    client.emit('enter_room', {
-      status: 'success',
-      message: '방에 입장했습니다.',
-      userList: this.roomsService.getAllClient(roomId),
+    this.server.in('lobby').emit('user_exit_lobby', {
+      userName: client.data.user.name,
+      message: `${client.data.user.name} is disconnected from lobby`,
     });
 
-    client.to(roomId).emit('user_enter_room', {
+    this.server.in(roomId).emit('user_enter_room', {
       userName: client.data.user.name,
       message: `${client.data.user.name} 님이 ${
         this.roomsService.getGameRoom(roomId).roomName
       } 방에 접속했습니다.`,
     });
 
-    this.server.in('lobby').emit('user_exit_lobby', {
-      userName: client.data.user.name,
-      message: `${client.data.user.name} is disconnected from lobby`,
+    this.roomsService.enterRoom(client, roomId);
+    client.emit('enter_room', {
+      status: 'success',
+      message: '방에 입장했습니다.',
+      userList: this.roomsService.getAllClient(roomId),
     });
   }
 
@@ -153,15 +162,6 @@ export class RoomsGateway {
     const { roomId } = data;
 
     this.roomsService.exitRoom(client, roomId);
-    this.roomsService.enterRoom(client, 'lobby');
-
-    client.emit('exit_room', {
-      status: 'success',
-      message: '방에서 나왔습니다.',
-      userList: this.roomsService.getAllClient('lobby'),
-      gameRoomList: this.roomsService.getAllGameRoom(),
-    });
-
     this.server.in(roomId).emit('user_exit_room', {
       userName: client.data.user.name,
       message: `${client.data.user.name} 님이 ${
@@ -172,19 +172,14 @@ export class RoomsGateway {
     this.server.in('lobby').emit('user_enter_lobby', {
       userName: client.data.user.name,
       message: `${client.data.user.name} is connected to lobby`,
+    });
+
+    this.roomsService.enterRoom(client, 'lobby');
+    client.emit('exit_room', {
+      status: 'success',
+      message: '방에서 나왔습니다.',
       userList: this.roomsService.getAllClient('lobby'),
       gameRoomList: this.roomsService.getAllGameRoom(),
-    });
-  }
-
-  @UseFilters(HttpToSocketExceptionFilter)
-  @SubscribeMessage('exit_lobby')
-  exitLobby(@ConnectedSocket() client: Socket) {
-    this.roomsService.exitRoom(client, 'lobby');
-
-    this.server.in('lobby').emit('user_exit_lobby', {
-      userName: client.data.user.name,
-      message: `${client.data.user.name} is disconnected from lobby`,
     });
   }
 
@@ -193,7 +188,7 @@ export class RoomsGateway {
   chat(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId, message } = data;
 
-    client.to(roomId).emit('chat', {
+    this.server.in(roomId).emit('chat', {
       userName: client.data.user.name,
       message,
     });
@@ -216,7 +211,7 @@ export class RoomsGateway {
         message: 'DM을 보냈습니다.',
       });
 
-      targetUser.emit('user_dm', {
+      this.server.to(targetUser.id).emit('user_dm', {
         userName: client.data.user.name,
         message,
       });
@@ -228,7 +223,7 @@ export class RoomsGateway {
   ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
 
-    client.to(roomId).emit('ready', {
+    this.server.in(roomId).emit('ready', {
       userName: client.data.user.name,
       ready: this.roomsService.changeReadyStatus(client),
     });
