@@ -31,8 +31,8 @@ const LobbyPage: React.FC = () => {
     setUserList(prev => prev.filter(name => name !== userName));
   };
 
-  const handleCreateRoom = ({ roomId, roomName, userCount, capacity, state }: IGameRoom) => {
-    setGameRoomList(prev => prev.concat({ roomId, roomName, userCount, capacity, state }));
+  const handleCreateRoom = (roomInfo: IGameRoom) => {
+    setGameRoomList(prev => prev.concat(roomInfo));
   };
 
   useEffect(() => {
