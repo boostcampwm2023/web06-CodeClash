@@ -4,6 +4,7 @@ import LobbyMyInfo from "../components/lobby/MyInfo";
 import LobbyRoomListBox from "../components/lobby/RoomListBox";
 import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export interface IGameRoom {
   roomId: string;
@@ -13,26 +14,57 @@ export interface IGameRoom {
   state: "playing" | "waiting";
 }
 
+export interface ILobbyUserInfo {
+  userName: string;
+  ready?: boolean;
+}
+
+interface ICreateRoomResponse extends IGameRoom {
+  status: "success" | "fail";
+  userList: any[];
+}
+
 const LobbyPage: React.FC = () => {
-  const [userList, setUserList] = useState<string[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [userList, setUserList] = useState<ILobbyUserInfo[]>([]);
   const [gameRoomList, setGameRoomList] = useState<IGameRoom[]>([]);
   const { socket } = useSocketStore();
 
-  const handleLobbyConnect = ({ gameRoomList, userList }: { gameRoomList: IGameRoom[]; userList: string[] }) => {
+  useEffect(() => {
+    if (location.state.data) {
+      setUserList(prev => location.state.data.userList || prev);
+      setGameRoomList(prev => location.state.data.gameRoomList || prev);
+    }
+  }, [location.state.data]);
+
+  const handleLobbyConnect = ({
+    gameRoomList,
+    userList,
+  }: {
+    gameRoomList: IGameRoom[];
+    userList: ILobbyUserInfo[];
+  }) => {
     setUserList(userList);
     setGameRoomList(gameRoomList);
   };
 
   const handleUserEnterLobby = ({ userName }: { userName: string }) => {
-    setUserList(prev => prev.concat(userName));
+    setUserList(prev => prev.concat([{ userName }]));
   };
 
-  const handleUserExitLobby = ({ userName }: { userName: string }) => {
-    setUserList(prev => prev.filter(name => name !== userName));
+  const handleUserExitLobby = ({ name }: { name: string }) => {
+    setUserList(prev => prev.filter(({ userName }) => userName !== name));
   };
 
   const handleCreateRoom = (roomInfo: IGameRoom) => {
     setGameRoomList(prev => prev.concat(roomInfo));
+  };
+
+  const handleRoomCreated = ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
+    if (status === "success") {
+      navigate("/room/" + roomId, { state: { data: { roomId, roomName, userList, capacity } } });
+    }
   };
 
   useEffect(() => {
@@ -41,6 +73,7 @@ const LobbyPage: React.FC = () => {
       socket.on("user_enter_lobby", handleUserEnterLobby);
       socket.on("user_exit_lobby", handleUserExitLobby);
       socket.on("user_create_room", handleCreateRoom);
+      socket.on("create_room", handleRoomCreated);
     }
     return () => {
       if (socket) {
@@ -48,6 +81,7 @@ const LobbyPage: React.FC = () => {
         socket.off("user_enter_lobby", handleUserEnterLobby);
         socket.off("user_exit_lobby", handleUserExitLobby);
         socket.off("user_create_room", handleCreateRoom);
+        socket.off("create_room", handleRoomCreated);
       }
     };
   }, [socket]);
