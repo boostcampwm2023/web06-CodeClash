@@ -10,6 +10,7 @@ export class RoomsService {
       roomName: '로비',
       userList: [],
       capacity: 1000,
+      state: 'waiting',
     },
   };
 
@@ -27,6 +28,7 @@ export class RoomsService {
       roomName,
       userList: [],
       capacity,
+      state: 'waiting',
     };
 
     this.enterRoom(client, roomId);
@@ -57,20 +59,28 @@ export class RoomsService {
       roomName: room.roomName,
       capacity: room.capacity,
       userCount: room.userList.length,
+      state: room.state,
     };
   }
 
   getAllGameRoom() {
-    return Object.values(this.roomList).map((room) => {
-      if (room.roomId !== 'lobby') {
-        return {
-          roomId: room.roomId,
-          roomName: room.roomName,
-          capacity: room.capacity,
-          userCount: room.userList.length,
-        };
-      }
-    });
+    return Object.values(this.roomList)
+      .map((room) => {
+        if (room.roomId !== 'lobby') {
+          return {
+            roomId: room.roomId,
+            roomName: room.roomName,
+            capacity: room.capacity,
+            userCount: room.userList.length,
+            state: room.state,
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter((room) => {
+        if (room) return true;
+      });
   }
 
   changeReadyStatus(client: Socket) {
@@ -107,5 +117,9 @@ export class RoomsService {
 
   isConnctedUser(userName: string) {
     return this.userNameSocketMapper.has(userName);
+  }
+
+  changeRoomStatus(roomId: string, status: string) {
+    this.roomList[roomId].state = status;
   }
 }
