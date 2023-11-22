@@ -10,6 +10,7 @@ export interface IGameRoom {
   roomName: string;
   capacity: number;
   userCount: number;
+  state: "playing" | "waiting";
 }
 
 const LobbyPage: React.FC = () => {
@@ -30,17 +31,23 @@ const LobbyPage: React.FC = () => {
     setUserList(prev => prev.filter(name => name !== userName));
   };
 
+  const handleCreateRoom = ({ roomId, roomName, userCount, capacity, state }: IGameRoom) => {
+    setGameRoomList(prev => prev.concat({ roomId, roomName, userCount, capacity, state }));
+  };
+
   useEffect(() => {
     if (socket) {
       socket.on("connection", handleLobbyConnect);
       socket.on("user_enter_lobby", handleUserEnterLobby);
       socket.on("user_exit_lobby", handleUserExitLobby);
+      socket.on("user_create_room", handleCreateRoom);
     }
     return () => {
       if (socket) {
         socket.off("connection", handleLobbyConnect);
         socket.off("user_enter_lobby", handleUserEnterLobby);
         socket.off("user_exit_lobby", handleUserExitLobby);
+        socket.off("user_create_room", handleCreateRoom);
       }
     };
   }, [socket]);

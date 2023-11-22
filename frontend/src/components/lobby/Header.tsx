@@ -1,6 +1,7 @@
 import Button from "../common/Button";
 import { useState } from "react";
 import InviteModal from "./InviteModal";
+import CreateRoomModal from "./CreateRoomModal";
 
 enum HeaderStatus {
   LOBBY = "lobby",
@@ -76,6 +77,7 @@ const LobbyHeader: React.FC = () => {
         />
       </div>
       {selectedHeader === HeaderStatus.NOTIFICATION && <InviteModal closeModal={closeModal} inviteList={inviteList} />}
+      {selectedHeader === HeaderStatus.ROOM && <CreateRoomModal closeModal={closeModal} />}
     </div>
   );
 };
