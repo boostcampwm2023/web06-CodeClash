@@ -1,6 +1,39 @@
 import { engToKor, korToEng } from "korsearch";
 import { GameItemType } from "./gameItemType";
 
+export const gameItemHandler = (
+  setCode: React.Dispatch<React.SetStateAction<string>>,
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+) => {
+  return (type: GameItemType) => {
+    switch (type) {
+      case GameItemType.SWAP:
+        swapRandomLine(setCode);
+        break;
+      case GameItemType.REVERSELANGUAGE:
+        reverseLanguage(setCode, dispatch);
+        break;
+      case GameItemType.TINYCODE:
+        tinyCode(dispatch);
+        break;
+      case GameItemType.SCREENBLOCK:
+        screenBlock(dispatch);
+        break;
+      case GameItemType.TYPEBLOCK:
+        typeBlock(dispatch);
+        break;
+      case GameItemType.CRAZYMUSIC:
+        crazyMusic();
+        break;
+      default:
+        break;
+    }
+  };
+};
+
 const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<string>>) => {
   setCode(code => {
     const codeLine = code.split("\n");
@@ -66,4 +99,13 @@ const typeBlock = (
   setTimeout(() => {
     dispatch({ type: GameItemType.TYPEBLOCK, act: "off" });
   }, 1000 * 5);
+};
+
+const crazyMusic = () => {
+  const audio = new Audio("/crazy.mp3");
+  audio.volume = 0.5;
+  audio.onload = () => audio.play();
+  setTimeout(() => {
+    audio.pause();
+  }, 1000 * 20);
 };

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { baseAxios } from "./baseAxios";
 
 export const postLoginRequest = (email: string, password: string) => {

@@ -1,7 +1,7 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type monaco from "monaco-editor";
 import { Editor } from "@monaco-editor/react";
-import { engToKor } from "korsearch";
+import { engToKor, korToEng } from "korsearch";
 
 interface CodeEditorProps {
   editorCode: string;
@@ -14,13 +14,10 @@ interface CodeEditorProps {
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, options }) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>();
-
+  const currentPosRef = useRef<monaco.Position | null>();
   return (
     <Editor
       language="javascript"
-      onChange={value => {
-        setEditorCode(options?.isReverse ? engToKor(value ?? "") : value ?? "");
-      }}
       value={editorCode}
       onMount={(editor, monaco) => {
         editorRef.current = editor;
@@ -28,6 +25,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
           monaco.editor.defineTheme("myTheme", data as monaco.editor.IStandaloneThemeData);
           monaco.editor.setTheme("myTheme");
         });
+
+        editor.onDidChangeCursorPosition(e => {
+          if (e.source === "modelChange") {
+            editor.setPosition(currentPosRef.current ?? e.position);
+          }
+        });
+      }}
+      onChange={value => {
+        if (!options?.isReverse) {
+          setEditorCode(value ?? "");
+        } else {
+          currentPosRef.current = editorRef.current?.getPosition();
+          setEditorCode(engToKor(korToEng(value ?? "")));
+        }
       }}
       options={{
         minimap: {
