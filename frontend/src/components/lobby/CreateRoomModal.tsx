@@ -7,12 +7,16 @@ interface CreateRoomModalProps {
   closeModal: () => void;
 }
 
+const DEFAULT_CAPACITY = "4";
+const CAPACITY_LENGTH = 5;
+const CAPACITY_MIN_VALUE = 2;
+
 const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
   const { socket } = useSocketStore();
-  const [selectedRadio, setSelectedRadio] = useState("4");
+  const [selectedRadio, setSelectedRadio] = useState(DEFAULT_CAPACITY);
   const createRoomInput = useRef({
     roomName: "",
-    capacity: "4",
+    capacity: DEFAULT_CAPACITY,
   });
 
   const handleRadioChange = (value: string) => {
@@ -26,8 +30,8 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
     closeModal();
   };
 
-  const capacityInput = Array(5)
-    .fill(2)
+  const capacityInput = Array(CAPACITY_LENGTH)
+    .fill(CAPACITY_MIN_VALUE)
     .map((initValue, index) => {
       const id = String(initValue + index);
       return (
@@ -48,7 +52,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
     });
 
   return (
-    <Modal title="초대 리스트" closeModal={closeModal} className="px-2 flex flex-col items-center gap-2">
+    <Modal title="방 생성하기" closeModal={closeModal} className="px-2 flex flex-col items-center gap-2">
       <input
         className="rounded py-1 px-2 text-black text-sm"
         placeholder="방 이름"
