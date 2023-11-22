@@ -46,7 +46,9 @@ export class RoomsService {
     return {
       roomId,
       roomName,
+      userList: this.getAllClient(roomId),
       capacity,
+      state: 'waiting',
     };
   }
 
