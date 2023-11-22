@@ -119,7 +119,7 @@ export class RoomsService {
     return this.userNameSocketMapper.has(userName);
   }
 
-  changeRoomStatus(roomId: string, status: string) {
-    this.roomList[roomId].state = status;
+  changeRoomState(roomId: string, state: string) {
+    this.roomList[roomId].state = state;
   }
 }
