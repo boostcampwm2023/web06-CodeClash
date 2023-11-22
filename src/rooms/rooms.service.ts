@@ -1,24 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Socket } from 'socket.io';
+import {
+  CreateRoomInfo,
+  Room,
+  RoomInfo,
+  RoomList,
+} from './entities/room.entity';
 
 @Injectable()
 export class RoomsService {
-  private roomList = {
+  private roomList: RoomList = {
     lobby: {
       roomId: 'lobby',
       roomName: '로비',
       userList: [],
       capacity: 1000,
       state: 'waiting',
-    },
+    } as Room,
   };
 
   private userNameSocketMapper = new Map();
 
   constructor() {}
 
-  createRoom(client: Socket, roomName: string, capacity: number) {
+  createRoom(
+    client: Socket,
+    roomName: string,
+    capacity: number,
+  ): CreateRoomInfo {
     const roomId = uuid();
 
     this.exitRoom(client, 'lobby');
@@ -51,7 +61,7 @@ export class RoomsService {
     this.deleteUserFromList(client, roomId);
   }
 
-  getGameRoom(roomId: string) {
+  getGameRoom(roomId: string): RoomInfo {
     const room = this.roomList[roomId];
 
     return {
@@ -63,7 +73,7 @@ export class RoomsService {
     };
   }
 
-  getAllGameRoom() {
+  getAllGameRoom(): RoomInfo[] {
     return Object.values(this.roomList)
       .map((room) => {
         if (room.roomId !== 'lobby') {
@@ -119,7 +129,7 @@ export class RoomsService {
     return this.userNameSocketMapper.has(userName);
   }
 
-  changeRoomState(roomId: string, state: string) {
+  changeRoomState(roomId: string, state: 'waiting' | 'playing') {
     this.roomList[roomId].state = state;
   }
 }
