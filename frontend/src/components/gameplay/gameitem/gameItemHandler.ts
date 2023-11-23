@@ -80,9 +80,7 @@ const reverseLanguage = (
 ) => {
   setCode(code => engToKor(code));
   dispatch({ type: GameItemType.REVERSELANGUAGE, act: "on" });
-  if (timerID.reverseLanguage) {
-    clearTimeout(timerID.reverseLanguage);
-  }
+  timerID.reverseLanguage && clearTimeout(timerID.reverseLanguage);
   timerID.reverseLanguage = setTimeout(
     () => {
       setCode(code => korToEng(code));
@@ -101,9 +99,11 @@ const tinyCode = (
   gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.TINYCODE, act: "on" });
-  setTimeout(
+  timerID.tinyCode && clearTimeout(timerID.tinyCode);
+  timerID.tinyCode = setTimeout(
     () => {
       dispatch({ type: GameItemType.TINYCODE, act: "off" });
+      timerID.tinyCode = 0;
     },
     (1000 * 10) / Math.log2(gamePlayerCount),
   );
@@ -117,9 +117,12 @@ const screenBlock = (
   gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.SCREENBLOCK, act: "on" });
-  setTimeout(
+
+  timerID.screenBlock && clearTimeout(timerID.screenBlock);
+  timerID.screenBlock = setTimeout(
     () => {
       dispatch({ type: GameItemType.SCREENBLOCK, act: "off" });
+      timerID.screenBlock = 0;
     },
     (1000 * 10) / Math.log2(gamePlayerCount),
   );
@@ -133,23 +136,36 @@ const typeRandom = (
   gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.TYPERANDOM, act: "on" });
-  setTimeout(
+  timerID.typeRandom && clearTimeout(timerID.typeRandom);
+  timerID.typeRandom = setTimeout(
     () => {
       dispatch({ type: GameItemType.TYPERANDOM, act: "off" });
+      timerID.typeRandom = 0;
     },
     (1000 * 10) / Math.log2(gamePlayerCount),
   );
 };
+const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
+const audio = new Audio();
+audio.volume = 0.2;
+audio.loop = true;
 
 const crazyMusic = (gamePlayerCount: number) => {
-  const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
   const audioIdx = Math.floor(Math.random() * audioNameList.length);
-  const audio = new Audio(audioNameList[audioIdx]);
-  audio.volume = 0.2;
-  audio.play();
-  setTimeout(
+  timerID.crazyMusic && clearTimeout(timerID.crazyMusic);
+  if (!timerID.crazyMusic) {
+    fetch(audioNameList[audioIdx])
+      .then(res => res.blob())
+      .then(blob => {
+        audio.src = URL.createObjectURL(blob);
+        audio.play();
+      });
+  }
+  timerID.crazyMusic = setTimeout(
     () => {
       audio.pause();
+      audio.currentTime = 0;
+      timerID.crazyMusic = 0;
     },
     (1000 * 20) / Math.log2(gamePlayerCount),
   );
@@ -163,9 +179,11 @@ const stealEye = (
   gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.STOLEEYE, act: "on" });
+  timerID.stealEye && clearTimeout(timerID.stealEye);
   setTimeout(
     () => {
       dispatch({ type: GameItemType.STOLEEYE, act: "off" });
+      timerID.stealEye = 0;
     },
     (1000 * 15) / Math.log2(gamePlayerCount),
   );
