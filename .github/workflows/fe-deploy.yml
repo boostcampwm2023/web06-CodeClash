@@ -25,9 +25,9 @@ jobs:
       - name: Deploy to Server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          port: ${{ secrets.REMOTE_PORT }}
-          password: ${{ secrets.REMOTE_PASSWORD }}
+          host: ${{ secrets.API_HOST }}
+          username: ${{ secrets.API_USER }}
+          port: ${{ secrets.API_PORT }}
+          password: ${{ secrets.API_PASSWORD }}
           source: frontend/build
           target: /home/codeclash
