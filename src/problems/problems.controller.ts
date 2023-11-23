@@ -16,7 +16,7 @@ import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { CreateProblemDto } from './dto/create-problem.dto';
 import { AdminGuard } from 'src/auth/guard/admin.guard';
 
-@Controller('problems')
+@Controller('api/problems')
 export class ProblemsController {
   constructor(private readonly problemsService: ProblemsService) {}
 

@@ -17,7 +17,7 @@ import { AdminGuard } from 'src/auth/guard/admin.guard';
 import { CreateTestcaseDto } from './dto/create-testcase.dto';
 import { UpdateTestcaseDto } from './dto/update-testcase.dto';
 
-@Controller('testcases')
+@Controller('api/testcases')
 export class TestcasesController {
   constructor(private readonly testcasesService: TestcasesService) {}
   @Get()
