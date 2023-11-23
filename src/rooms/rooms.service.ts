@@ -63,6 +63,10 @@ export class RoomsService {
     client.leave(roomId);
     client.data.user.ready = false;
     this.deleteUserFromList(client, roomId);
+    
+    if (this.roomList[roomId].userList.length === 0) {
+      delete this.roomList[roomId];
+    }
   }
 
   getGameRoom(roomId: string): RoomInfo {
