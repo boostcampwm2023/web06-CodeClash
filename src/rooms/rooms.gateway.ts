@@ -160,6 +160,7 @@ export class RoomsGateway {
       status: 'success',
       message: '방에 입장했습니다.',
       userList: this.roomsService.getAllClient(roomId),
+      ...roomInfo,
     });
   }
 
