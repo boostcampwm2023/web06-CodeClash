@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.REMOTE_PASSWORD }}
           script: |
             cd /repository
-            git pull origin main
+            git pull origin fe-deploy-test
             cd /repository/frontend
             npm install
             npm run build
