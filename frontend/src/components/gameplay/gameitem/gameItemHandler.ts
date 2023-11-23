@@ -13,20 +13,20 @@ export const gameItemHandler = (
       case GameItemType.SWAP:
         swapRandomLine(setCode);
         break;
-      case GameItemType.REVERSELANGUAGE:
-        reverseLanguage(setCode, dispatch);
+      case GameItemType.SCREENBLOCK:
+        screenBlock(dispatch);
+        break;
+      case GameItemType.TYPERANDOM:
+        typeRandom(dispatch);
         break;
       case GameItemType.TINYCODE:
         tinyCode(dispatch);
         break;
-      case GameItemType.SCREENBLOCK:
-        screenBlock(dispatch);
-        break;
-      case GameItemType.TYPEBLOCK:
-        typeBlock(dispatch);
-        break;
       case GameItemType.CRAZYMUSIC:
         crazyMusic();
+        break;
+      case GameItemType.REVERSELANGUAGE:
+        reverseLanguage(setCode, dispatch);
         break;
       case GameItemType.STOLEEYE:
         stealEye(dispatch);
@@ -92,15 +92,15 @@ const screenBlock = (
   }, 1000 * 8);
 };
 
-const typeBlock = (
+const typeRandom = (
   dispatch: React.Dispatch<{
     type: GameItemType;
     act: "on" | "off";
   }>,
 ) => {
-  dispatch({ type: GameItemType.TYPEBLOCK, act: "on" });
+  dispatch({ type: GameItemType.TYPERANDOM, act: "on" });
   setTimeout(() => {
-    dispatch({ type: GameItemType.TYPEBLOCK, act: "off" });
+    dispatch({ type: GameItemType.TYPERANDOM, act: "off" });
   }, 1000 * 5);
 };
 

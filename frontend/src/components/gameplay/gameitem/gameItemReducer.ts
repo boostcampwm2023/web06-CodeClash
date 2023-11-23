@@ -2,7 +2,7 @@ import { GameItemType } from "./gameItemType";
 
 interface IGameItemState {
   isScreenBlock: boolean;
-  isTypeBlock: boolean;
+  isTypeRandom: boolean;
   isTinyCode: boolean;
   isCrazyMusic: boolean;
   isReverseLanguage: boolean;
@@ -10,9 +10,9 @@ interface IGameItemState {
   fontSize: number;
 }
 
-export const initialGameItemState = {
+export const initialGameItemState: IGameItemState = {
   isScreenBlock: false,
-  isTypeBlock: false,
+  isTypeRandom: false,
   isTinyCode: false,
   isCrazyMusic: false,
   isReverseLanguage: false,
@@ -26,17 +26,17 @@ export const gameItemReducer = (
     type: GameItemType;
     act: "on" | "off";
   },
-) => {
+): IGameItemState => {
   switch (action.type) {
     case GameItemType.SCREENBLOCK:
       return {
         ...state,
         isScreenBlock: action.act === "on",
       };
-    case GameItemType.TYPEBLOCK:
+    case GameItemType.TYPERANDOM:
       return {
         ...state,
-        isTypeBlock: action.act === "on",
+        isTypeRandom: action.act === "on",
       };
     case GameItemType.TINYCODE:
       return {

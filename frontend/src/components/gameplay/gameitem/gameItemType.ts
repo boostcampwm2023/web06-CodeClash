@@ -7,7 +7,7 @@ export interface IGameItem {
 export enum GameItemType {
   SWAP,
   SCREENBLOCK,
-  TYPEBLOCK,
+  TYPERANDOM,
   TINYCODE,
   CRAZYMUSIC,
   REVERSELANGUAGE,
@@ -26,9 +26,9 @@ export const gameItemTypes: IGameItem[] = [
     description: "상대방의 화면을 8초간 깜빡입니다.",
   },
   {
-    type: GameItemType.TYPEBLOCK,
+    type: GameItemType.TYPERANDOM,
     name: "타이핑방해",
-    description: "상대방의 타이핑을 5초간 막습니다.",
+    description: "일정확률로 타이핑할때 랜덤한 값이 들어갑니다.",
   },
   {
     type: GameItemType.TINYCODE,

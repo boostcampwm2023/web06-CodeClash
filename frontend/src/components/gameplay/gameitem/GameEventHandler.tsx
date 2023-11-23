@@ -19,6 +19,7 @@ const GameEventHandler: React.FC = () => {
 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState);
 
+  // 언어 뒤집기
   useEffect(() => {
     if (gameEventState.isReverseLanguage) {
       setCode(engToKor(code));
@@ -76,7 +77,11 @@ const GameEventHandler: React.FC = () => {
       <CodeEditor
         editorCode={code}
         setEditorCode={setCode}
-        options={{ isReverse: gameEventState.isReverseLanguage, fontSize: gameEventState.fontSize }}
+        options={{
+          isReverse: gameEventState.isReverseLanguage,
+          fontSize: gameEventState.fontSize,
+          isTypeRandom: gameEventState.isTypeRandom,
+        }}
       />
       <GameFooterBox />
       {gameEventState.isScreenBlock && <ScreenBlock />}
