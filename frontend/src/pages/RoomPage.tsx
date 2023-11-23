@@ -47,6 +47,18 @@ const RoomPage: React.FC = () => {
     setRoomInfo({ roomId, roomName, capacity });
   }, [location]);
 
+  const handleUserEnterRoom = ({ userName }: { userName: string }) => {
+    setUserList(prev => prev.concat({ userName, isHost: false, ready: false }));
+  };
+
+  const handleUserExitRoom = ({ userName: newUserName }: { userName: string }) => {
+    setUserList(prev =>
+      prev
+        .filter(({ userName }) => userName !== newUserName)
+        .map((userInfo: IUserInfo, index: number) => ({ ...userInfo, isHost: index === 0 })),
+    );
+  };
+
   const handleExitRoom = () => {
     if (socket) {
       socket.emit("exit_room", { roomId: roomInfo?.roomId });
@@ -61,10 +73,14 @@ const RoomPage: React.FC = () => {
 
   useEffect(() => {
     if (socket) {
+      socket.on("user_enter_room", handleUserEnterRoom);
+      socket.on("user_exit_room", handleUserExitRoom);
       socket.on("exit_room", handleEnterLobby);
     }
     return () => {
       if (socket) {
+        socket.off("user_enter_room", handleUserEnterRoom);
+        socket.off("user_exit_room", handleUserExitRoom);
         socket.off("exit_room", handleEnterLobby);
       }
       handleExitRoom();
