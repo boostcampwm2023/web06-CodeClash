@@ -168,14 +168,18 @@ export class RoomsGateway {
   @SubscribeMessage('exit_room')
   exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
+    const userCount = this.roomsService.getGameRoom(roomId).userCount;
 
     this.roomsService.exitRoom(client, roomId);
-    this.server.in(roomId).emit('user_exit_room', {
-      userName: client.data.user.name,
-      message: `${client.data.user.name} 님이 ${
-        this.roomsService.getGameRoom(roomId).roomName
-      } 방에서 나갔습니다.`,
-    });
+
+    if (userCount !== 0) {
+      this.server.in(roomId).emit('user_exit_room', {
+        userName: client.data.user.name,
+        message: `${client.data.user.name} 님이 ${
+          this.roomsService.getGameRoom(roomId).roomName
+        } 방에서 나갔습니다.`,
+      });
+    }
 
     this.server.in('lobby').emit('user_enter_lobby', {
       userName: client.data.user.name,
