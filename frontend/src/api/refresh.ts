@@ -10,7 +10,7 @@ export const refreshAccessToken = async (config: InternalAxiosRequestConfig) => 
   const diff = now - loginAt;
 
   if (diff > expireTime) {
-    const accessToken = (await baseAxios.get("/token/access")).data.accessToken;
+    const accessToken = (await baseAxios.get("/api/token/access")).data.accessToken;
 
     if (accessToken) {
       setAccessToken(accessToken);
