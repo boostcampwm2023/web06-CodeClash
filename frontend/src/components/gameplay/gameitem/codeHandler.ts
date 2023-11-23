@@ -102,9 +102,12 @@ const typeBlock = (
 };
 
 const crazyMusic = () => {
-  const audio = new Audio("/crazy.mp3");
-  audio.volume = 0.5;
-  audio.onload = () => audio.play();
+  const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
+  const audioIdx = Math.floor(Math.random() * audioNameList.length);
+  const audio = new Audio(`/music/${audioNameList[audioIdx]}.mp3`);
+  audio.volume = 0.2;
+  audio.loop = true;
+  audio.play();
   setTimeout(() => {
     audio.pause();
   }, 1000 * 20);

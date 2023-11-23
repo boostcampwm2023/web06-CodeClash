@@ -7,6 +7,7 @@ import { GameItemType, IGameItem, gameItemTypes } from "./gameItemType";
 import { gameItemReducer, initialGameItemState } from "./gameItemReducer";
 import { gameItemHandler } from "./codeHandler";
 import { engToKor, korToEng } from "korsearch";
+import { getTrendGif } from "../../../api/gif";
 
 const MAX_GAME_ITEM = 999;
 
@@ -33,8 +34,8 @@ const GameEventHandler: React.FC = () => {
       }
     }, 1000 * 1);
     //dev
-    const keyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === "Control") {
+    const keyDownHandler = ({ key }: KeyboardEvent) => {
+      if (key === "Control") {
         handleGameEvent(Number(prompt("아이템 인덱스 입력")) ?? GameItemType.SWAP);
       }
     };
@@ -58,8 +59,8 @@ const GameEventHandler: React.FC = () => {
   }, [socket]);
 
   useEffect(() => {
-    const keyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === "Control" && socket?.connected && gameItems.length > 0) {
+    const keyDownHandler = ({ key }: KeyboardEvent) => {
+      if (key === "Control" && socket?.connected && gameItems.length > 0) {
         socket.emit("game-item", { type: gameItems[0] });
         setGameItems(gameItems.slice(1));
       }
