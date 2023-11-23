@@ -18,10 +18,6 @@ const SocketProvider: React.FC = () => {
       return;
     }
     socket.connect();
-
-    return () => {
-      socket.disconnect();
-    };
   }, [socket]);
 
   return <Outlet />;
