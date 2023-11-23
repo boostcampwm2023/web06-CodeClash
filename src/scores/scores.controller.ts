@@ -8,7 +8,7 @@ import { ScoreSubmissionDto } from './dto/score-submission.dto';
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
 
-  @Post('/grade')
+  @Post('api/grade')
   @UseGuards(AccessTokenGuard)
   async grade(@Body() submission: ScoreSubmissionDto, @User() user) {
     return await this.scoresService.grade(submission, user);

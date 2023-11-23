@@ -6,7 +6,7 @@ import { User } from 'src/users/decorators/user.decorator';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { Token } from './decorators/token.decorator';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
