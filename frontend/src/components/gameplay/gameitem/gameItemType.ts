@@ -12,6 +12,8 @@ export enum GameItemType {
   CRAZYMUSIC,
   REVERSELANGUAGE,
   STOLEEYE,
+  UNDO,
+  DELAYINPUT,
 }
 
 export const gameItemTypes: IGameItem[] = [
@@ -49,5 +51,15 @@ export const gameItemTypes: IGameItem[] = [
     type: GameItemType.STOLEEYE,
     name: "시선강탈",
     description: "시선강탈 움짤을 틀어줍니다.",
+  },
+  {
+    type: GameItemType.UNDO,
+    name: "실행취소",
+    description: "UNDO 동작을 3번 시행합니다.",
+  },
+  {
+    type: GameItemType.DELAYINPUT,
+    name: "딜레이입력",
+    description: "키보드 딜레이를 1초로 설정합니다.",
   },
 ];

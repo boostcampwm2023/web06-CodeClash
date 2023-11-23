@@ -145,6 +145,7 @@ const typeRandom = (
     (1000 * 10) / Math.log2(gamePlayerCount),
   );
 };
+
 const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
 const audio = new Audio();
 audio.volume = 0.2;
