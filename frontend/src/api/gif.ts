@@ -1,6 +1,6 @@
 import { gifAxios } from "./baseAxios";
 
-export const getTrendGif = async (limit: number = 25) => {
+export const getFailedGif = async (limit: number = 25) => {
   const giphy = {
     apiKey: "6qyUD0EpEB5XLEbCpYSSxDockO1xG7pY",
     tag: "fail",

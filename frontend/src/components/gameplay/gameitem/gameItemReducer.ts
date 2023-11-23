@@ -6,6 +6,7 @@ interface IGameItemState {
   isTinyCode: boolean;
   isCrazyMusic: boolean;
   isReverseLanguage: boolean;
+  isEyeStolen: boolean;
   fontSize: number;
 }
 
@@ -15,6 +16,7 @@ export const initialGameItemState = {
   isTinyCode: false,
   isCrazyMusic: false,
   isReverseLanguage: false,
+  isEyeStolen: false,
   fontSize: 16,
 };
 
@@ -51,6 +53,11 @@ export const gameItemReducer = (
       return {
         ...state,
         isReverseLanguage: action.act === "on",
+      };
+    case GameItemType.STOLEEYE:
+      return {
+        ...state,
+        isEyeStolen: action.act === "on",
       };
     default:
       return state;

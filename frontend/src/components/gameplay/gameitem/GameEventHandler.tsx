@@ -1,13 +1,13 @@
 import { useEffect, useReducer, useState } from "react";
-import ScreenBlock from "./ScreenBlock";
+import ScreenBlock from "./gameScreenEffect/ScreenBlock";
 import { useSocketStore } from "../../../store/useSocket";
 import GameFooterBox from "../FooterBox";
 import CodeEditor from "../CodeEditor";
 import { GameItemType, IGameItem, gameItemTypes } from "./gameItemType";
 import { gameItemReducer, initialGameItemState } from "./gameItemReducer";
-import { gameItemHandler } from "./codeHandler";
+import { gameItemHandler } from "./gameItemHandler";
 import { engToKor, korToEng } from "korsearch";
-import { getTrendGif } from "../../../api/gif";
+import EyeStolen from "./gameScreenEffect/EyeStolen";
 
 const MAX_GAME_ITEM = 999;
 
@@ -80,6 +80,7 @@ const GameEventHandler: React.FC = () => {
       />
       <GameFooterBox />
       {gameEventState.isScreenBlock && <ScreenBlock />}
+      {gameEventState.isEyeStolen && <EyeStolen />}
     </>
   );
 };

@@ -28,6 +28,9 @@ export const gameItemHandler = (
       case GameItemType.CRAZYMUSIC:
         crazyMusic();
         break;
+      case GameItemType.STOLEEYE:
+        stealEye(dispatch);
+        break;
       default:
         break;
     }
@@ -104,11 +107,22 @@ const typeBlock = (
 const crazyMusic = () => {
   const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
   const audioIdx = Math.floor(Math.random() * audioNameList.length);
-  const audio = new Audio(`/music/${audioNameList[audioIdx]}.mp3`);
+  const audio = new Audio(audioNameList[audioIdx]);
   audio.volume = 0.2;
-  audio.loop = true;
   audio.play();
   setTimeout(() => {
     audio.pause();
   }, 1000 * 20);
+};
+
+const stealEye = (
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+) => {
+  dispatch({ type: GameItemType.STOLEEYE, act: "on" });
+  setTimeout(() => {
+    dispatch({ type: GameItemType.STOLEEYE, act: "off" });
+  }, 1000 * 15);
 };
