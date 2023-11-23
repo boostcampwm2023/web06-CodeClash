@@ -10,14 +10,14 @@ import { engToKor, korToEng } from "korsearch";
 import EyeStolen from "./gameScreenEffect/EyeStolen";
 
 const MAX_GAME_ITEM = 999;
-
+const USER_COUNT = 3;
 const GameEventHandler: React.FC = () => {
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
   const [code, setCode] = useState("");
   const { socket } = useSocketStore();
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
 
-  const handleGameEvent = gameItemHandler(setCode, disPatchEventState);
+  const handleGameEvent = gameItemHandler(setCode, disPatchEventState, USER_COUNT);
 
   // 언어 뒤집기
   useEffect(() => {

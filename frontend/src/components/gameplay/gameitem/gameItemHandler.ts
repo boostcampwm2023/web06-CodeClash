@@ -7,29 +7,30 @@ export const gameItemHandler = (
     type: GameItemType;
     act: "on" | "off";
   }>,
+  gamePlayerCount: number,
 ) => {
   return (type: GameItemType) => {
     switch (type) {
       case GameItemType.SWAP:
-        swapRandomLine(setCode);
+        swapRandomLine(setCode, gamePlayerCount);
         break;
       case GameItemType.SCREENBLOCK:
-        screenBlock(dispatch);
+        screenBlock(dispatch, gamePlayerCount);
         break;
       case GameItemType.TYPERANDOM:
-        typeRandom(dispatch);
+        typeRandom(dispatch, gamePlayerCount);
         break;
       case GameItemType.TINYCODE:
-        tinyCode(dispatch);
+        tinyCode(dispatch, gamePlayerCount);
         break;
       case GameItemType.CRAZYMUSIC:
-        crazyMusic();
+        crazyMusic(gamePlayerCount);
         break;
       case GameItemType.REVERSELANGUAGE:
-        reverseLanguage(setCode, dispatch);
+        reverseLanguage(setCode, dispatch, gamePlayerCount);
         break;
       case GameItemType.STOLEEYE:
-        stealEye(dispatch);
+        stealEye(dispatch, gamePlayerCount);
         break;
       default:
         break;
@@ -37,7 +38,23 @@ export const gameItemHandler = (
   };
 };
 
-const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<string>>) => {
+const timerID: {
+  screenBlock: ReturnType<typeof setTimeout> | number;
+  typeRandom: ReturnType<typeof setTimeout> | number;
+  tinyCode: ReturnType<typeof setTimeout> | number;
+  crazyMusic: ReturnType<typeof setTimeout> | number;
+  reverseLanguage: ReturnType<typeof setTimeout> | number;
+  stealEye: ReturnType<typeof setTimeout> | number;
+} = {
+  screenBlock: 0,
+  typeRandom: 0,
+  tinyCode: 0,
+  crazyMusic: 0,
+  reverseLanguage: 0,
+  stealEye: 0,
+};
+
+const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<string>>, gamePlayerCount: number) => {
   setCode(code => {
     const codeLine = code.split("\n");
     const wholeLineCount = codeLine.length;
@@ -59,13 +76,21 @@ const reverseLanguage = (
     type: GameItemType;
     act: "on" | "off";
   }>,
+  gamePlayerCount: number,
 ) => {
   setCode(code => engToKor(code));
   dispatch({ type: GameItemType.REVERSELANGUAGE, act: "on" });
-  setTimeout(() => {
-    setCode(code => korToEng(code));
-    dispatch({ type: GameItemType.REVERSELANGUAGE, act: "off" });
-  }, 1000 * 12);
+  if (timerID.reverseLanguage) {
+    clearTimeout(timerID.reverseLanguage);
+  }
+  timerID.reverseLanguage = setTimeout(
+    () => {
+      setCode(code => korToEng(code));
+      dispatch({ type: GameItemType.REVERSELANGUAGE, act: "off" });
+      timerID.reverseLanguage = 0;
+    },
+    (1000 * 15) / Math.log2(gamePlayerCount),
+  );
 };
 
 const tinyCode = (
@@ -73,11 +98,15 @@ const tinyCode = (
     type: GameItemType;
     act: "on" | "off";
   }>,
+  gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.TINYCODE, act: "on" });
-  setTimeout(() => {
-    dispatch({ type: GameItemType.TINYCODE, act: "off" });
-  }, 1000 * 10);
+  setTimeout(
+    () => {
+      dispatch({ type: GameItemType.TINYCODE, act: "off" });
+    },
+    (1000 * 10) / Math.log2(gamePlayerCount),
+  );
 };
 
 const screenBlock = (
@@ -85,11 +114,15 @@ const screenBlock = (
     type: GameItemType;
     act: "on" | "off";
   }>,
+  gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.SCREENBLOCK, act: "on" });
-  setTimeout(() => {
-    dispatch({ type: GameItemType.SCREENBLOCK, act: "off" });
-  }, 1000 * 8);
+  setTimeout(
+    () => {
+      dispatch({ type: GameItemType.SCREENBLOCK, act: "off" });
+    },
+    (1000 * 10) / Math.log2(gamePlayerCount),
+  );
 };
 
 const typeRandom = (
@@ -97,22 +130,29 @@ const typeRandom = (
     type: GameItemType;
     act: "on" | "off";
   }>,
+  gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.TYPERANDOM, act: "on" });
-  setTimeout(() => {
-    dispatch({ type: GameItemType.TYPERANDOM, act: "off" });
-  }, 1000 * 5);
+  setTimeout(
+    () => {
+      dispatch({ type: GameItemType.TYPERANDOM, act: "off" });
+    },
+    (1000 * 10) / Math.log2(gamePlayerCount),
+  );
 };
 
-const crazyMusic = () => {
+const crazyMusic = (gamePlayerCount: number) => {
   const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
   const audioIdx = Math.floor(Math.random() * audioNameList.length);
   const audio = new Audio(audioNameList[audioIdx]);
   audio.volume = 0.2;
   audio.play();
-  setTimeout(() => {
-    audio.pause();
-  }, 1000 * 20);
+  setTimeout(
+    () => {
+      audio.pause();
+    },
+    (1000 * 20) / Math.log2(gamePlayerCount),
+  );
 };
 
 const stealEye = (
@@ -120,9 +160,13 @@ const stealEye = (
     type: GameItemType;
     act: "on" | "off";
   }>,
+  gamePlayerCount: number,
 ) => {
   dispatch({ type: GameItemType.STOLEEYE, act: "on" });
-  setTimeout(() => {
-    dispatch({ type: GameItemType.STOLEEYE, act: "off" });
-  }, 1000 * 15);
+  setTimeout(
+    () => {
+      dispatch({ type: GameItemType.STOLEEYE, act: "off" });
+    },
+    (1000 * 15) / Math.log2(gamePlayerCount),
+  );
 };
