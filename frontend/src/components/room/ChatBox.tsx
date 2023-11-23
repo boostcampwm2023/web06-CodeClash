@@ -1,25 +1,53 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import RoomChatContent from "./ChatContent";
+import { useSocketStore } from "../../store/useSocket";
 
 interface IChatMessage {
-  username: string;
+  userName: string;
   createdAt: string;
-  content: string;
+  message: string;
 }
 
-const RoomChatBox: React.FC = () => {
+interface RoomChatBoxProps {
+  roomId: string;
+}
+
+const RoomChatBox: React.FC<RoomChatBoxProps> = ({ roomId }) => {
   const [chatList, setChatList] = useState<IChatMessage[]>([]);
   const chatScroll = useRef<HTMLDivElement>(null);
+  const { socket } = useSocketStore();
+  const [chatMessage, setChatMessage] = useState("");
 
-  const chatContents = chatList.map(({ username, createdAt, content }, index) => {
-    return <RoomChatContent username={username} createdAt={createdAt} content={content} key={username + index} />;
+  const handleSendChat = () => {
+    socket?.emit("chat", { roomId, message: chatMessage });
+    setChatMessage("");
+  };
+
+  const handleReceiveChat = ({ userName, message }: IChatMessage) => {
+    const date = new Date();
+    setChatList(prev => prev.concat({ userName, message, createdAt: date.toLocaleTimeString() }));
+  };
+
+  const chatContents = chatList.map(({ userName, createdAt, message }, index) => {
+    return <RoomChatContent userName={userName} createdAt={createdAt} content={message} key={userName + index} />;
   });
 
   useEffect(() => {
     if (chatScroll.current) {
       chatScroll.current.scrollTop = chatScroll.current.scrollHeight;
     }
-  }, []);
+  }, [chatList]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("chat", handleReceiveChat);
+    }
+    return () => {
+      if (socket) {
+        socket.off("chat", handleReceiveChat);
+      }
+    };
+  }, [socket]);
 
   return (
     <div className="flex flex-col text-center w-full border-8 border-white rounded-lg bg-skyblue text-white">
@@ -32,8 +60,13 @@ const RoomChatBox: React.FC = () => {
           <input
             className="bg-gray-500 m-1 px-3 p-1 mb-2 rounded-md box-content"
             placeholder="내용을 입력하세요"
+            value={chatMessage}
+            onChange={e => setChatMessage(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSendChat()}
           ></input>
-          <button className="absolute right-2 bottom-3">{"->"}</button>
+          <button className="absolute right-2 bottom-3" onClick={handleSendChat}>
+            {"->"}
+          </button>
         </div>
       </div>
     </div>

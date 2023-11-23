@@ -83,7 +83,6 @@ const RoomPage: React.FC = () => {
         socket.off("user_exit_room", handleUserExitRoom);
         socket.off("exit_room", handleEnterLobby);
       }
-      handleExitRoom();
     };
   }, [socket]);
 
@@ -95,7 +94,7 @@ const RoomPage: React.FC = () => {
     <div className="flex justify-center items-center w-full h-full gap-3">
       <div className="w-[800px] grid grid-cols-3 gap-2">{users}</div>
       <div className="w-[600px] flex flex-col items-center gap-3">
-        <RoomChatBox />
+        <RoomChatBox roomId={roomInfo?.roomId || ""} />
         <RoomButtonBox exitRoom={handleExitRoom} />
       </div>
     </div>
