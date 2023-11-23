@@ -1,22 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Socket } from 'socket.io';
+import {
+  CreateRoomInfo,
+  Room,
+  RoomInfo,
+  RoomList,
+  User,
+} from './entities/room.entity';
 
 @Injectable()
 export class RoomsService {
-  private roomList = {
+  private roomList: RoomList = {
     lobby: {
       roomId: 'lobby',
       roomName: '로비',
       userList: [],
-    },
+      capacity: 1000,
+      state: 'waiting',
+    } as Room,
   };
 
   private userNameSocketMapper = new Map();
 
   constructor() {}
 
-  createRoom(client: Socket, roomName: string, capacity: number) {
+  createRoom(
+    client: Socket,
+    roomName: string,
+    capacity: number,
+  ): CreateRoomInfo {
     const roomId = uuid();
 
     this.exitRoom(client, 'lobby');
@@ -26,6 +39,7 @@ export class RoomsService {
       roomName,
       userList: [],
       capacity,
+      state: 'waiting',
     };
 
     this.enterRoom(client, roomId);
@@ -33,7 +47,9 @@ export class RoomsService {
     return {
       roomId,
       roomName,
+      userList: this.getAllClient(roomId),
       capacity,
+      state: 'waiting',
     };
   }
 
@@ -45,10 +61,15 @@ export class RoomsService {
 
   exitRoom(client: Socket, roomId: string) {
     client.leave(roomId);
+    client.data.user.ready = false;
     this.deleteUserFromList(client, roomId);
+    
+    if (this.roomList[roomId].userList.length === 0) {
+      delete this.roomList[roomId];
+    }
   }
 
-  getGameRoom(roomId: string) {
+  getGameRoom(roomId: string): RoomInfo {
     const room = this.roomList[roomId];
 
     return {
@@ -56,19 +77,28 @@ export class RoomsService {
       roomName: room.roomName,
       capacity: room.capacity,
       userCount: room.userList.length,
+      state: room.state,
     };
   }
 
-  getAllGameRoom() {
-    return Object.values(this.roomList).filter((room) => {
-      if (room.roomId !== 'lobby') {
-        return {
-          roomId: room.roomId,
-          roomName: room.roomName,
-          userCount: room.userList.length,
-        };
-      }
-    });
+  getAllGameRoom(): RoomInfo[] {
+    return Object.values(this.roomList)
+      .map((room) => {
+        if (room.roomId !== 'lobby') {
+          return {
+            roomId: room.roomId,
+            roomName: room.roomName,
+            capacity: room.capacity,
+            userCount: room.userList.length,
+            state: room.state,
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter((room) => {
+        if (room) return true;
+      });
   }
 
   changeReadyStatus(client: Socket) {
@@ -81,8 +111,13 @@ export class RoomsService {
     return this.roomList[roomId].userList.every((user) => user.data.user.ready);
   }
 
-  getAllClient(roomId: string) {
-    return this.roomList[roomId].userList.map((user) => user.data.user.name);
+  getAllClient(roomId: string): User[] {
+    return this.roomList[roomId].userList.map((user) => {
+      return {
+        userName: user.data.user.name,
+        ready: user.data.user.ready,
+      };
+    });
   }
 
   registerUserSocket(client: Socket, userName: string) {
@@ -105,5 +140,9 @@ export class RoomsService {
 
   isConnctedUser(userName: string) {
     return this.userNameSocketMapper.has(userName);
+  }
+
+  changeRoomState(roomId: string, state: 'waiting' | 'playing') {
+    this.roomList[roomId].state = state;
   }
 }
