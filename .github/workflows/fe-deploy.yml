@@ -1,0 +1,33 @@
+on:
+  pull_request:
+    branches:
+      - fe-deploy-test
+    paths:
+      - "frontend/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Deploy to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          port: ${{ secrets.REMOTE_PORT }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          source: frontend/build
+          target: /home/codeclash
