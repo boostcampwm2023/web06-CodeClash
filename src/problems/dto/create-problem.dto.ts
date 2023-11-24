@@ -6,4 +6,5 @@ export class CreateProblemDto extends PickType(ProblemTable, [
   'description',
   'timeLimit',
   'memoryLimit',
+  'sampleCode',
 ]) {}
