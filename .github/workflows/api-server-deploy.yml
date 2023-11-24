@@ -3,6 +3,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "api-server/**"
 
 env:
   # 도커 레지스트리 및 이미지 정보, 컨테이너 이름
@@ -22,14 +24,12 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: npm install
-        run: npm install
-
-      - name: npm test
-        run: npm test
-
-      - name: npm run build
-        run: npm run build
+      - name: npm install, test, build
+        run: |
+          cd api-server 
+          npm install
+          npm test
+          npm run build
 
   # 테스트 및 빌드 성공시 도커 이미지 빌드
   build:
@@ -38,6 +38,9 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+
+      - name: cd to api-server
+        run: cd api-server
 
       - name: Set up docker build
         id: buildx
