@@ -15,7 +15,25 @@ input[type="password"] {
 
 @layer base {
   :root {
-    font-size: 32px;
+    font-size: 16px;
+  }
+
+  @screen md {
+    :root {
+      font-size: 20px;
+    }
+  }
+
+  @screen xl {
+    :root {
+      font-size: 24px;
+    }
+  }
+
+  @screen 2xl {
+    :root {
+      font-size: 32px;
+    }
   }
 }
 
@@ -26,4 +44,8 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+html {
+  font-size: 16px;
 }

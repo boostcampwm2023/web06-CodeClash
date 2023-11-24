@@ -10,15 +10,6 @@ const MusicPlayer: React.FC = () => {
     musicPlayer.current.volume = 0.1;
     musicPlayer.current.loop = true;
 
-    document.addEventListener(
-      "keydown",
-      () => {
-        musicPlayer.current.play();
-        setIsPlaying(true);
-      },
-      { once: true },
-    );
-
     const handleMusicEnded = () => {
       setIsPlaying(false);
     };
