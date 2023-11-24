@@ -3,7 +3,7 @@ import { baseAxios } from "./baseAxios";
 export const postLoginRequest = (email: string, password: string) => {
   return baseAxios({
     method: "post",
-    url: "/auth/login/email",
+    url: "/api/auth/login/email",
     headers: {
       Authorization: "Basic " + btoa(email + ":" + password),
     },
@@ -11,7 +11,7 @@ export const postLoginRequest = (email: string, password: string) => {
 };
 
 export const postRegisterRequest = async (name: string, email: string, password: string) => {
-  const res = await baseAxios.post("/auth/register/email", {
+  const res = await baseAxios.post("/api/auth/register/email", {
     name,
     email,
     password,

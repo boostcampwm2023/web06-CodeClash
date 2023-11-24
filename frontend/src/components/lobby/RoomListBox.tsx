@@ -1,4 +1,7 @@
-import { IGameRoom } from "../../pages/LobbyPage";
+import { useEffect } from "react";
+import { IGameRoom, ILobbyUserInfo } from "../../pages/LobbyPage";
+import { useSocketStore } from "../../store/useSocket";
+import { useNavigate } from "react-router";
 
 interface LobbyRoomListBoxProps {
   gameRoomList: IGameRoom[];
@@ -6,6 +9,12 @@ interface LobbyRoomListBoxProps {
 
 interface LobbyRoomListItemProps extends IGameRoom {
   onClick?: () => void;
+}
+
+interface IEnterRoomResponse extends IGameRoom {
+  status: "success" | "fail";
+  message: string;
+  userList?: ILobbyUserInfo[];
 }
 
 const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName, capacity, userCount, onClick }) => {
@@ -26,6 +35,26 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName,
 };
 
 const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => {
+  const { socket } = useSocketStore();
+  const navigate = useNavigate();
+
+  const handleEnterRoom = (roomId: string) => {
+    socket?.emit("enter_room", { roomId });
+  };
+
+  const handleRoomEntered = ({ status, roomId, roomName, capacity, userList }: IEnterRoomResponse) => {
+    if (status === "fail") return;
+    navigate("/room", { state: { data: { roomId, roomName, userList, capacity } } });
+  };
+
+  useEffect(() => {
+    socket?.on("enter_room", handleRoomEntered);
+
+    return () => {
+      socket?.off("enter_room", handleRoomEntered);
+    };
+  }, [socket]);
+
   return (
     <div className="h-full flex flex-col flex-grow gap-4 border-[3px] border-white rounded-lg bg-skyblue p-4 ">
       <div className="skew-x-right bg-black rounded-sm text-white px-2 py-1">
@@ -42,6 +71,7 @@ const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => 
               roomName={roomName}
               userCount={userCount}
               state={state}
+              onClick={() => handleEnterRoom(roomId)}
             />
           ))}
       </div>
