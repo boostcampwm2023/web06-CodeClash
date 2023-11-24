@@ -14,6 +14,7 @@ import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
   namespace: 'rooms',
+  path: '/api/rooms',
   cors: true,
 })
 export class RoomsGateway {
