@@ -13,7 +13,8 @@ import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
-  namespace: 'api/rooms',
+  namespace: 'rooms',
+  path: '/api/rooms',
   cors: true,
 })
 export class RoomsGateway {
