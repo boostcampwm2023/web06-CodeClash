@@ -38,6 +38,7 @@ jobs:
         with:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+          context: ./scoring-server
 
   # 도커 이미지 빌드 성공시, 서버에 배포
   deploy:
