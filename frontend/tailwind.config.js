@@ -6,6 +6,10 @@ module.exports = {
       fontFamily: {
         sans: ["Cafe24Ssurround", "sans-serif"],
       },
+      screens: {
+        "2k": "2560px",
+        "4k": "3840px",
+      },
       colors: {
         pink: "#F90196",
         skyblue: "#33C9EA",

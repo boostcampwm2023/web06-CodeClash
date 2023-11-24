@@ -35,6 +35,18 @@ input[type="password"] {
       font-size: 32px;
     }
   }
+
+  @screen 2k {
+    :root {
+      font-size: 40px;
+    }
+  }
+
+  @screen 4k {
+    :root {
+      font-size: 48px;
+    }
+  }
 }
 
 body {
