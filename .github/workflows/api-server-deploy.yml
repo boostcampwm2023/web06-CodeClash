@@ -85,7 +85,6 @@ jobs:
             docker run -d \
               --env-file /root/.env.production \
               -p 3000:3000 \
-              -p 443:443 \
               --name ${{ env.DOCKER_CONTAINER }} \
               --restart=always \
               ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
