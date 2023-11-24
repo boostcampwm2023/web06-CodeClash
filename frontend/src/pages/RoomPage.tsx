@@ -86,14 +86,22 @@ const RoomPage: React.FC = () => {
     };
   }, [socket]);
 
-  const users = userList.map(({ isHost, userName, ready }, index) => (
-    <RoomUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
-  ));
+  const emptyList = new Array((roomInfo?.capacity ?? userList.length) - userList.length).fill({
+    isHost: false,
+    userName: "대기중...",
+    ready: false,
+  });
+
+  const users = userList
+    .concat(emptyList)
+    .map(({ isHost, userName, ready }, index) => (
+      <RoomUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
+    ));
 
   return (
-    <div className="flex justify-center items-center w-full h-full gap-3">
-      <div className="w-[800px] grid grid-cols-3 gap-2">{users}</div>
-      <div className="w-[600px] flex flex-col items-center gap-3">
+    <div className="flex justify-center items-center w-full h-full gap-3 p-16">
+      <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
+      <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox roomId={roomInfo?.roomId || ""} />
         <RoomButtonBox exitRoom={handleExitRoom} />
       </div>
