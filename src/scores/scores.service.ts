@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ScoreSubmissionDto } from './dto/score-submission.dto';
 import { UserTable } from 'src/users/entities/user.entity';
 import { ProblemsService } from 'src/problems/problems.service';
@@ -22,6 +22,11 @@ export class ScoresService {
   async grade(submission: ScoreSubmissionDto, user: UserTable) {
     const { code, problemId, language } = submission;
     const problem = await this.problemsService.getProblem(problemId);
+
+    if (!problem) {
+      throw new BadRequestException('Problem does not exist');
+    }
+
     const promises = [];
 
     for (let i = 0; i < problem.testcases.length; i++) {
