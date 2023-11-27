@@ -8,7 +8,7 @@ export interface ProblemType {
     id: number;
     input: string;
     output: string;
-  };
+  }[];
   title: string;
   timeLimit: number;
   updatedAt: string;

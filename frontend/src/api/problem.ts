@@ -8,3 +8,16 @@ export const getProblemById = async (id: number) => {
     alert(err);
   }
 };
+
+export const postProblemGrade = async (id: number, code: string) => {
+  try {
+    const res = await baseAxios.post(`/api/scores/grade`, {
+      code,
+      language: "javascript",
+      problemId: id,
+    });
+    return res;
+  } catch (err: any) {
+    alert(err);
+  }
+};
