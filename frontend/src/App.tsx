@@ -12,7 +12,7 @@ import { AnimatePresence } from "framer-motion";
 const App: React.FC = () => {
   const location = useLocation();
   return (
-    <div className="bg-defaultPattern h-[100vh] w-[100vw] min-w-[1180px]">
+    <div className="bg-defaultPattern bg-cover w-screen h-screen">
       <MusicPlayer />
       <AnimatePresence initial={false} mode="wait">
         <Routes location={location} key={location.pathname}>

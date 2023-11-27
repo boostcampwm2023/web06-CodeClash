@@ -5,15 +5,7 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className, onClick }) => {
   return (
-    <svg
-      width="484"
-      height="283"
-      viewBox="0 0 484 283"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      onClick={onClick}
-    >
+    <svg viewBox="0 0 484 283" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} onClick={onClick}>
       <mask id="path-1-outside-1_280_193" maskUnits="userSpaceOnUse" x="0" y="0" width="484" height="283" fill="black">
         <rect fill="white" width="484" height="283" />
         <path d="M146.99 27.8363L135.591 17.7426L87.8059 20.8146L50.5419 59.4339L81.6683 139.306L105.342 142.378H66.3243L61.0635 146.766L33.8827 180.119L39.1435 256.919L109.287 262.624L114.987 250.336L169.348 270.085L199.159 241.12L258.782 236.293L331.118 259.113L357.86 219.178L369.697 243.315L398.193 227.516L444.225 270.085L463.076 253.847L455.623 143.694L429.758 141.5L445.54 138.867L427.566 110.78L445.54 83.571L408.715 59.4339L447.294 37.93L444.225 12.0375L371.5 18.1815L362.244 48.4625L342.516 26.0809L282.894 12.0375L258.782 16.8649L236.423 123.946L225.025 42.0357V39.6854L180.308 29.5917L157.073 48.4625L146.99 27.8363Z" />

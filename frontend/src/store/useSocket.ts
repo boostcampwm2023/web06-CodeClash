@@ -13,11 +13,14 @@ interface SocketAction {
 interface SocketStore extends SocketState, SocketAction {}
 
 const createSocket = (token: string) => {
-  return io(baseURL + "/api/rooms", {
+  return io(baseURL + "/rooms", {
+    path: "/api/rooms/",
     autoConnect: false,
     extraHeaders: {
       Authorization: `Bearer ${token}`,
     },
+    reconnection: true,
+    transports: ["polling"],
   });
 };
 

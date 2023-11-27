@@ -105,10 +105,10 @@ const LobbyPage: React.FC = () => {
     >
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
-        <LobbyUserListBox userList={userList} />
+        <LobbyUserListBox userList={userList ?? []} />
         <LobbyMyInfo />
       </div>
-      <LobbyRoomListBox gameRoomList={gameRoomList} />
+      <LobbyRoomListBox gameRoomList={gameRoomList ?? []} />
     </motion.div>
   );
 };

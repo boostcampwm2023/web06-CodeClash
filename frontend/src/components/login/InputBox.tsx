@@ -45,7 +45,7 @@ const LoginInputBox: React.FC = () => {
         </label>
         <input
           id="email"
-          className="rounded-full border-[3px] border-white text-[0.75rem] py-1 px-2 outline-none bg-[#D9D9D9] w-[15rem]"
+          className="rounded-full border-[3px] border-white text-[0.75rem] py-1 px-2 outline-none bg-[#D9D9D9] max-w-[calc(100vw-2rem)] w-[15rem] min-w-[45vh]"
           onChange={e => (ref.current.email = e.target.value)}
         ></input>
         <label className="text-white " htmlFor="password">
@@ -53,7 +53,7 @@ const LoginInputBox: React.FC = () => {
         </label>
         <input
           id="password"
-          className="rounded-full border-[3px] border-white text-[0.75rem] p-1 px-2 outline-none bg-[#D9D9D9] w-[15rem] mb-2"
+          className="rounded-full border-[3px] border-white text-[0.75rem] p-1 px-2 outline-none bg-[#D9D9D9] max-w-[calc(100vw-2rem)] w-[15rem] min-w-[45vh]"
           onChange={e => (ref.current.password = e.target.value)}
           type="password"
           onKeyDown={e => {
