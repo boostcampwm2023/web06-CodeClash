@@ -2,6 +2,7 @@ import GameDefaultBox from "./DefaultBox";
 import { useState, DragEventHandler } from "react";
 import GameEventHandler from "./gameitem/GameEventHandler";
 import convertRemToPixels from "../../utils/convertRemToPixels";
+import { ProblemType } from "./problemType";
 
 const OriginalResizeObserver = window.ResizeObserver;
 
@@ -25,7 +26,11 @@ for (let staticMethod in OriginalResizeObserver) {
   }
 }
 
-const GamePlayBox: React.FC = () => {
+interface GamePlayBoxProps {
+  problemInfo: ProblemType;
+}
+
+const GamePlayBox: React.FC<GamePlayBoxProps> = ({ problemInfo }) => {
   const [problemBoxWidth, setProblemBoxWidth] = useState<number>(35);
   const [codeBoxHeight, setCodeBoxHeight] = useState<number>(70);
 
@@ -64,7 +69,7 @@ const GamePlayBox: React.FC = () => {
           }}
         >
           <GameDefaultBox>
-            <GameEventHandler />
+            <GameEventHandler initialCode={problemInfo?.sampleCode ?? ""} />
           </GameDefaultBox>
         </div>
         <div className="h-2 items-center justify-center cursor-pointer" onDrag={dragCodeBoxHandler}></div>

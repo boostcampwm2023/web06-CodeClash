@@ -11,7 +11,12 @@ import EyeStolen from "./gameScreenEffect/EyeStolen";
 
 const MAX_GAME_ITEM = 999;
 const USER_COUNT = 3;
-const GameEventHandler: React.FC = () => {
+
+interface GameEventHandlerProps {
+  initialCode: string;
+}
+
+const GameEventHandler: React.FC<GameEventHandlerProps> = ({ initialCode }) => {
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
   const [code, setCode] = useState("");
   const { socket } = useSocketStore();
@@ -82,6 +87,7 @@ const GameEventHandler: React.FC = () => {
           fontSize: gameEventState.fontSize,
           isTypeRandom: gameEventState.isTypeRandom,
         }}
+        initialCode={initialCode}
       />
       <GameFooterBox />
       {gameEventState.isScreenBlock && <ScreenBlock />}

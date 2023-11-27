@@ -56,6 +56,7 @@ export const useLoginStore = create<LoginStore>(
           nickname: nickname,
           isLogin: true,
           accessToken: accessToken,
+          loginAt: new Date().getTime(),
         })),
       setLoginAt: loginAt => set(state => ({ loginAt: loginAt })),
       setExpireTime: expireAt => set(state => ({ expireTime: expireAt })),

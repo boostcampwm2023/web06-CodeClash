@@ -8,7 +8,6 @@ export const baseAxios = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json; charset=UTF-8",
-    WithCredentials: "true",
     Authorization: "Bearer " + useLoginStore.getState().accessToken,
   },
 });
