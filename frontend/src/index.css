@@ -47,6 +47,10 @@ input[type="password"] {
       font-size: 48px;
     }
   }
+
+  .font-outline-2 {
+    -webkit-text-stroke: 2px #f90196;
+  }
 }
 
 body {

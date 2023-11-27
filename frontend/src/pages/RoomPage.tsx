@@ -5,6 +5,7 @@ import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
+import StartAnimation from "../components/room/StartAnimation";
 
 export interface IUserInfo {
   isHost: boolean;
@@ -27,6 +28,7 @@ interface IExitRoomResponse {
 const RoomPage: React.FC = () => {
   const [userList, setUserList] = useState<IUserInfo[]>([]);
   const [roomInfo, setRoomInfo] = useState<IRoomInfo>();
+  const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { socket } = useSocketStore();
@@ -100,6 +102,7 @@ const RoomPage: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center w-full h-full gap-3 p-16">
+      <StartAnimation isStart={isStart} />
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox roomId={roomInfo?.roomId || ""} />

@@ -19,10 +19,12 @@ module.exports = {
         white: "#FEFEFD",
       },
       backgroundImage: {
-        defaultPattern: "url('/src/assets/img/backgroundimage.png')",
+        defaultPattern: "url('/src/assets/img/backgroundimage.webp')",
+        barPattern: "url('/src/assets/img/starteffectimage.png')",
       },
       dropShadow: {
         textShadow: "2px 4px 0 rgba(0, 0, 0, 0.25)",
+        textBlack: "2px 4px 0 rgba(0, 0, 0, 1)",
       },
       borderWidth: {},
       skew: {
