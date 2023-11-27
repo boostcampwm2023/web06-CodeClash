@@ -44,13 +44,14 @@ const attatchChildProcessEvents = (
         status: output.trim() == answer ? "pass" : "fail",
         output: output.trim(),
         error,
+        answer: isExample ? answer : "",
       });
     }
   });
 };
 
 app.post("/v2/scoring", (req, res) => {
-  const { code, testcase, timeLimit, memoryLimit } = req.body;
+  const { code, testcase, timeLimit, memoryLimit, isExample } = req.body;
   let userCode = code;
 
   const input = JSON.parse(testcase.input);
@@ -73,6 +74,7 @@ app.post("/v2/scoring", (req, res) => {
       status: "fail",
       output: "",
       error: "Time Limit Exceeded",
+      answer: isExample ? testcase.output : "",
     });
   }, timeLimit);
 
