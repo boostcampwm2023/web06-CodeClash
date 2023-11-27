@@ -59,24 +59,18 @@ const RoomPage: React.FC = () => {
     );
   };
 
-  const handleExitRoom = () => {
-    if (socket) {
-      socket.emit("exit_room", { roomId: roomInfo?.roomId });
-    }
-  };
-
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
     if (status === "success") {
       navigate("/lobby", { state: { data: { userList, gameRoomList } } });
     }
   };
 
-  const handleClickReady = () => {
-    socket?.emit("ready", { roomId: roomInfo?.roomId });
-  };
-
   const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
     setUserList(prev => prev.map(user => (user.userName === userName ? { ...user, ready } : user)));
+  };
+
+  const handleStart = () => {
+    navigate("/game", { state: { data: { ...roomInfo, userList } } });
   };
 
   useEffect(() => {
@@ -85,6 +79,7 @@ const RoomPage: React.FC = () => {
       socket.on("user_exit_room", handleUserExitRoom);
       socket.on("exit_room", handleEnterLobby);
       socket.on("ready", handleUserReady);
+      socket.on("start", handleStart);
     }
     return () => {
       if (socket) {
@@ -92,6 +87,7 @@ const RoomPage: React.FC = () => {
         socket.off("user_exit_room", handleUserExitRoom);
         socket.off("exit_room", handleEnterLobby);
         socket.off("ready", handleUserReady);
+        socket.off("start", handleStart);
       }
     };
   }, [socket]);
@@ -113,7 +109,7 @@ const RoomPage: React.FC = () => {
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox roomId={roomInfo?.roomId || ""} />
-        <RoomButtonBox exitRoom={handleExitRoom} handleClickReady={handleClickReady} />
+        <RoomButtonBox roomId={roomInfo?.roomId || ""} />
       </div>
     </div>
   );

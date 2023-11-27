@@ -54,8 +54,8 @@ const LobbyPage: React.FC = () => {
     setUserList(prev => prev.concat({ userName }));
   };
 
-  const handleUserExitLobby = ({ name }: { name: string }) => {
-    setUserList(prev => prev.filter(({ userName }) => userName !== name));
+  const handleUserExitLobby = ({ userName: exitedUserName }: { userName: string }) => {
+    setUserList(prev => prev.filter(({ userName }) => userName !== exitedUserName));
   };
 
   const handleCreateRoom = (roomInfo: IGameRoom) => {
@@ -68,6 +68,10 @@ const LobbyPage: React.FC = () => {
     }
   };
 
+  const handleDeleteRoom = ({ roomId: deleteRoomId }: { roomId: string }) => {
+    setGameRoomList(prev => prev.filter(({ roomId }) => roomId !== deleteRoomId));
+  };
+
   useEffect(() => {
     if (socket) {
       socket.on("connection", handleLobbyConnect);
@@ -75,6 +79,7 @@ const LobbyPage: React.FC = () => {
       socket.on("user_exit_lobby", handleUserExitLobby);
       socket.on("user_create_room", handleCreateRoom);
       socket.on("create_room", handleRoomCreated);
+      socket.on("delete_room", handleDeleteRoom);
     }
     return () => {
       if (socket) {
@@ -83,6 +88,7 @@ const LobbyPage: React.FC = () => {
         socket.off("user_exit_lobby", handleUserExitLobby);
         socket.off("user_create_room", handleCreateRoom);
         socket.off("create_room", handleRoomCreated);
+        socket.off("delete_room", handleDeleteRoom);
       }
     };
   }, [socket]);
