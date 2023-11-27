@@ -71,6 +71,9 @@ jobs:
             do
               docker run -d \
                 -p $((3000 + i - 1)):3000 \
+                -- cpus="1" \
+                --memory="1g" \
+                --security-opt seccomp=/root/profile/whitelist.json \
                 --name ${{ env.DOCKER_CONTAINER }}_$i \
                 --restart=always \
                 ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
