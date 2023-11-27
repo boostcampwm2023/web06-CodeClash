@@ -169,9 +169,10 @@ export class RoomsGateway {
   @SubscribeMessage('exit_room')
   exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
-    const userCount = this.roomsService.getGameRoom(roomId).userCount;
 
     this.roomsService.exitRoom(client, roomId);
+    
+    const userCount = this.roomsService.getGameRoom(roomId).userCount;
 
     if (userCount !== 0) {
       this.server.in(roomId).emit('user_exit_room', {

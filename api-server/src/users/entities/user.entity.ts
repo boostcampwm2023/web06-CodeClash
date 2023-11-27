@@ -12,7 +12,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 enum Role {
   USER = 'user',
-  ADMIN = 'amdin',
+  ADMIN = 'admin',
 }
 
 @Entity({ name: 'user' })
