@@ -174,7 +174,7 @@ export class RoomsGateway {
     
     const userCount = this.roomsService.getGameRoom(roomId).userCount;
 
-    if (userCount !== 0) {
+    if (userCount) {
       this.server.in(roomId).emit('user_exit_room', {
         userName: client.data.user.name,
         message: `${client.data.user.name} 님이 ${
@@ -189,6 +189,7 @@ export class RoomsGateway {
     });
 
     this.roomsService.enterRoom(client, 'lobby');
+    
     client.emit('exit_room', {
       status: 'success',
       message: '방에서 나왔습니다.',
