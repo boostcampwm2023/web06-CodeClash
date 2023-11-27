@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 const LobbyMyInfo: React.FC = () => {
   return (
     <div className=" min-w-max flex flex-row items-center gap-4 border-[3px] border-white text-white rounded-lg bg-skyblue p-2">
