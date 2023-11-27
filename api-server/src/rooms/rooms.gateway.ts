@@ -174,7 +174,7 @@ export class RoomsGateway {
     
     const userCount = this.roomsService.getGameRoom(roomId).userCount;
 
-    if (userCount !== 0) {
+    if (userCount) {
       this.server.in(roomId).emit('user_exit_room', {
         userName: client.data.user.name,
         message: `${client.data.user.name} 님이 ${
