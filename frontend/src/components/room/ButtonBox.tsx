@@ -9,9 +9,7 @@ const RoomButtonBox: React.FC<RoomButtonBoxProps> = ({ roomId }) => {
   const { socket } = useSocketStore();
 
   const handleExitRoom = () => {
-    if (socket) {
-      socket.emit("exit_room", { roomId });
-    }
+    socket?.emit("exit_room", { roomId });
   };
 
   const handleClickReady = () => {
