@@ -23,7 +23,10 @@ export class TestcasesService {
   }
 
   async createTestcase(createTestcaseDto: CreateTestcaseDto) {
-    return await this.testcasesRepository.save(createTestcaseDto);
+    return await this.testcasesRepository.save({
+      ...createTestcaseDto,
+      problem: { id: createTestcaseDto.problemId },
+    });
   }
 
   async updateTestcase(
