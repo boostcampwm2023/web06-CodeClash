@@ -125,8 +125,8 @@ export class RoomsGateway {
   @SubscribeMessage('enter_room')
   enterRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
-
     const roomInfo = this.roomsService.getGameRoom(roomId);
+
     if (roomInfo.userCount >= roomInfo.capacity) {
       client.emit('enter_room', {
         status: 'fail',
@@ -171,8 +171,8 @@ export class RoomsGateway {
     const { roomId } = data;
 
     this.roomsService.exitRoom(client, roomId);
-    
-    const userCount = this.roomsService.getGameRoom(roomId).userCount;
+
+    const { userCount } = this.roomsService.getGameRoom(roomId);
 
     if (userCount) {
       this.server.in(roomId).emit('user_exit_room', {

@@ -71,9 +71,9 @@ export class RoomsService {
 
   getGameRoom(roomId: string): RoomInfo {
     if (!this.roomList[roomId]) {
-      return undefined;
+      return { userCount: 0 } as RoomInfo;
     }
-    
+
     const room = this.roomList[roomId];
 
     return {
