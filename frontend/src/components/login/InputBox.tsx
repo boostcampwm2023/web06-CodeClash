@@ -25,6 +25,7 @@ const LoginInputBox: React.FC = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isLogin]);
+
   const userLoginInput = useRef({
     email: "",
     password: "",
@@ -90,7 +91,6 @@ const LoginInputBox: React.FC = () => {
       {!isLogin ? (
         <div className="flex flex-col items-start">
           {infoInput(userLoginInput)}
-
           <button className="self-center text-white text-[0.75rem]" onClick={() => setModalOpened(true)}>
             회원가입
           </button>
