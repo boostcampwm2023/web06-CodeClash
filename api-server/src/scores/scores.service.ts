@@ -34,6 +34,8 @@ export class ScoresService {
     const promises = [];
 
     for (let i = 0; i < problem.testcases.length; i++) {
+      if(problem.testcases[i].isExample != isExample) continue;
+
       promises.push(
         fetch(`${scoringServers[currentServer]}/v2/scoring`, {
           method: 'POST',
