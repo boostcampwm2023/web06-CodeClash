@@ -45,11 +45,11 @@ npm start
 
 <!-- 이미지로 변경 -->
 
-- WebRTC
 - Nginx
 - Docker
 - Naver Cloud Platform
 - TypeScript
+- Mysql
 
 ### FE
 
@@ -61,8 +61,15 @@ npm start
 ### BE
 
 - NestJS v10
-- mongoDB
-- PostgreSQL
-<!-- 추가 요망-->
+- ExpressJs
+- MySql
+- TypeORM
+- Jwt
 
 ## 아키텍쳐 구조
+
+### FE
+
+### BE
+
+![Alt text](https://private-user-images.githubusercontent.com/77053595/285119810-f406f607-d692-4bff-a4be-05663cc7bcf4.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDA5NzU5NTEsIm5iZiI6MTcwMDk3NTY1MSwicGF0aCI6Ii83NzA1MzU5NS8yODUxMTk4MTAtZjQwNmY2MDctZDY5Mi00YmZmLWE0YmUtMDU2NjNjYzdiY2Y0LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzExMjYlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMTI2VDA1MTQxMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdiY2MwMzQ1OGJiNmZkYjQxMzAyMjVkNDYxN2FhZTY1N2Y4OTQ0YTEyMWMwZWUzZGEwYjNmNGJkZDIyZTkyYmUmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.EhCJqD13xJp1BcQ9HNtmk3f4g8hXimt9ZIYm1Pw1Eko)
