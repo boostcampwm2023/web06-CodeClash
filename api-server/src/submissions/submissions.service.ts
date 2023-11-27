@@ -21,16 +21,12 @@ export class SubmissionsService {
     });
   }
 
-  async createSubmission(
-    createSubmissionDto: CreateSubmissionDto,
-    problemId: number,
-    userId: number,
-  ) {
+  async createSubmission(createSubmissionDto: CreateSubmissionDto) {
     const submission = this.submissionsRepository.create(createSubmissionDto);
     return await this.submissionsRepository.save({
       ...submission,
-      user: { id: userId },
-      problem: { id: problemId },
+      user: { id: createSubmissionDto.userId },
+      problem: { id: createSubmissionDto.problemId },
     });
   }
 }
