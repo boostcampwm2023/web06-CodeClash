@@ -13,7 +13,8 @@ const attatchChildProcessEvents = (
   timer,
   startTime,
   memoryLimit,
-  answer
+  answer,
+  isExample
 ) => {
   let output = "";
   let error = "";
@@ -53,11 +54,11 @@ const attatchChildProcessEvents = (
 app.post("/v2/scoring", (req, res) => {
   const { code, testcase, timeLimit, memoryLimit, isExample } = req.body;
   let userCode = code;
+  const input = testcase.input;
 
-  const input = JSON.parse(testcase.input);
-
-  userCode += `\nconsole.log(solution(${input.join(", ")}));`;
-  userCode += `\nprocess.send(process.memoryUsage());`;
+  userCode +=
+    "\nconsole.log(solution(" + input.substr(1, input.length - 2) + "))";
+  userCode += "\nprocess.send(process.memoryUsage());";
 
   const startTime = Date.now();
   const child = spawn("node", ["-e", userCode], {
@@ -84,7 +85,8 @@ app.post("/v2/scoring", (req, res) => {
     timer,
     startTime,
     memoryLimit,
-    testcase.output
+    testcase.output,
+    isExample
   );
 });
 
