@@ -24,6 +24,6 @@ export class ScoresController {
     @Query('isExample', ParseBoolPipe) isExample: boolean,
     @User() user,
   ) {
-    return await this.scoresService.grade(submission, user, isExample);
+    return await this.scoresService.grade(submission, user, isExample ? true : false);
   }
 }
