@@ -60,7 +60,7 @@ export class RoomsService {
   }
 
   exitRoom(client: Socket, roomId: string) {
-    if (client.rooms) {
+    if (client.rooms.size) {
       client.leave(roomId);
       client.data.user.ready = false;
     }

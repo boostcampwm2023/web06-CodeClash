@@ -85,9 +85,12 @@ export class RoomsGateway {
   }
 
   async handleDisconnect(socket: Socket) {
+    if (!socket.data.user) {
+      return;
+    }
+
     this.roomsService.exitRoom(socket, socket.data.roomId);
     this.roomsService.deleteUserSocket(socket.data.user.name);
-
     if (socket.data.roomId) {
       if (socket.data.roomId === 'lobby') {
         this.server.in(socket.data.roomId).emit('user_exit_lobby', {
