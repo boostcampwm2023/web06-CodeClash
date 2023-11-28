@@ -34,6 +34,7 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "env-cmd": "^10.1.0",
+    "moment-timezone": "^0.5.43",
     "mysql2": "^3.6.3",
     "nest-winston": "^1.9.4",
     "reflect-metadata": "^0.1.13",
