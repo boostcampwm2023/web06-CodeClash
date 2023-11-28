@@ -1,5 +1,5 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { baseAxios, baseURL } from "./baseAxios";
+import axios, { AxiosResponse } from "axios";
+import { baseURL } from "./baseAxios";
 import { useLoginStore } from "../store/useLogin";
 
 export const onResponse = async (response: AxiosResponse) => {
