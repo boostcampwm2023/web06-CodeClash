@@ -1,11 +1,11 @@
 import { StateCreator, create } from "zustand";
-import { PersistOptions, persist } from "zustand/middleware";
+import { PersistOptions, createJSONStorage, persist } from "zustand/middleware";
 
 const day = 24 * 60 * 60 * 1000;
 
 interface LoginState {
   email: string;
-  nickname: string;
+  userName: string;
   isLogin: boolean;
   accessToken?: string;
   loginAt: number;
@@ -15,10 +15,10 @@ interface LoginState {
 interface LoginAction {
   setEmail: (email: string) => void;
   setIsLogin: (isLoggined: boolean) => void;
-  setNickname: (nickname: string) => void;
+  setUserName: (userName: string) => void;
   setLogout: () => void;
   setAccessToken: (accessToken: string) => void;
-  setLoginInitial: (email: string, nickname: string, accessToken: string) => void;
+  setLoginInitial: (email: string, userName: string, accessToken: string) => void;
   setLoginAt: (loginAt: number) => void;
   setExpireTime: (expireAt: number) => void;
 }
@@ -35,31 +35,35 @@ export const useLoginStore = create<LoginStore>(
     set => ({
       email: "",
       isLogin: false,
-      nickname: "",
+      userName: "",
       accessToken: "",
       loginAt: 0,
       expireTime: day, // 1day
       setEmail: email => set(state => ({ email: email })),
-      setNickname: nickname => set(state => ({ nickname: nickname })),
+      setUserName: userName => set(state => ({ userName })),
       setIsLogin: isLogin => set(state => ({ isLogin: isLogin })),
       setLogout: () =>
         set(state => ({
           email: "",
-          nickname: "",
+          userName: "",
           isLogin: false,
           accessToken: "",
         })),
-      setAccessToken: accessToken => set(state => ({ accessToken: accessToken })),
-      setLoginInitial: (email, nickname, accessToken) =>
+      setAccessToken: accessToken => set(state => ({ accessToken })),
+      setLoginInitial: (email, userName, accessToken) =>
         set(state => ({
-          email: email,
-          nickname: nickname,
+          email,
+          userName,
           isLogin: true,
-          accessToken: accessToken,
+          accessToken,
+          loginAt: new Date().getTime(),
         })),
-      setLoginAt: loginAt => set(state => ({ loginAt: loginAt })),
+      setLoginAt: loginAt => set(state => ({ loginAt })),
       setExpireTime: expireAt => set(state => ({ expireTime: expireAt })),
     }),
-    { name: "loginStore" },
+    {
+      name: "loginstorage", // unique name
+      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+    },
   ),
 );

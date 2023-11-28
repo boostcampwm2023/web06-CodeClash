@@ -120,7 +120,7 @@
       "token": "keyword.operator.js"
     },
     {
-      "foreground": "ffffff",
+      "foreground": "000000",
       "background": "990000",
       "token": "invalid"
     },

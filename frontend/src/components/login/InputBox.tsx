@@ -25,6 +25,7 @@ const LoginInputBox: React.FC = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isLogin]);
+
   const userLoginInput = useRef({
     email: "",
     password: "",
@@ -44,7 +45,7 @@ const LoginInputBox: React.FC = () => {
         </label>
         <input
           id="email"
-          className="rounded-full border-[3px] border-white text-[0.75rem] py-1 px-2 outline-none bg-[#D9D9D9] w-[15rem]"
+          className="rounded-full border-[3px] border-white text-[0.75rem] py-1 px-2 outline-none bg-[#D9D9D9] max-w-[calc(100vw-2rem)] w-[15rem] min-w-[45vh]"
           onChange={e => (ref.current.email = e.target.value)}
         ></input>
         <label className="text-white " htmlFor="password">
@@ -52,7 +53,7 @@ const LoginInputBox: React.FC = () => {
         </label>
         <input
           id="password"
-          className="rounded-full border-[3px] border-white text-[0.75rem] p-1 px-2 outline-none bg-[#D9D9D9] w-[15rem] mb-2"
+          className="rounded-full border-[3px] border-white text-[0.75rem] p-1 px-2 outline-none bg-[#D9D9D9] max-w-[calc(100vw-2rem)] w-[15rem] min-w-[45vh]"
           onChange={e => (ref.current.password = e.target.value)}
           type="password"
           onKeyDown={e => {
@@ -77,7 +78,7 @@ const LoginInputBox: React.FC = () => {
   const handleLogin = (info: { email: string; password: string }) => {
     postLoginRequest(info.email, info.password)
       .then(res => {
-        setLogin(info.email, res.data.nickname, res.data.accessToken);
+        setLogin(info.email, res.data.userName, res.data.accessToken);
         navigate("/lobby");
       })
       .catch(err => {
@@ -90,7 +91,6 @@ const LoginInputBox: React.FC = () => {
       {!isLogin ? (
         <div className="flex flex-col items-start">
           {infoInput(userLoginInput)}
-
           <button className="self-center text-white text-[0.75rem]" onClick={() => setModalOpened(true)}>
             회원가입
           </button>

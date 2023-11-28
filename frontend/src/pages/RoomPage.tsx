@@ -5,6 +5,9 @@ import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
+import StartAnimation from "../components/room/StartAnimation";
+import { motion } from "framer-motion";
+import SlidePage from "../components/common/SlidePage";
 
 export interface IUserInfo {
   isHost: boolean;
@@ -27,6 +30,7 @@ interface IExitRoomResponse {
 const RoomPage: React.FC = () => {
   const [userList, setUserList] = useState<IUserInfo[]>([]);
   const [roomInfo, setRoomInfo] = useState<IRoomInfo>();
+  const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { socket } = useSocketStore();
@@ -47,10 +51,16 @@ const RoomPage: React.FC = () => {
     setRoomInfo({ roomId, roomName, capacity });
   }, [location]);
 
-  const handleExitRoom = () => {
-    if (socket) {
-      socket.emit("exit_room", { roomId: roomInfo?.roomId });
-    }
+  const handleUserEnterRoom = ({ userName }: { userName: string }) => {
+    setUserList(prev => prev.concat({ userName, isHost: false, ready: false }));
+  };
+
+  const handleUserExitRoom = ({ userName: newUserName }: { userName: string }) => {
+    setUserList(prev =>
+      prev
+        .filter(({ userName }) => userName !== newUserName)
+        .map((userInfo: IUserInfo, index: number) => ({ ...userInfo, isHost: index === 0 })),
+    );
   };
 
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
@@ -59,30 +69,60 @@ const RoomPage: React.FC = () => {
     }
   };
 
+  const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
+    setUserList(prev => prev.map(user => (user.userName === userName ? { ...user, ready } : user)));
+  };
+
+  const handleStart = () => {
+    setIsStart(true);
+    setTimeout(() => {
+      setIsStart(false);
+      setTimeout(() => {
+        navigate("/game", { state: { data: { ...roomInfo, userList } } });
+      }, 300);
+    }, 3000);
+  };
+
   useEffect(() => {
     if (socket) {
+      socket.on("user_enter_room", handleUserEnterRoom);
+      socket.on("user_exit_room", handleUserExitRoom);
       socket.on("exit_room", handleEnterLobby);
+      socket.on("ready", handleUserReady);
+      socket.on("start", handleStart);
     }
     return () => {
       if (socket) {
+        socket.off("user_enter_room", handleUserEnterRoom);
+        socket.off("user_exit_room", handleUserExitRoom);
         socket.off("exit_room", handleEnterLobby);
+        socket.off("ready", handleUserReady);
+        socket.off("start", handleStart);
       }
-      handleExitRoom();
     };
   }, [socket]);
 
-  const users = userList.map(({ isHost, userName, ready }, index) => (
-    <RoomUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
-  ));
+  const emptyList = new Array((roomInfo?.capacity ?? userList.length) - userList.length).fill({
+    isHost: false,
+    userName: "대기중...",
+    ready: false,
+  });
+
+  const users = userList
+    .concat(emptyList)
+    .map(({ isHost, userName, ready }, index) => (
+      <RoomUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
+    ));
 
   return (
-    <div className="flex justify-center items-center w-full h-full gap-3">
-      <div className="w-[800px] grid grid-cols-3 gap-2">{users}</div>
-      <div className="w-[600px] flex flex-col items-center gap-3">
-        <RoomChatBox />
-        <RoomButtonBox exitRoom={handleExitRoom} />
+    <SlidePage className="flex justify-center items-center w-full h-full gap-3 p-16">
+      <StartAnimation isStart={isStart} />
+      <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
+      <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
+        <RoomChatBox roomId={roomInfo?.roomId || ""} />
+        <RoomButtonBox roomId={roomInfo?.roomId || ""} />
       </div>
-    </div>
+    </SlidePage>
   );
 };
 
