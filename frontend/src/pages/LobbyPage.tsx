@@ -62,7 +62,7 @@ const LobbyPage: React.FC = () => {
     setUserList(prev => prev.filter(({ userName }) => userName !== exitedUserName));
   };
 
-  const handleCreateRoom = (roomInfo: IUserCreateRoomResponse) => {
+  const handleUserCreateRoom = (roomInfo: IUserCreateRoomResponse) => {
     setUserList(prev => prev.filter(({ userName }) => userName !== roomInfo?.userName));
     setGameRoomList(prev => prev.concat(roomInfo));
   };
@@ -82,7 +82,7 @@ const LobbyPage: React.FC = () => {
       socket.on("connection", handleLobbyConnect);
       socket.on("user_enter_lobby", handleUserEnterLobby);
       socket.on("user_exit_lobby", handleUserExitLobby);
-      socket.on("user_create_room", handleCreateRoom);
+      socket.on("user_create_room", handleUserCreateRoom);
       socket.on("create_room", handleRoomCreated);
       socket.on("delete_room", handleDeleteRoom);
     }
@@ -91,7 +91,7 @@ const LobbyPage: React.FC = () => {
         socket.off("connection", handleLobbyConnect);
         socket.off("user_enter_lobby", handleUserEnterLobby);
         socket.off("user_exit_lobby", handleUserExitLobby);
-        socket.off("user_create_room", handleCreateRoom);
+        socket.off("user_create_room", handleUserCreateRoom);
         socket.off("create_room", handleRoomCreated);
         socket.off("delete_room", handleDeleteRoom);
       }
