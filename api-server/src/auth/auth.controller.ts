@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UseGuards, Response } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Response,
+  Get,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BasicTokenGuard } from './guard/basic-token.guard';
@@ -24,6 +31,8 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         path: '/',
+        sameSite: 'none',
+        secure: true,
       })
       .send({ accessToken });
   }
@@ -40,11 +49,13 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         path: '/',
+        sameSite: 'none',
+        secure: true,
       })
       .send({ accessToken });
   }
 
-  @Post('token/access')
+  @Get('token/access')
   @UseGuards(RefreshTokenGuard)
   getAccessToken(@Token() token) {
     const newToken = this.authService.rotateToken(token, false);

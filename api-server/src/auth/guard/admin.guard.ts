@@ -1,7 +1,7 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { BasicTokenGuard } from './basic-token.guard';
+import { AccessTokenGuard } from './bearer-token.guard';
 
-export class AdminGuard extends BasicTokenGuard {
+export class AdminGuard extends AccessTokenGuard {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     await super.canActivate(context);
     const req = context.switchToHttp().getRequest();

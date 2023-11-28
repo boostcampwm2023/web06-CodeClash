@@ -19,7 +19,11 @@ export class ScoresService {
     private readonly submissionsService: SubmissionsService,
   ) {}
 
-  async grade(submission: ScoreSubmissionDto, user: UserTable) {
+  async grade(
+    submission: ScoreSubmissionDto,
+    user: UserTable,
+    isExample: boolean,
+  ) {
     const { code, problemId, language } = submission;
     const problem = await this.problemsService.getProblem(problemId);
 
@@ -30,6 +34,8 @@ export class ScoresService {
     const promises = [];
 
     for (let i = 0; i < problem.testcases.length; i++) {
+      if(problem.testcases[i].isExample != isExample) continue;
+
       promises.push(
         fetch(`${scoringServers[currentServer]}/v2/scoring`, {
           method: 'POST',
@@ -40,6 +46,7 @@ export class ScoresService {
             timeLimit: problem.timeLimit,
             memoryLimit: problem.memoryLimit,
             testcase: problem.testcases[i],
+            isExample,
           }),
         }),
       );
@@ -52,13 +59,15 @@ export class ScoresService {
       ? 'pass'
       : 'fail';
 
-    await this.submissionsService.createSubmission({
-      code,
-      language,
-      status,
-      problemId,
-      userId: user.id,
-    } as CreateSubmissionDto);
+    if (!isExample) {
+      await this.submissionsService.createSubmission({
+        code,
+        language,
+        status,
+        problemId,
+        userId: user.id,
+      } as CreateSubmissionDto);
+    }
 
     return results;
   }
