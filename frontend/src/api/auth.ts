@@ -1,7 +1,6 @@
 import { baseAxios } from "./baseAxios";
 
 export const postLoginRequest = (email: string, password: string) => {
-  console.log(baseAxios.defaults.headers);
   return baseAxios({
     method: "post",
     url: "/api/auth/login/email",
