@@ -8,7 +8,6 @@ import { logger } from './utils/logger/winston.config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useWebSocketAdapter(new SocketIoAdapter(app));
-  app.useGlobalInterceptors(new LogInterceptor());
   app.enableCors();
   app.use(cookesParser());
   app.useLogger(logger);
