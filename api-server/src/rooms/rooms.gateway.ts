@@ -85,6 +85,9 @@ export class RoomsGateway {
   }
 
   async handleDisconnect(socket: Socket) {
+    this.roomsService.exitRoom(socket, socket.data.roomId);
+    this.roomsService.deleteUserSocket(socket.data.user.name);
+
     if (socket.data.roomId) {
       if (socket.data.roomId === 'lobby') {
         this.server.in(socket.data.roomId).emit('user_exit_lobby', {
@@ -92,14 +95,17 @@ export class RoomsGateway {
           message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
         });
       } else {
-        this.server.in(socket.data.roomId).emit('user_exit_room', {
-          userName: socket.data.user.name,
-          message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
-        });
+        if (this.roomsService.getGameRoom(socket.data.roomId)) {
+          this.server.in(socket.data.roomId).emit('user_exit_room', {
+            userName: socket.data.user.name,
+            message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
+          });
+        } else {
+          this.server.in('lobby').emit('delete_room', {
+            roomId: socket.data.roomId,
+          });
+        }
       }
-
-      this.roomsService.exitRoom(socket, socket.data.roomId);
-      this.roomsService.deleteUserSocket(socket.data.user.name);
     }
   }
 
@@ -125,8 +131,8 @@ export class RoomsGateway {
   @SubscribeMessage('enter_room')
   enterRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
-
     const roomInfo = this.roomsService.getGameRoom(roomId);
+
     if (roomInfo.userCount >= roomInfo.capacity) {
       client.emit('enter_room', {
         status: 'fail',
@@ -171,15 +177,16 @@ export class RoomsGateway {
     const { roomId } = data;
 
     this.roomsService.exitRoom(client, roomId);
-    
-    const userCount = this.roomsService.getGameRoom(roomId).userCount;
-
-    if (userCount !== 0) {
+    if (this.roomsService.getGameRoom(roomId)) {
       this.server.in(roomId).emit('user_exit_room', {
         userName: client.data.user.name,
         message: `${client.data.user.name} 님이 ${
           this.roomsService.getGameRoom(roomId).roomName
         } 방에서 나갔습니다.`,
+      });
+    } else {
+      this.server.in('lobby').emit('delete_room', {
+        roomId,
       });
     }
 
