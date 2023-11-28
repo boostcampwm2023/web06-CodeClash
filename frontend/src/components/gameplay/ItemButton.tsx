@@ -1,5 +1,5 @@
 interface GameItemButtonProps {
-  item: "swap";
+  item: string;
   onClick?: () => void;
   className?: string;
 }
@@ -8,10 +8,13 @@ const GameItemButton: React.FC<GameItemButtonProps> = ({ item, onClick, classNam
   return (
     <div
       className={
-        "rounded-[10px] hover:cursor-pointer border-[3px] border-white flex items-center justify-center bg-skyblue aspect-square drop-shadow-textShadow " +
+        "rounded-[10px] w-[4rem] hover:cursor-pointer border-[3px] border-white flex items-center justify-center bg-skyblue aspect-square drop-shadow-textShadow " +
         className
       }
       onClick={onClick}
+      style={{
+        fontSize: `${item.length / 4}rem`,
+      }}
     >
       {item}
     </div>

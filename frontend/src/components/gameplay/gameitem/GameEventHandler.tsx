@@ -11,7 +11,7 @@ import EyeStolen from "./gameScreenEffect/EyeStolen";
 import { postProblemGrade } from "../../../api/problem";
 import { ProblemType } from "../problemType";
 
-const MAX_GAME_ITEM = 999;
+const MAX_GAME_ITEM = 2;
 const USER_COUNT = 3;
 
 interface GameEventHandlerProps {
@@ -50,43 +50,43 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (gameItems.length < MAX_GAME_ITEM) {
-        setGameItems(prev => [...prev, gameItemTypes[Math.floor(Math.random() * gameItemTypes.length)]]);
-      }
+      setGameItems(prev => {
+        if (prev.length < MAX_GAME_ITEM) {
+          const randomIdx = Math.floor(Math.random() * gameItemTypes.length);
+          return prev.concat(gameItemTypes[randomIdx]);
+        }
+        return prev;
+      });
     }, 1000 * 1);
-    //dev
-    const keyDownHandler = ({ key }: KeyboardEvent) => {
-      if (key === "Control") {
-        handleGameEvent(Number(prompt("아이템 인덱스 입력")) ?? GameItemType.SWAP);
-      }
-    };
-    document.addEventListener("keydown", keyDownHandler);
+
     return () => {
-      document.removeEventListener("keydown", keyDownHandler);
       clearInterval(intervalId);
     };
   }, []);
 
   useEffect(() => {
-    const gameItemHandler = (data: { type: GameItemType }) => {
-      handleGameEvent(data.type);
+    const gameItemHandler = (data: { item: GameItemType; userName: string }) => {
+      handleGameEvent(data.item);
     };
 
-    socket?.on("game-item", gameItemHandler);
+    socket?.on("item", gameItemHandler);
 
     return () => {
-      socket?.off("game-item");
+      socket?.off("item");
     };
   }, [socket]);
 
   useEffect(() => {
     const keyDownHandler = ({ key }: KeyboardEvent) => {
-      if (key === "Control" && socket?.connected && gameItems.length > 0) {
-        socket.emit("game-item", { type: gameItems[0] });
-        setGameItems(gameItems.slice(1));
+      if (key === "Control") {
+        setGameItems(gameitems => {
+          if (gameitems.length === 0 || !socket) return gameitems;
+          socket.emit("item", { roomId: "", item: gameitems[0] });
+          return gameitems.slice(1);
+        });
       }
     };
-    socket?.connected && document.addEventListener("keydown", keyDownHandler);
+    document.addEventListener("keydown", keyDownHandler);
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
