@@ -306,4 +306,15 @@ export class RoomsGateway {
       });
     }
   }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('item')
+  item(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { roomId, item } = data;
+
+    client.to(roomId).emit('item', {
+      userName: client.data.user.name,
+      item,
+    });
+  }
 }
