@@ -11,8 +11,6 @@ async function bootstrap() {
   app.enableCors({
     origin: true,
     credentials: true,
-    sameSite: 'none',
-    secure: true,
   });
   app.use(cookesParser());
   await app.listen(3000);
