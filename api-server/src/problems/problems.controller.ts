@@ -54,4 +54,10 @@ export class ProblemsController {
   deleteProblem(@Param('problemId', ParseIntPipe) problemId: number) {
     return this.problemsService.deleteProblem(problemId);
   }
+
+  @Get('ids')
+  @UseGuards(AccessTokenGuard)
+  getProblemIds() {
+    return this.problemsService.getProblemIds();
+  }
 }
