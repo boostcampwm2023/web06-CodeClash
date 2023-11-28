@@ -57,7 +57,7 @@ app.post("/v2/scoring", (req, res) => {
   const input = testcase.input;
 
   userCode +=
-    "\nconsole.log(solution(" + input.substr(1, input.length - 2) + "))";
+    "\nconsole.log(solution(" + input.slice(1, input.length - 1) + "))";
   userCode += "\nprocess.send(process.memoryUsage());";
 
   const startTime = Date.now();
