@@ -8,17 +8,37 @@ import { gameItemReducer, initialGameItemState } from "./gameItemReducer";
 import { gameItemHandler } from "./gameItemHandler";
 import { engToKor, korToEng } from "korsearch";
 import EyeStolen from "./gameScreenEffect/EyeStolen";
+import { postProblemGrade } from "../../../api/problem";
+import { ProblemType } from "../problemType";
 
 const MAX_GAME_ITEM = 999;
 const USER_COUNT = 3;
-const GameEventHandler: React.FC = () => {
+
+interface GameEventHandlerProps {
+  problemInfo: ProblemType;
+  code: string;
+  setCode: React.Dispatch<React.SetStateAction<string>>;
+  setResult: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, setCode, setResult }) => {
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
-  const [code, setCode] = useState("");
   const { socket } = useSocketStore();
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, USER_COUNT);
 
+  const handleGradeSubmit = () => {
+    postProblemGrade(problemInfo.id, code).then(res => {
+      setResult(
+        res?.data.map((data: any, idx: number) => {
+          return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${data.memory}mb 실행시간:${
+            data.runTime
+          }ms\n`;
+        }),
+      );
+    });
+  };
   // 언어 뒤집기
   useEffect(() => {
     if (gameEventState.isReverseLanguage) {
@@ -82,8 +102,9 @@ const GameEventHandler: React.FC = () => {
           fontSize: gameEventState.fontSize,
           isTypeRandom: gameEventState.isTypeRandom,
         }}
+        initialCode={problemInfo?.sampleCode}
       />
-      <GameFooterBox />
+      <GameFooterBox handleGradeSubmit={handleGradeSubmit} items={gameItems} />
       {gameEventState.isScreenBlock && <ScreenBlock />}
       {gameEventState.isEyeStolen && <EyeStolen />}
     </>

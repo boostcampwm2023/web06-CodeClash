@@ -13,6 +13,7 @@ interface CodeEditorProps {
     isReverse?: boolean;
     isTypeRandom?: boolean;
   };
+  initialCode: string;
 }
 
 const isInputValue = (code: number) => {
@@ -44,9 +45,13 @@ const editorOptions = {
   wordBasedSuggestions: false,
 };
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, options }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, options, initialCode }) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const currentPosRef = useRef<monaco.Position | null>();
+
+  useEffect(() => {
+    setEditorCode(initialCode ?? "");
+  }, [initialCode]);
 
   useEffect(() => {
     const randomKeydownHandler = (e: IKeyboardEvent) => {
