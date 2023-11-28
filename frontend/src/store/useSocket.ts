@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { baseURL } from "../api/baseAxios";
 
 interface SocketState {
-  socket?: Socket | null;
+  socket: Socket | null;
 }
 
 interface SocketAction {
