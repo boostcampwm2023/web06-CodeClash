@@ -78,7 +78,7 @@ const LoginInputBox: React.FC = () => {
   const handleLogin = (info: { email: string; password: string }) => {
     postLoginRequest(info.email, info.password)
       .then(res => {
-        setLogin(info.email, res.data.nickname, res.data.accessToken);
+        setLogin(info.email, res.data.userName, res.data.accessToken);
         navigate("/lobby");
       })
       .catch(err => {
