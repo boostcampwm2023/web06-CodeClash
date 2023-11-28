@@ -127,6 +127,9 @@ export class AuthService {
       password: hash,
     });
 
-    return this.loginUser(newUser);
+    return {
+      ...this.loginUser(newUser),
+      user: newUser,
+    };
   }
 }
