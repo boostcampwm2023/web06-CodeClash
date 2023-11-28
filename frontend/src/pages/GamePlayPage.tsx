@@ -4,6 +4,8 @@ import GamePlayBox from "../components/gameplay/PlayBox";
 import GameProblemIdx from "../components/gameplay/ProblemIdx";
 import { ProblemType } from "../components/gameplay/problemType";
 import { getProblemById } from "../api/problem";
+import axios from "axios";
+import { baseAxios, baseURL } from "../api/baseAxios";
 
 const tempProblemId = [1, 2, 4];
 const GAME_COUNT = 3;
@@ -13,7 +15,7 @@ const GamePlayPage: React.FC = () => {
 
   useEffect(() => {
     Promise.all(tempProblemId.map(id => getProblemById(id))).then(res => {
-      setProblemList(res.map(({ data }: any) => data));
+      setProblemList(res.map(r => r?.data));
     });
   }, []);
 
