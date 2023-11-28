@@ -6,6 +6,7 @@ import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import SlidePage from "../components/common/SlidePage";
 
 export interface IGameRoom {
   roomId: string;
@@ -99,28 +100,14 @@ const LobbyPage: React.FC = () => {
   }, [socket]);
 
   return (
-    <motion.div
-      className="p-16 w-full h-full flex flex-row"
-      initial={{
-        x: "-100%",
-      }}
-      animate={{
-        x: 0,
-      }}
-      exit={{
-        x: "100%",
-      }}
-      transition={{
-        duration: 0.5,
-      }}
-    >
+    <SlidePage className="p-16 w-full h-full flex flex-row">
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
         <LobbyUserListBox userList={userList ?? []} />
         <LobbyMyInfo />
       </div>
       <LobbyRoomListBox gameRoomList={gameRoomList ?? []} />
-    </motion.div>
+    </SlidePage>
   );
 };
 
