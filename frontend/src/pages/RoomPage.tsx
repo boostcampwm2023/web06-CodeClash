@@ -6,6 +6,8 @@ import { useSocketStore } from "../store/useSocket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
 import StartAnimation from "../components/room/StartAnimation";
+import { motion } from "framer-motion";
+import SlidePage from "../components/common/SlidePage";
 
 export interface IUserInfo {
   isHost: boolean;
@@ -72,7 +74,13 @@ const RoomPage: React.FC = () => {
   };
 
   const handleStart = () => {
-    navigate("/game", { state: { data: { ...roomInfo, userList } } });
+    setIsStart(true);
+    setTimeout(() => {
+      setIsStart(false);
+      setTimeout(() => {
+        navigate("/game", { state: { data: { ...roomInfo, userList } } });
+      }, 300);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -107,14 +115,14 @@ const RoomPage: React.FC = () => {
     ));
 
   return (
-    <div className="flex justify-center items-center w-full h-full gap-3 p-16">
+    <SlidePage className="flex justify-center items-center w-full h-full gap-3 p-16">
       <StartAnimation isStart={isStart} />
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox roomId={roomInfo?.roomId || ""} />
         <RoomButtonBox roomId={roomInfo?.roomId || ""} />
       </div>
-    </div>
+    </SlidePage>
   );
 };
 

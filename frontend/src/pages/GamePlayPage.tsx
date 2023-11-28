@@ -4,8 +4,8 @@ import GamePlayBox from "../components/gameplay/PlayBox";
 import GameProblemIdx from "../components/gameplay/ProblemIdx";
 import { ProblemType } from "../components/gameplay/problemType";
 import { getProblemById } from "../api/problem";
-import axios from "axios";
-import { baseAxios, baseURL } from "../api/baseAxios";
+import { motion } from "framer-motion";
+import SlidePage from "../components/common/SlidePage";
 
 const tempProblemId = [1, 2, 4];
 const GAME_COUNT = 3;
@@ -20,12 +20,12 @@ const GamePlayPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="pt-2 px-4 pb-14 w-full h-full flex flex-col items-center">
+    <SlidePage className="pt-2 px-4 pb-14 w-full h-full flex flex-col items-center">
       <GameHeaderBox title={problemList[currentProblemIdx]?.title || ""} />
       <GameProblemIdx currentIdx={currentProblemIdx + 1} totalIdx={GAME_COUNT} />
       <div className="h-4"></div>
       <GamePlayBox problemInfo={problemList[currentProblemIdx]} />
-    </div>
+    </SlidePage>
   );
 };
 

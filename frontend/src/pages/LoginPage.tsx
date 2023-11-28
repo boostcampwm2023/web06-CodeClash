@@ -9,7 +9,7 @@ const LoginPage: React.FC = () => {
         x: 0,
       }}
       exit={{
-        x: "100%",
+        x: "-100%",
       }}
       transition={{
         duration: 0.2,
