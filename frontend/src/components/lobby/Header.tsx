@@ -2,12 +2,15 @@ import Button from "../common/Button";
 import { useState } from "react";
 import InviteModal from "./InviteModal";
 import CreateRoomModal from "./CreateRoomModal";
+import { useLoginStore } from "../../store/useLogin";
+import { useSocketStore } from "../../store/useSocket";
 
 enum HeaderStatus {
   LOBBY = "lobby",
   MYINFO = "myinfo",
   NOTIFICATION = "notification",
   ROOM = "room",
+  LOGOUT = "logout",
 }
 
 export interface Iinvite {
@@ -15,35 +18,20 @@ export interface Iinvite {
   host: string;
 }
 
-const tempInviteList = [
-  {
-    roomName: "파이썬 1:1 초보만@@@@@@@@",
-    host: "알파고",
-  },
-  {
-    roomName: "파이썬 1:1 초보만@@@@@@@@@@",
-    host: "홍구",
-  },
-  {
-    roomName: "파이썬 1:1 초보만@@@@@@@@@@@@",
-    host: "택신",
-  },
-  {
-    roomName: "파이썬 1:1 초보만@@@@",
-    host: "이제동",
-  },
-  {
-    roomName: "파이썬 1:1 초보만@@@@@@@",
-    host: "짭제",
-  },
-];
-
 const LobbyHeader: React.FC = () => {
   const [selectedHeader, setSelectedHeader] = useState<HeaderStatus>(HeaderStatus.LOBBY);
-  const [inviteList, setInviteList] = useState<Iinvite[]>(tempInviteList);
+  const [inviteList, setInviteList] = useState<Iinvite[]>([]);
+  const { setLogout } = useLoginStore();
+  const { socket, setSocketClear } = useSocketStore();
 
   const closeModal = () => {
     setSelectedHeader(HeaderStatus.LOBBY);
+  };
+
+  const handleLogout = () => {
+    socket?.disconnect();
+    setSocketClear();
+    setLogout();
   };
 
   return (
@@ -63,17 +51,23 @@ const LobbyHeader: React.FC = () => {
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.MYINFO)}
         />
-        <Button
+        {/* <Button
           color={selectedHeader === HeaderStatus.NOTIFICATION ? "pink" : "skyblue"}
           title="알림"
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.NOTIFICATION)}
-        />
+        /> */}
         <Button
           color={selectedHeader === HeaderStatus.ROOM ? "pink" : "skyblue"}
-          title="방"
+          title="방 생성"
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.ROOM)}
+        />
+        <Button
+          color="skyblue"
+          title="로그아웃"
+          className="border-[3px] py-[0.25rem] px-[0.5rem]"
+          onClick={handleLogout}
         />
       </div>
       {selectedHeader === HeaderStatus.NOTIFICATION && <InviteModal closeModal={closeModal} inviteList={inviteList} />}
