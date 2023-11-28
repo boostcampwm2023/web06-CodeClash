@@ -84,6 +84,7 @@ jobs:
             docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
             docker run -d \
               --env-file /root/.env.production \
+              -v ${{ env.LOG_DIR }}:/home/logs ${{ env.DOCKER_IMAGE }}:latest \
               -p 3000:3000 \
               --name ${{ env.DOCKER_CONTAINER }} \
               --restart=always \
