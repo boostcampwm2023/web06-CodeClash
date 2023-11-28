@@ -13,7 +13,8 @@ const attatchChildProcessEvents = (
   timer,
   startTime,
   memoryLimit,
-  answer
+  answer,
+  isExample
 ) => {
   let output = "";
   let error = "";
@@ -44,19 +45,20 @@ const attatchChildProcessEvents = (
         status: output.trim() == answer ? "pass" : "fail",
         output: output.trim(),
         error,
+        answer: isExample ? answer : "",
       });
     }
   });
 };
 
 app.post("/v2/scoring", (req, res) => {
-  const { code, testcase, timeLimit, memoryLimit } = req.body;
+  const { code, testcase, timeLimit, memoryLimit, isExample } = req.body;
   let userCode = code;
+  const input = testcase.input;
 
-  const input = JSON.parse(testcase.input);
-
-  userCode += `\nconsole.log(solution(${input.join(", ")}));`;
-  userCode += `\nprocess.send(process.memoryUsage());`;
+  userCode +=
+    "\nconsole.log(solution(" + input.slice(1, input.length - 1) + "))";
+  userCode += "\nprocess.send(process.memoryUsage());";
 
   const startTime = Date.now();
   const child = spawn("node", ["-e", userCode], {
@@ -73,6 +75,7 @@ app.post("/v2/scoring", (req, res) => {
       status: "fail",
       output: "",
       error: "Time Limit Exceeded",
+      answer: isExample ? testcase.output : "",
     });
   }, timeLimit);
 
@@ -82,7 +85,8 @@ app.post("/v2/scoring", (req, res) => {
     timer,
     startTime,
     memoryLimit,
-    testcase.output
+    testcase.output,
+    isExample
   );
 });
 
