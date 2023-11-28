@@ -1,26 +1,25 @@
-import { InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosResponse } from "axios";
+import { baseURL } from "./baseAxios";
 import { useLoginStore } from "../store/useLogin";
-import { baseAxios } from "./baseAxios";
 
-export const refreshAccessToken = async (config: InternalAxiosRequestConfig) => {
-  const { expireTime, loginAt, isLogin, setAccessToken, setLoginAt } = useLoginStore.getState();
-
-  if (!isLogin) return config;
-  const now = new Date().getTime();
-  const diff = now - loginAt;
-
-  if (diff > expireTime) {
-    const accessToken = (await baseAxios.get("/api/token/access")).data.accessToken;
-
-    if (accessToken) {
-      setAccessToken(accessToken);
-      setLoginAt(now);
-    }
-
-    config.headers.Authorization = "Bearer " + accessToken;
-  }
-
-  return config;
+export const onResponse = async (response: AxiosResponse) => {
+  return response;
 };
 
-export const refreshErrorHandle = () => {};
+export const onFailed = async (error: any) => {
+  const { config, response } = error;
+  const { setAccessToken } = useLoginStore.getState();
+  if (response?.status === 401) {
+    const originalRequest = config;
+    const res = await axios.get(`${baseURL}/api/auth/token/access`, { withCredentials: true });
+    setAccessToken(res.data.accessToken);
+    return axios({
+      ...originalRequest,
+      headers: {
+        Authorization: "Bearer " + res.data.accessToken,
+      },
+      withCredentials: true,
+    });
+  }
+  return Promise.reject(error);
+};

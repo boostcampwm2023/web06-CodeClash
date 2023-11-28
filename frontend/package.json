@@ -29,6 +29,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "https": "set HTTPS=true&&set SSL_CRT_FILE=cert.pem&&set SSL_KEY_FILE=key.pem&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

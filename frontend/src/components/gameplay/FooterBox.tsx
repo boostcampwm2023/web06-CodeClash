@@ -1,7 +1,13 @@
 import Button from "../common/Button";
 import GameItemButton from "./ItemButton";
+import { IGameItem } from "./gameitem/gameItemType";
 
-const GameFooterBox: React.FC = () => {
+interface GameFooterBoxProps {
+  items: IGameItem[];
+  handleGradeSubmit: () => void;
+}
+
+const GameFooterBox: React.FC<GameFooterBoxProps> = ({ items, handleGradeSubmit }) => {
   return (
     <footer className="absolute right-0 bottom-0">
       <div className="absolute h-full w-full bg-black rounded-tl-md skew-x-left -left-2 z-0"></div>
@@ -16,7 +22,12 @@ const GameFooterBox: React.FC = () => {
         </div>
         <div className="flex flex-row items-center justify-center gap-1 text-[24px]">
           <Button title="실행" color="yellow" className="py-[0.25em] px-5 border-[3px] rounded-[12px]"></Button>
-          <Button title="제출" color="pink" className="py-[0.25em] px-5 border-[3px] rounded-[12px]"></Button>
+          <Button
+            title="제출"
+            color="pink"
+            className="py-[0.25em] px-5 border-[3px] rounded-[12px]"
+            onClick={handleGradeSubmit}
+          ></Button>
         </div>
       </div>
     </footer>
