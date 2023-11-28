@@ -38,4 +38,10 @@ export class ProblemsService {
       id: problemId,
     });
   }
+
+  async getProblemIds() {
+    const problems = await this.problemsRepository.find();
+
+    return problems.map((problem) => problem.id);
+  }
 }

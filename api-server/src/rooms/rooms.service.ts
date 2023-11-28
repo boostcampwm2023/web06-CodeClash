@@ -60,8 +60,10 @@ export class RoomsService {
   }
 
   exitRoom(client: Socket, roomId: string) {
-    client.leave(roomId);
-    client.data.user.ready = false;
+    if (client.rooms.size) {
+      client.leave(roomId);
+      client.data.user.ready = false;
+    }
     this.deleteUserFromList(client, roomId);
 
     if (roomId !== 'lobby' && this.roomList[roomId].userList.length === 0) {

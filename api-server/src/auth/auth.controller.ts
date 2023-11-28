@@ -34,7 +34,7 @@ export class AuthController {
         sameSite: 'none',
         secure: true,
       })
-      .send({ accessToken });
+      .send({ accessToken, userName: user.name, email: user.email });
   }
 
   @Post('register/email')
@@ -42,7 +42,7 @@ export class AuthController {
     @Body() registerByEmailDto: RegisterUserDto,
     @Response() res,
   ) {
-    const { accessToken, refreshToken } =
+    const { accessToken, refreshToken, user } =
       await this.authService.registerWithEmail(registerByEmailDto);
 
     res
@@ -52,7 +52,7 @@ export class AuthController {
         sameSite: 'none',
         secure: true,
       })
-      .send({ accessToken });
+      .send({ accessToken, userName: user.name, email: user.email });
   }
 
   @Get('token/access')
