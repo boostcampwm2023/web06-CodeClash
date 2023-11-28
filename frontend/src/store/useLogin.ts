@@ -1,5 +1,5 @@
 import { StateCreator, create } from "zustand";
-import { PersistOptions, persist } from "zustand/middleware";
+import { PersistOptions, createJSONStorage, persist } from "zustand/middleware";
 
 const day = 24 * 60 * 60 * 1000;
 
@@ -61,6 +61,9 @@ export const useLoginStore = create<LoginStore>(
       setLoginAt: loginAt => set(state => ({ loginAt: loginAt })),
       setExpireTime: expireAt => set(state => ({ expireTime: expireAt })),
     }),
-    { name: "loginStore" },
+    {
+      name: "loginstorage", // unique name
+      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+    },
   ),
 );

@@ -1,29 +1,25 @@
-import axios, { InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { baseAxios, baseURL } from "./baseAxios";
 import { useLoginStore } from "../store/useLogin";
 
-export const refreshAccessToken = async (config: InternalAxiosRequestConfig) => {
-  const { expireTime, loginAt, isLogin, setAccessToken, setLoginAt, accessToken } = useLoginStore.getState();
-
-  if (!isLogin) return config;
-
-  if (!config.headers.Authorization && accessToken) {
-    config.headers.Authorization = "Bearer " + accessToken;
-  }
-  const now = new Date().getTime();
-  const diff = now - loginAt;
-
-  if (diff > expireTime) {
-    const accessToken = (await axios.post("https://codeclash.site/api/auth/token/access")).data.accessToken;
-
-    if (accessToken) {
-      setAccessToken(accessToken);
-      setLoginAt(now);
-    }
-
-    config.headers.Authorization = "Bearer " + accessToken;
-  }
-
-  return config;
+export const onResponse = async (response: AxiosResponse) => {
+  return response;
 };
 
-export const refreshErrorHandle = () => {};
+export const onFailed = async (error: any) => {
+  const { config, response } = error;
+  const { setAccessToken } = useLoginStore.getState();
+  if (response?.status === 401) {
+    const originalRequest = config;
+    const res = await axios.get(`${baseURL}/api/auth/token/access`, { withCredentials: true });
+    setAccessToken(res.data.accessToken);
+    return axios({
+      ...originalRequest,
+      headers: {
+        Authorization: "Bearer " + res.data.accessToken,
+      },
+      withCredentials: true,
+    });
+  }
+  return Promise.reject(error);
+};
