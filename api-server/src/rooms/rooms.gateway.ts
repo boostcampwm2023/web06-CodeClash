@@ -312,7 +312,8 @@ export class RoomsGateway {
   item(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId, item } = data;
 
-    this.server.in(roomId).emit('item', {
+    client.to(roomId).emit('item', {
+      userName: client.data.user.name,
       item,
     });
   }
