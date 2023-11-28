@@ -20,6 +20,10 @@ export interface ILobbyUserInfo {
   ready?: boolean;
 }
 
+interface IUserCreateRoomResponse extends IGameRoom {
+  userName: string;
+}
+
 interface ICreateRoomResponse extends IGameRoom {
   status: "success" | "fail";
   userList: ILobbyUserInfo[];
@@ -58,7 +62,8 @@ const LobbyPage: React.FC = () => {
     setUserList(prev => prev.filter(({ userName }) => userName !== exitedUserName));
   };
 
-  const handleCreateRoom = (roomInfo: IGameRoom) => {
+  const handleCreateRoom = (roomInfo: IUserCreateRoomResponse) => {
+    setUserList(prev => prev.filter(({ userName }) => userName !== roomInfo?.userName));
     setGameRoomList(prev => prev.concat(roomInfo));
   };
 
