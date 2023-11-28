@@ -4,7 +4,7 @@ import * as winston from 'winston';
 import * as moment from 'moment-timezone';
 
 const dailyOptions = {
-  level: ' http',
+  level: 'http',
   datePattern: 'YYYY-MM-DD',
   dirname: process.env.LOG_DIR,
   filename: `%DATE%.log`,
