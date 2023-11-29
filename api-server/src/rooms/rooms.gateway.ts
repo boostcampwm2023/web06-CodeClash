@@ -258,6 +258,10 @@ export class RoomsGateway {
         message: '게임을 시작합니다.',
       });
 
+      this.server.in('lobby').emit('room_start', {
+        roomId,
+      });
+
       this.roomsService.changeRoomState(roomId, 'playing');
     }
   }
