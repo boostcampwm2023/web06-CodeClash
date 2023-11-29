@@ -70,7 +70,7 @@ const RoomPage: React.FC = () => {
     };
   }, [socket]);
 
-  const emptyList = new Array((capacity ?? userList.length) - userList.length).fill({
+  const emptyList = new Array(capacity - userList.length).fill({
     isHost: false,
     userName: "대기중...",
     ready: false,

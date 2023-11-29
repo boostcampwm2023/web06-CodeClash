@@ -5,7 +5,7 @@ import { UserInfo, useRoomStore } from "../../store/useRoom";
 import { GameRoom, useLobbyStore } from "../../store/useLobby";
 
 interface LobbyRoomListItemProps extends GameRoom {
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 interface IEnterRoomResponse extends GameRoom {
