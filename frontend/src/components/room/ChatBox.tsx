@@ -4,6 +4,7 @@ import { useSocketStore } from "../../store/useSocket";
 import { useRoomStore } from "../../store/useRoom";
 
 interface IChatMessage {
+  isNotification: boolean;
   userName: string;
   createdAt: string;
   message: string;
@@ -24,12 +25,44 @@ const RoomChatBox: React.FC = () => {
 
   const handleReceiveChat = ({ userName, message }: IChatMessage) => {
     const date = new Date();
-    setChatList(prev => prev.concat({ userName, message, createdAt: date.toLocaleTimeString() }));
+    setChatList(prev =>
+      prev.concat({ isNotification: false, userName, message, createdAt: date.toLocaleTimeString() }),
+    );
   };
 
-  const chatContents = chatList.map(({ userName, createdAt, message }, index) => {
-    return <RoomChatContent userName={userName} createdAt={createdAt} content={message} key={userName + index} />;
+  const chatContents = chatList.map(({ isNotification, userName, createdAt, message }, index) => {
+    return (
+      <RoomChatContent
+        isNotification={isNotification}
+        userName={userName}
+        createdAt={createdAt}
+        content={message}
+        key={userName + index}
+      />
+    );
   });
+
+  const handleUserEnterRoom = ({ userName }: { userName: string }) => {
+    setChatList(prev =>
+      prev.concat({
+        isNotification: true,
+        userName,
+        message: "님이 입장하셨습니다.",
+        createdAt: "",
+      }),
+    );
+  };
+
+  const handleUserExitRoom = ({ userName }: { userName: string }) => {
+    setChatList(prev =>
+      prev.concat({
+        isNotification: true,
+        userName,
+        message: "님이 퇴장하셨습니다.",
+        createdAt: "",
+      }),
+    );
+  };
 
   useEffect(() => {
     if (chatScroll.current) {
@@ -40,10 +73,14 @@ const RoomChatBox: React.FC = () => {
   useEffect(() => {
     if (socket) {
       socket.on("chat", handleReceiveChat);
+      socket.on("user_enter_room", handleUserEnterRoom);
+      socket.on("user_exit_room", handleUserExitRoom);
     }
     return () => {
       if (socket) {
         socket.off("chat", handleReceiveChat);
+        socket.off("user_enter_room", handleUserEnterRoom);
+        socket.off("user_exit_room", handleUserExitRoom);
       }
     };
   }, [socket]);
