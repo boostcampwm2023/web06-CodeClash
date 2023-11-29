@@ -331,8 +331,10 @@ export class RoomsGateway {
   gameOver(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
 
-    this.roomsService.getGameRoom(roomId).userList.forEach((user) => {
-      user.data.user.ready = false;
+    this.roomsService.getAllClient(roomId).forEach(({ userName }) => {
+      const userSocket = this.roomsService.getUserSocket(userName);
+
+      this.roomsService.changeReadyStatus(userSocket);
     });
     this.roomsService.changeRoomState(roomId, 'waiting');
     this.server.in('lobby').emit('room_game_over', {
