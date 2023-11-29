@@ -3,28 +3,7 @@ import { useState, DragEventHandler } from "react";
 import GameEventHandler from "./gameitem/GameEventHandler";
 import convertRemToPixels from "../../utils/convertRemToPixels";
 import { ProblemType } from "./problemType";
-
-const OriginalResizeObserver = window.ResizeObserver;
-
-window.ResizeObserver = function (callback: any) {
-  const wrappedCallback = (entries: any, observer: any) => {
-    window.requestAnimationFrame(() => {
-      callback(entries, observer);
-    });
-  };
-
-  // Create an instance of the original ResizeObserver
-  // with the wrapped callback
-  return new OriginalResizeObserver(wrappedCallback);
-} as any;
-
-for (let staticMethod in OriginalResizeObserver) {
-  if (OriginalResizeObserver.hasOwnProperty(staticMethod)) {
-    window.ResizeObserver[staticMethod as keyof typeof OriginalResizeObserver] = OriginalResizeObserver[
-      staticMethod as keyof typeof OriginalResizeObserver
-    ] as any;
-  }
-}
+import MarkdownPreview from "@uiw/react-markdown-preview";
 
 interface GamePlayBoxProps {
   problemInfo: ProblemType;
@@ -53,27 +32,7 @@ const GamePlayBox: React.FC<GamePlayBoxProps> = ({ problemInfo }) => {
         }}
       >
         <GameDefaultBox>
-          <p>{problemInfo?.description}</p>
-          <div className="my-8">
-            {problemInfo?.testcases.map((testcase, index) => (
-              <div key={index} className="flex flex-row items-center gap-2">
-                <p>입력 예시 {index + 1}: </p>
-                <p>{testcase.input}</p>
-              </div>
-            ))}
-          </div>
-          <div className="my-8">
-            {problemInfo?.testcases.map((testcase, index) => (
-              <div key={index} className="flex flex-row items-center gap-2">
-                <p>출력 예시 {index + 1}: </p>
-                <p>{testcase.output}</p>
-              </div>
-            ))}
-          </div>
-          <div className="my-8">
-            <p>메모리 제한: {problemInfo?.memoryLimit}mb</p>
-            <p>시간 제한: {problemInfo?.timeLimit}ms</p>
-          </div>
+          <MarkdownPreview source={problemInfo?.description} className=" rounded-sm w-full h-full" />
         </GameDefaultBox>
       </div>
 
