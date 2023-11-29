@@ -6,12 +6,12 @@ import { useSocketStore } from "../store/useSocket";
 import { useNavigate } from "react-router-dom";
 import StartAnimation from "../components/room/StartAnimation";
 import SlidePage from "../components/common/SlidePage";
-import { useRoomStore } from "../store/useRoom";
-import { GameRoom } from "../store/useLobby";
+import { UserInfo, useRoomStore } from "../store/useRoom";
+import { GameRoom, useLobbyStore } from "../store/useLobby";
 
 interface IExitRoomResponse {
   status: "success" | "fail";
-  userList: string[];
+  userList: UserInfo[];
   gameRoomList: GameRoom[];
 }
 
@@ -23,6 +23,7 @@ const RoomPage: React.FC = () => {
     roomInfo: { userList, capacity, roomId },
     setRoomUserList,
   } = useRoomStore();
+  const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
     setRoomUserList(userList.concat({ userName, ready: false }));
@@ -34,7 +35,8 @@ const RoomPage: React.FC = () => {
 
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
     if (status === "success") {
-      navigate("/lobby", { state: { data: { userList, gameRoomList } } });
+      setLobby({ userList, gameRoomList });
+      navigate("/lobby");
     }
   };
 

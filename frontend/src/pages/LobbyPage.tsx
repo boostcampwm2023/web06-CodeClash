@@ -25,13 +25,6 @@ const LobbyPage: React.FC = () => {
   const { userList, gameRoomList, setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby } =
     useLobbyStore();
 
-  // useEffect(() => {
-  //   if (location.state) {
-  //     setLobbyUserList(prev => location.state.data.userList || prev);
-  //     setGameRoomList(prev => location.state.data.gameRoomList || prev);
-  //   }
-  // }, [location.state]);
-
   const handleLobbyConnect = ({ gameRoomList, userList }: { gameRoomList: GameRoom[]; userList: UserInfo[] }) => {
     setLobby({ userList, gameRoomList });
   };
