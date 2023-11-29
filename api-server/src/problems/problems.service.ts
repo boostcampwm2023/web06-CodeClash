@@ -46,17 +46,22 @@ export class ProblemsService {
   }
 
   async findAllWithTestcases() {
-    const query = `
-      SELECT p.id AS problem_id, p.title, p.description, p.time_limit, p.memory_limit, p.sample_code,
-      JSON_ARRAYAGG(JSON_OBJECT('input', t.input, 'output', t.output)) AS testcases
-      FROM problem p
-      LEFT JOIN testcase t ON p.id = t.problem_id AND t.is_example = 1
-      GROUP BY p.id
-    `;
-
-    const entityManager = this.problemsRepository.manager;
-
-    return await entityManager.query(query);
+    this.problemsRepository.find({
+      relations: ['testcases'],
+      where: { testcases: { isExample: true } },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        timeLimit: true,
+        memoryLimit: true,
+        sampleCode: true,
+        testcases: {
+          input: true,
+          output: true,
+        },
+      },
+    });
   }
 
   async getProblemsAtRandom(caseCount: number) {
