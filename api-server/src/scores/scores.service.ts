@@ -4,6 +4,7 @@ import { UserTable } from 'src/users/entities/user.entity';
 import { ProblemsService } from 'src/problems/problems.service';
 import { SubmissionsService } from 'src/submissions/submissions.service';
 import { CreateSubmissionDto } from 'src/submissions/dto/create-submission.dto';
+import { SubmissionStatus } from 'src/submissions/entities/submission.entity';
 
 const scoringServers = [
   'http://10.41.177.25:3000',
@@ -34,7 +35,7 @@ export class ScoresService {
     const promises = [];
 
     for (let i = 0; i < problem.testcases.length; i++) {
-      if(problem.testcases[i].isExample != isExample) continue;
+      if (problem.testcases[i].isExample != isExample) continue;
 
       promises.push(
         fetch(`${scoringServers[currentServer]}/v2/scoring`, {
@@ -56,8 +57,8 @@ export class ScoresService {
     let results = await Promise.all(promises);
     results = await Promise.all(results.map((result) => result.json()));
     const status = results.every((result) => result.status === 'pass')
-      ? 'pass'
-      : 'fail';
+      ? SubmissionStatus.Accepted
+      : SubmissionStatus.WrongAnswer;
 
     if (!isExample) {
       await this.submissionsService.createSubmission({
