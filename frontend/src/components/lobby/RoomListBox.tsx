@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { IGameRoom, ILobbyUserInfo } from "../../pages/LobbyPage";
 import { useSocketStore } from "../../store/useSocket";
 import { useNavigate } from "react-router";
+import { useRoomStore } from "../../store/useRoom";
 
 interface LobbyRoomListBoxProps {
   gameRoomList: IGameRoom[];
@@ -14,7 +15,7 @@ interface LobbyRoomListItemProps extends IGameRoom {
 interface IEnterRoomResponse extends IGameRoom {
   status: "success" | "fail";
   message: string;
-  userList?: ILobbyUserInfo[];
+  userList: ILobbyUserInfo[];
 }
 
 const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName, capacity, userCount, onClick }) => {
@@ -37,6 +38,7 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName,
 const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => {
   const { socket } = useSocketStore();
   const navigate = useNavigate();
+  const { setRoomInfo } = useRoomStore();
 
   const handleEnterRoom = (roomId: string) => {
     socket?.emit("enter_room", { roomId });
@@ -44,7 +46,8 @@ const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => 
 
   const handleRoomEntered = ({ status, roomId, roomName, capacity, userList }: IEnterRoomResponse) => {
     if (status === "fail") return;
-    navigate("/room", { state: { data: { roomId, roomName, userList, capacity } } });
+    setRoomInfo({ roomId, roomName, capacity, userList });
+    navigate("/room");
   };
 
   useEffect(() => {
