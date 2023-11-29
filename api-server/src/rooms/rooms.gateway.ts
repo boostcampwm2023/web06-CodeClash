@@ -325,4 +325,21 @@ export class RoomsGateway {
       item,
     });
   }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('game_over')
+  gameOver(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+
+    this.roomsService.getAllClient(roomId).forEach(({ userName }) => {
+      const userSocket = this.roomsService.getUserSocket(userName);
+
+      this.roomsService.changeReadyStatus(userSocket);
+    });
+    this.roomsService.changeRoomState(roomId, 'waiting');
+    this.server.in('lobby').emit('room_game_over', {
+      roomId,
+      status: 'waiting',
+    });
+  }
 }
