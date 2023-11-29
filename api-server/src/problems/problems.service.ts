@@ -44,4 +44,42 @@ export class ProblemsService {
 
     return problems.map((problem) => problem.id);
   }
+
+  async findAllWithTestcases() {
+    const query = `
+      SELECT p.id AS problem_id, p.title, p.description, p.time_limit, p.memory_limit, p.sample_code,
+      JSON_ARRAYAGG(JSON_OBJECT('input', t.input, 'output', t.output)) AS testcases
+      FROM problem p
+      LEFT JOIN testcase t ON p.id = t.problem_id AND t.is_example = 1
+      GROUP BY p.id
+    `;
+
+    const entityManager = this.problemsRepository.manager;
+
+    return await entityManager.query(query);
+  }
+
+  async getProblemsAtRandom(caseCount: number) {
+    const problems = await this.findAllWithTestcases();
+
+    if (problems.length < caseCount) {
+      throw new Error('caseCount must be lower than problem count');
+    }
+
+    const duplicated = new Set();
+    const results = [];
+
+    for (let i = 0; i < caseCount; i++) {
+      let randomIdx = Math.floor(Math.random() * problems.length);
+
+      while (duplicated.has(randomIdx)) {
+        randomIdx = Math.floor(Math.random() * problems.length);
+      }
+
+      duplicated.add(randomIdx);
+      results.push(problems[randomIdx]);
+    }
+
+    return results;
+  }
 }
