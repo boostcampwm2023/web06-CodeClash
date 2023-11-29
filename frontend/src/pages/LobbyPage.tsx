@@ -7,7 +7,7 @@ import { useSocketStore } from "../store/useSocket";
 import { useNavigate } from "react-router-dom";
 import SlidePage from "../components/common/SlidePage";
 import { UserInfo, useRoomStore } from "../store/useRoom";
-import { GameRoom, useLobbyStore } from "../store/useLobby";
+import { GameRoom, LobbyState, useLobbyStore } from "../store/useLobby";
 
 interface IUserCreateRoomResponse extends GameRoom {
   userName: string;
@@ -22,10 +22,9 @@ const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const { socket } = useSocketStore();
   const { setRoomInfo } = useRoomStore();
-  const { userList, gameRoomList, setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby } =
-    useLobbyStore();
+  const { setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby } = useLobbyStore();
 
-  const handleLobbyConnect = ({ gameRoomList, userList }: { gameRoomList: GameRoom[]; userList: UserInfo[] }) => {
+  const handleLobbyConnect = ({ gameRoomList, userList }: LobbyState) => {
     setLobby({ userList, gameRoomList });
   };
 
@@ -78,10 +77,10 @@ const LobbyPage: React.FC = () => {
     <SlidePage className="p-16 w-full h-full flex flex-row">
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
-        <LobbyUserListBox userList={userList ?? []} />
+        <LobbyUserListBox />
         <LobbyMyInfo />
       </div>
-      <LobbyRoomListBox gameRoomList={gameRoomList ?? []} />
+      <LobbyRoomListBox />
     </SlidePage>
   );
 };

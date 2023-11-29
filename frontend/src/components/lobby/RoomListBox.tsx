@@ -2,11 +2,7 @@ import { useEffect } from "react";
 import { useSocketStore } from "../../store/useSocket";
 import { useNavigate } from "react-router";
 import { UserInfo, useRoomStore } from "../../store/useRoom";
-import { GameRoom } from "../../store/useLobby";
-
-interface LobbyRoomListBoxProps {
-  gameRoomList: GameRoom[];
-}
+import { GameRoom, useLobbyStore } from "../../store/useLobby";
 
 interface LobbyRoomListItemProps extends GameRoom {
   onClick?: () => void;
@@ -35,10 +31,11 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName,
   );
 };
 
-const LobbyRoomListBox: React.FC<LobbyRoomListBoxProps> = ({ gameRoomList }) => {
+const LobbyRoomListBox: React.FC = () => {
   const { socket } = useSocketStore();
   const navigate = useNavigate();
   const { setRoomInfo } = useRoomStore();
+  const { gameRoomList } = useLobbyStore();
 
   const handleEnterRoom = (roomId: string) => {
     socket?.emit("enter_room", { roomId });

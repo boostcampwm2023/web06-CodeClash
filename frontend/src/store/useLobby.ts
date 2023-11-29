@@ -9,7 +9,7 @@ export interface GameRoom {
   state: "playing" | "waiting";
 }
 
-interface LobbyState {
+export interface LobbyState {
   userList: UserInfo[];
   gameRoomList: GameRoom[];
 }
