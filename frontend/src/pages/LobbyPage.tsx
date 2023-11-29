@@ -5,8 +5,8 @@ import LobbyRoomListBox from "../components/lobby/RoomListBox";
 import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
 import { useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import SlidePage from "../components/common/SlidePage";
+import { useRoomStore } from "../store/useRoom";
 
 export interface IGameRoom {
   roomId: string;
@@ -36,6 +36,7 @@ const LobbyPage: React.FC = () => {
   const [userList, setUserList] = useState<ILobbyUserInfo[]>([]);
   const [gameRoomList, setGameRoomList] = useState<IGameRoom[]>([]);
   const { socket } = useSocketStore();
+  const { setRoomInfo } = useRoomStore();
 
   useEffect(() => {
     if (location.state) {
@@ -70,7 +71,8 @@ const LobbyPage: React.FC = () => {
 
   const handleRoomCreated = ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
     if (status === "success") {
-      navigate("/room", { state: { data: { roomId, roomName, userList, capacity } } });
+      setRoomInfo({ roomId, roomName, capacity, userList });
+      navigate("/room");
     }
   };
 
