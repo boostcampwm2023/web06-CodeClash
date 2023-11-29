@@ -11,6 +11,7 @@ import { UseFilters } from '@nestjs/common';
 import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to-ws.exception';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
+import { ProblemsService } from 'src/problems/problems.service';
 
 @WebSocketGateway({
   namespace: 'rooms',
@@ -22,6 +23,7 @@ export class RoomsGateway {
     private readonly roomsService: RoomsService,
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly problemsService: ProblemsService,
   ) {}
 
   @WebSocketServer()
@@ -253,9 +255,11 @@ export class RoomsGateway {
     });
 
     if (this.roomsService.checkUsersReady(roomId)) {
+      const problems = this.problemsService.getProblemsAtRandom(1);
+
       this.server.in(roomId).emit('start', {
         status: 'start',
-        message: '게임을 시작합니다.',
+        problems,
       });
 
       this.server.in('lobby').emit('room_start', {
