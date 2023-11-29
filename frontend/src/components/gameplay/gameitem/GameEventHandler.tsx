@@ -10,6 +10,7 @@ import { engToKor, korToEng } from "korsearch";
 import EyeStolen from "./gameScreenEffect/EyeStolen";
 import { postProblemGrade } from "../../../api/problem";
 import { ProblemType } from "../problemType";
+import { useRoomStore } from "../../../store/useRoom";
 
 const MAX_GAME_ITEM = 2;
 const USER_COUNT = 3;
@@ -23,8 +24,9 @@ interface GameEventHandlerProps {
 
 const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, setCode, setResult }) => {
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
-  const { socket } = useSocketStore();
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
+  const { socket } = useSocketStore();
+  const { roomId } = useRoomStore();
 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, USER_COUNT);
 
@@ -81,7 +83,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       if (key === "Control") {
         setGameItems(gameitems => {
           if (gameitems.length === 0 || !socket) return gameitems;
-          socket.emit("item", { roomId: "", item: gameitems[0] });
+          socket.emit("item", { roomId: roomId, item: gameitems[0].type });
           return gameitems.slice(1);
         });
       }

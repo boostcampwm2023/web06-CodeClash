@@ -4,7 +4,6 @@ import GamePlayBox from "../components/gameplay/PlayBox";
 import GameProblemIdx from "../components/gameplay/ProblemIdx";
 import { ProblemType } from "../components/gameplay/problemType";
 import { getProblemById } from "../api/problem";
-import { motion } from "framer-motion";
 import SlidePage from "../components/common/SlidePage";
 
 const tempProblemId = [10];
