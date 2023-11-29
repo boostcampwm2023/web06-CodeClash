@@ -1,9 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type monaco from "monaco-editor";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { engToKor, korToEng } from "korsearch";
 import { IKeyboardEvent } from "monaco-editor";
-import convertRemToPixels from "../../utils/convertRemToPixels";
+
+const OriginalResizeObserver = window.ResizeObserver;
+
+window.ResizeObserver = function (callback: any) {
+  const wrappedCallback = (entries: any, observer: any) => {
+    window.requestAnimationFrame(() => {
+      callback(entries, observer);
+    });
+  };
+
+  // Create an instance of the original ResizeObserver
+  // with the wrapped callback
+  return new OriginalResizeObserver(wrappedCallback);
+} as any;
+
+for (let staticMethod in OriginalResizeObserver) {
+  if (OriginalResizeObserver.hasOwnProperty(staticMethod)) {
+    window.ResizeObserver[staticMethod as keyof typeof OriginalResizeObserver] = OriginalResizeObserver[
+      staticMethod as keyof typeof OriginalResizeObserver
+    ] as any;
+  }
+}
 
 interface CodeEditorProps {
   editorCode: string;
