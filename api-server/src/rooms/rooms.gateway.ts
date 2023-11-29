@@ -258,6 +258,10 @@ export class RoomsGateway {
         message: '게임을 시작합니다.',
       });
 
+      this.server.in('lobby').emit('room_start', {
+        roomId,
+      });
+
       this.roomsService.changeRoomState(roomId, 'playing');
     }
   }
@@ -305,5 +309,16 @@ export class RoomsGateway {
         gameRoomList: this.roomsService.getAllGameRoom(),
       });
     }
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('item')
+  item(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { roomId, item } = data;
+
+    client.to(roomId).emit('item', {
+      userName: client.data.user.name,
+      item,
+    });
   }
 }
