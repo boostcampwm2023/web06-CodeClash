@@ -1,22 +1,19 @@
 interface GameItemButtonProps {
-  item: string;
+  item?: React.FC;
   onClick?: () => void;
   className?: string;
 }
 
-const GameItemButton: React.FC<GameItemButtonProps> = ({ item, onClick, className }) => {
+const GameItemButton: React.FC<GameItemButtonProps> = ({ item = () => <></>, onClick, className }) => {
   return (
     <div
       className={
-        "rounded-[10px] w-[4rem] hover:cursor-pointer border-[3px] border-white flex items-center justify-center bg-skyblue aspect-square drop-shadow-textShadow " +
+        "rounded-[10px] hover:cursor-pointer border-[3px] w-[2rem] border-white flex items-center justify-center bg-skyblue aspect-square drop-shadow-textShadow " +
         className
       }
       onClick={onClick}
-      style={{
-        fontSize: `${item.length / 4}rem`,
-      }}
     >
-      {item}
+      {item({ className: "w-full aspect-square" })}
     </div>
   );
 };
