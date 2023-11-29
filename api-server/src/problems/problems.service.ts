@@ -44,4 +44,27 @@ export class ProblemsService {
 
     return problems.map((problem) => problem.id);
   }
+
+  async getProblemsAtRandom(caseCount: number) {
+    const problems = await this.problemsRepository.find();
+
+    if (problems.length < caseCount) {
+      throw new Error('caseCount must be lower than problem count');
+    }
+    const duplicated = new Set();
+    const results = [];
+
+    for (let i = 0; i < caseCount; i++) {
+      let randomIdx = Math.floor(Math.random() * problems.length);
+
+      while (duplicated.has(randomIdx)) {
+        randomIdx = Math.floor(Math.random() * problems.length);
+      }
+
+      duplicated.add(randomIdx);
+      results.push(problems[randomIdx]);
+    }
+
+    return results;
+  }
 }
