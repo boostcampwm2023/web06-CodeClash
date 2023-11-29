@@ -19,7 +19,7 @@ const RoomPage: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const { userList, capacity, roomId, setRoomUserList, setAddRoomUser, setRemoveRoomUser } = useRoomStore();
+  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady } = useRoomStore();
   const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
@@ -38,7 +38,7 @@ const RoomPage: React.FC = () => {
   };
 
   const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
-    setRoomUserList(userList.map(user => (user.userName === userName ? { ...user, ready } : user)));
+    setChangeUserReady(userName, ready);
   };
 
   const handleStart = () => {

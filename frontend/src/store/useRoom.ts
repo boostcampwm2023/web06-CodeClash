@@ -17,6 +17,7 @@ interface RoomAction {
   setRoomUserList: (newUserList: UserInfo[]) => void;
   setAddRoomUser: (newUser: UserInfo) => void;
   setRemoveRoomUser: (userName: string) => void;
+  setChangeUserReady: (userName: string, ready: boolean) => void;
 }
 
 interface RoomStore extends RoomState, RoomAction {}
@@ -31,4 +32,9 @@ export const useRoomStore = create<RoomStore>(set => ({
   setAddRoomUser: newUser => set(state => ({ ...state, userList: state.userList.concat(newUser) })),
   setRemoveRoomUser: exitedUserName =>
     set(state => ({ ...state, userList: state.userList.filter(({ userName }) => userName !== exitedUserName) })),
+  setChangeUserReady: (userName, ready) =>
+    set(state => ({
+      ...state,
+      userList: state.userList.map(user => (user.userName === userName ? { ...user, ready } : user)),
+    })),
 }));
