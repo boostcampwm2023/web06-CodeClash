@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import RoomChatContent from "./ChatContent";
 import { useSocketStore } from "../../store/useSocket";
+import { useRoomStore } from "../../store/useRoom";
 
 interface IChatMessage {
   userName: string;
@@ -8,15 +9,12 @@ interface IChatMessage {
   message: string;
 }
 
-interface RoomChatBoxProps {
-  roomId: string;
-}
-
-const RoomChatBox: React.FC<RoomChatBoxProps> = ({ roomId }) => {
+const RoomChatBox: React.FC = () => {
   const [chatList, setChatList] = useState<IChatMessage[]>([]);
   const chatScroll = useRef<HTMLDivElement>(null);
   const { socket } = useSocketStore();
   const [chatMessage, setChatMessage] = useState("");
+  const { roomId } = useRoomStore();
 
   const handleSendChat = () => {
     if (!chatMessage) return;

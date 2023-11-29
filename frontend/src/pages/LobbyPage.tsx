@@ -1,81 +1,55 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import LobbyHeader from "../components/lobby/Header";
 import LobbyMyInfo from "../components/lobby/MyInfo";
 import LobbyRoomListBox from "../components/lobby/RoomListBox";
 import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
-import { useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import SlidePage from "../components/common/SlidePage";
+import { UserInfo, useRoomStore } from "../store/useRoom";
+import { GameRoom, LobbyState, useLobbyStore } from "../store/useLobby";
 
-export interface IGameRoom {
-  roomId: string;
-  roomName: string;
-  capacity: number;
-  userCount: number;
-  state: "playing" | "waiting";
-}
-
-export interface ILobbyUserInfo {
-  userName: string;
-  ready?: boolean;
-}
-
-interface IUserCreateRoomResponse extends IGameRoom {
+interface IUserCreateRoomResponse extends GameRoom {
   userName: string;
 }
 
-interface ICreateRoomResponse extends IGameRoom {
+interface ICreateRoomResponse extends GameRoom {
   status: "success" | "fail";
-  userList: ILobbyUserInfo[];
+  userList: UserInfo[];
 }
 
 const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [userList, setUserList] = useState<ILobbyUserInfo[]>([]);
-  const [gameRoomList, setGameRoomList] = useState<IGameRoom[]>([]);
   const { socket } = useSocketStore();
+  const { setRoomInfo } = useRoomStore();
+  const { setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby } = useLobbyStore();
 
-  useEffect(() => {
-    if (location.state) {
-      setUserList(prev => location.state.data.userList || prev);
-      setGameRoomList(prev => location.state.data.gameRoomList || prev);
-    }
-  }, [location.state]);
-
-  const handleLobbyConnect = ({
-    gameRoomList,
-    userList,
-  }: {
-    gameRoomList: IGameRoom[];
-    userList: ILobbyUserInfo[];
-  }) => {
-    setUserList(userList);
-    setGameRoomList(gameRoomList);
+  const handleLobbyConnect = ({ gameRoomList, userList }: LobbyState) => {
+    setLobby({ userList, gameRoomList });
   };
 
   const handleUserEnterLobby = ({ userName }: { userName: string }) => {
-    setUserList(prev => prev.concat({ userName }));
+    setAddLobbyUser(userName);
   };
 
-  const handleUserExitLobby = ({ userName: exitedUserName }: { userName: string }) => {
-    setUserList(prev => prev.filter(({ userName }) => userName !== exitedUserName));
+  const handleUserExitLobby = ({ userName }: { userName: string }) => {
+    setRemoveLobbyUser(userName);
   };
 
   const handleUserCreateRoom = (roomInfo: IUserCreateRoomResponse) => {
-    setUserList(prev => prev.filter(({ userName }) => userName !== roomInfo?.userName));
-    setGameRoomList(prev => prev.concat(roomInfo));
+    setRemoveLobbyUser(roomInfo?.userName);
+    setAddGameRoom(roomInfo);
   };
 
   const handleRoomCreated = ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
     if (status === "success") {
-      navigate("/room", { state: { data: { roomId, roomName, userList, capacity } } });
+      setRoomInfo({ roomId, roomName, capacity, userList });
+      navigate("/room");
     }
   };
 
-  const handleDeleteRoom = ({ roomId: deleteRoomId }: { roomId: string }) => {
-    setGameRoomList(prev => prev.filter(({ roomId }) => roomId !== deleteRoomId));
+  const handleDeleteRoom = ({ roomId }: { roomId: string }) => {
+    setRemoveGameRoom(roomId);
   };
 
   useEffect(() => {
@@ -103,10 +77,10 @@ const LobbyPage: React.FC = () => {
     <SlidePage className="p-16 w-full h-full flex flex-row">
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
-        <LobbyUserListBox userList={userList ?? []} />
+        <LobbyUserListBox />
         <LobbyMyInfo />
       </div>
-      <LobbyRoomListBox gameRoomList={gameRoomList ?? []} />
+      <LobbyRoomListBox />
     </SlidePage>
   );
 };

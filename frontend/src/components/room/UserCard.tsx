@@ -1,7 +1,11 @@
-import { IUserInfo } from "../../pages/RoomPage";
+import { UserInfo } from "../../store/useRoom";
 import ReadyMark from "./ReadyMark";
 
-const RoomUserCard: React.FC<IUserInfo> = ({ userName, isHost, ready }) => {
+interface RoomUserCardProps extends UserInfo {
+  isHost: boolean;
+}
+
+const RoomUserCard: React.FC<RoomUserCardProps> = ({ userName, isHost, ready }) => {
   return (
     <div className="text-center relative flex flex-col items-center justify-between p-2 border-8 border-white rounded-lg bg-skyblue text-white">
       <div className="relative w-full border-b-8 border-white">
