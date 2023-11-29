@@ -19,18 +19,15 @@ const RoomPage: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const {
-    roomInfo: { userList, capacity, roomId },
-    setRoomUserList,
-  } = useRoomStore();
+  const { userList, capacity, roomId, setRoomUserList, setAddRoomUser, setRemoveRoomUser } = useRoomStore();
   const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
-    setRoomUserList(userList.concat({ userName, ready: false }));
+    setAddRoomUser({ userName, ready: false });
   };
 
-  const handleUserExitRoom = ({ userName: newUserName }: { userName: string }) => {
-    setRoomUserList(userList.filter(({ userName }) => userName !== newUserName));
+  const handleUserExitRoom = ({ userName }: { userName: string }) => {
+    setRemoveRoomUser(userName);
   };
 
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {

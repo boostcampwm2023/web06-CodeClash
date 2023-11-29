@@ -1,36 +1,34 @@
 import { create } from "zustand";
 
 export interface UserInfo {
-  isHost?: boolean;
   userName: string;
   ready?: boolean;
 }
 
-export interface RoomInfo {
+interface RoomState {
   roomId: string;
   roomName: string;
   capacity: number;
   userList: UserInfo[];
 }
 
-interface RoomState {
-  roomInfo: RoomInfo;
-}
-
 interface RoomAction {
-  setRoomInfo: (newRoomInfo: RoomInfo) => void;
+  setRoomInfo: (newRoomInfo: RoomState) => void;
   setRoomUserList: (newUserList: UserInfo[]) => void;
+  setAddRoomUser: (newUser: UserInfo) => void;
+  setRemoveRoomUser: (userName: string) => void;
 }
 
 interface RoomStore extends RoomState, RoomAction {}
 
 export const useRoomStore = create<RoomStore>(set => ({
-  roomInfo: {
-    roomId: "",
-    roomName: "",
-    capacity: 0,
-    userList: [],
-  },
-  setRoomInfo: newRoomInfo => set(state => ({ roomInfo: newRoomInfo })),
-  setRoomUserList: userList => set(state => ({ roomInfo: { ...state.roomInfo, userList } })),
+  roomId: "",
+  roomName: "",
+  capacity: 0,
+  userList: [],
+  setRoomInfo: newRoomInfo => set(state => ({ ...newRoomInfo })),
+  setRoomUserList: userList => set(state => ({ ...state, userList })),
+  setAddRoomUser: newUser => set(state => ({ ...state, userList: state.userList.concat(newUser) })),
+  setRemoveRoomUser: exitedUserName =>
+    set(state => ({ ...state, userList: state.userList.filter(({ userName }) => userName !== exitedUserName) })),
 }));
