@@ -19,7 +19,7 @@ interface RoomState {
 
 interface RoomAction {
   setRoomInfo: (newRoomInfo: RoomInfo) => void;
-  setUserList: (newUserList: UserInfo[]) => void;
+  setRoomUserList: (newUserList: UserInfo[]) => void;
 }
 
 interface RoomStore extends RoomState, RoomAction {}
@@ -32,5 +32,5 @@ export const useRoomStore = create<RoomStore>(set => ({
     userList: [],
   },
   setRoomInfo: newRoomInfo => set(state => ({ roomInfo: newRoomInfo })),
-  setUserList: userList => set(state => ({ roomInfo: { ...state.roomInfo, userList } })),
+  setRoomUserList: userList => set(state => ({ roomInfo: { ...state.roomInfo, userList } })),
 }));

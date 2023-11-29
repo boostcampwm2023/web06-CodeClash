@@ -1,21 +1,21 @@
 import { useEffect } from "react";
-import { IGameRoom, ILobbyUserInfo } from "../../pages/LobbyPage";
 import { useSocketStore } from "../../store/useSocket";
 import { useNavigate } from "react-router";
-import { useRoomStore } from "../../store/useRoom";
+import { UserInfo, useRoomStore } from "../../store/useRoom";
+import { GameRoom } from "../../store/useLobby";
 
 interface LobbyRoomListBoxProps {
-  gameRoomList: IGameRoom[];
+  gameRoomList: GameRoom[];
 }
 
-interface LobbyRoomListItemProps extends IGameRoom {
+interface LobbyRoomListItemProps extends GameRoom {
   onClick?: () => void;
 }
 
-interface IEnterRoomResponse extends IGameRoom {
+interface IEnterRoomResponse extends GameRoom {
   status: "success" | "fail";
   message: string;
-  userList: ILobbyUserInfo[];
+  userList: UserInfo[];
 }
 
 const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName, capacity, userCount, onClick }) => {

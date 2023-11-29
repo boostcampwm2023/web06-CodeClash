@@ -1,7 +1,7 @@
-import { ILobbyUserInfo } from "../../pages/LobbyPage";
+import { UserInfo } from "../../store/useRoom";
 
 interface LobbyUserListBoxProps {
-  userList: ILobbyUserInfo[];
+  userList: UserInfo[];
 }
 
 const LobbyUserListBox: React.FC<LobbyUserListBoxProps> = ({ userList }) => {

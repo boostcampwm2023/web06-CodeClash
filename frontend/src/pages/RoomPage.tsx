@@ -4,29 +4,32 @@ import RoomChatBox from "../components/room/ChatBox";
 import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
 import { useNavigate } from "react-router-dom";
-import { IGameRoom } from "./LobbyPage";
 import StartAnimation from "../components/room/StartAnimation";
 import SlidePage from "../components/common/SlidePage";
 import { useRoomStore } from "../store/useRoom";
+import { GameRoom } from "../store/useLobby";
 
 interface IExitRoomResponse {
   status: "success" | "fail";
   userList: string[];
-  gameRoomList: IGameRoom[];
+  gameRoomList: GameRoom[];
 }
 
 const RoomPage: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const { roomInfo, setUserList } = useRoomStore();
+  const {
+    roomInfo: { userList, capacity, roomId },
+    setRoomUserList,
+  } = useRoomStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
-    setUserList(roomInfo.userList.concat({ userName, ready: false }));
+    setRoomUserList(userList.concat({ userName, ready: false }));
   };
 
   const handleUserExitRoom = ({ userName: newUserName }: { userName: string }) => {
-    setUserList(roomInfo.userList.filter(({ userName }) => userName !== newUserName));
+    setRoomUserList(userList.filter(({ userName }) => userName !== newUserName));
   };
 
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
@@ -36,7 +39,7 @@ const RoomPage: React.FC = () => {
   };
 
   const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
-    setUserList(roomInfo.userList.map(user => (user.userName === userName ? { ...user, ready } : user)));
+    setRoomUserList(userList.map(user => (user.userName === userName ? { ...user, ready } : user)));
   };
 
   const handleStart = () => {
@@ -68,13 +71,13 @@ const RoomPage: React.FC = () => {
     };
   }, [socket]);
 
-  const emptyList = new Array((roomInfo?.capacity ?? roomInfo.userList.length) - roomInfo.userList.length).fill({
+  const emptyList = new Array((capacity ?? userList.length) - userList.length).fill({
     isHost: false,
     userName: "대기중...",
     ready: false,
   });
 
-  const users = roomInfo.userList
+  const users = userList
     .concat(emptyList)
     .map(({ userName, ready }, index) => (
       <RoomUserCard userName={userName} isHost={index === 0} ready={ready} key={userName + index} />
@@ -85,8 +88,8 @@ const RoomPage: React.FC = () => {
       <StartAnimation isStart={isStart} />
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
-        <RoomChatBox roomId={roomInfo?.roomId || ""} />
-        <RoomButtonBox roomId={roomInfo?.roomId || ""} />
+        <RoomChatBox roomId={roomId || ""} />
+        <RoomButtonBox roomId={roomId || ""} />
       </div>
     </SlidePage>
   );
