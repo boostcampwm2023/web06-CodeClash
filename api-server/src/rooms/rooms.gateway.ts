@@ -12,6 +12,7 @@ import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
+import { TIME_LIMIT } from './rooms.constants';
 
 @WebSocketGateway({
   namespace: 'rooms',
@@ -246,7 +247,7 @@ export class RoomsGateway {
 
   @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('ready')
-  ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
+  async ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
 
     this.server.in(roomId).emit('ready', {
@@ -255,8 +256,9 @@ export class RoomsGateway {
     });
 
     if (this.roomsService.checkUsersReady(roomId)) {
-      const problems = this.problemsService.findProblemsWithTestcases(1);
+      const problems = await this.problemsService.findProblemsWithTestcases(1);
 
+      this.roomsService.changeRoomState(roomId, 'playing');
       this.server.in(roomId).emit('start', {
         status: 'start',
         problems,
@@ -265,8 +267,6 @@ export class RoomsGateway {
       this.server.in('lobby').emit('room_start', {
         roomId,
       });
-
-      this.roomsService.changeRoomState(roomId, 'playing');
     }
   }
 
@@ -329,7 +329,7 @@ export class RoomsGateway {
   @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('game_over')
   gameOver(@ConnectedSocket() client: Socket) {
-    const { roomId } = client.data;
+    const { roomId, flag } = client.data;
 
     this.roomsService.getAllClient(roomId).forEach(({ userName }) => {
       const userSocket = this.roomsService.getUserSocket(userName);
@@ -341,5 +341,29 @@ export class RoomsGateway {
       roomId,
       status: 'waiting',
     });
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('pass')
+  pass(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+
+    client.data.passed = true;
+
+    if (this.roomsService.allUserPassed(roomId)) {
+      this.server.in(roomId).emit('game_over', {});
+
+      return;
+    }
+    if (this.roomsService.getCountdown(roomId)) return;
+
+    const timer = setTimeout(() => {
+      this.server.in(roomId).emit('pass', {
+        userName: client.data.user.name,
+      });
+    }, TIME_LIMIT);
+
+    this.roomsService.setCountdown(roomId, true);
+    this.roomsService.setTimer(roomId, timer);
   }
 }
