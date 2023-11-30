@@ -6,6 +6,7 @@ export interface Room {
   userList: Socket[];
   capacity: number;
   state: 'waiting' | 'playing';
+  timer: NodeJS.Timeout | null;
 }
 
 export interface RoomList {

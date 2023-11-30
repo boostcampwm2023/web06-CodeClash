@@ -11,14 +11,15 @@ import {
 
 @Injectable()
 export class RoomsService {
-  private roomList: RoomList = {
+  private roomList: Record<string, Room> = {
     lobby: {
       roomId: 'lobby',
       roomName: '로비',
       userList: [],
       capacity: 1000,
       state: 'waiting',
-    } as Room,
+      timer: null,
+    },
   };
 
   private userNameSocketMapper = new Map();
@@ -40,6 +41,7 @@ export class RoomsService {
       userList: [],
       capacity,
       state: 'waiting',
+      timer: null,
     };
 
     this.enterRoom(client, roomId);
@@ -62,7 +64,7 @@ export class RoomsService {
   exitRoom(client: Socket, roomId: string) {
     if (client.rooms.size) {
       client.leave(roomId);
-      client.data.user.ready = false;
+      client.data.ready = false;
     }
     this.deleteUserFromList(client, roomId);
 
@@ -108,20 +110,20 @@ export class RoomsService {
   }
 
   changeReadyStatus(client: Socket) {
-    client.data.user.ready = !client.data.user.ready;
+    client.data.ready = !client.data.ready;
 
-    return client.data.user.ready;
+    return client.data.ready;
   }
 
   checkUsersReady(roomId: string) {
-    return this.roomList[roomId].userList.every((user) => user.data.user.ready);
+    return this.roomList[roomId].userList.every((user) => user.data.ready);
   }
 
   getAllClient(roomId: string): User[] {
     return this.roomList[roomId].userList.map((user) => {
       return {
         userName: user.data.user.name,
-        ready: user.data.user.ready,
+        ready: user.data.ready,
       };
     });
   }
@@ -150,5 +152,28 @@ export class RoomsService {
 
   changeRoomState(roomId: string, state: 'waiting' | 'playing') {
     this.roomList[roomId].state = state;
+  }
+
+  setTimer(roomId: string, timer: NodeJS.Timeout) {
+    this.roomList[roomId].timer = timer;
+  }
+
+  getTimer(roomId: string): NodeJS.Timeout | null {
+    return this.roomList[roomId].timer;
+  }
+
+  allUserPassed(roomId: string) {
+    return this.roomList[roomId].userList.every(
+      (user) => user.data.user.passed,
+    );
+  }
+
+  gameOver(roomId: string) {
+    this.roomList[roomId].userList.forEach((user) => {
+      user.data.passed = false;
+      user.data.ready = false;
+    });
+    this.changeRoomState(roomId, 'waiting');
+    this.roomList[roomId].timer = null;
   }
 }

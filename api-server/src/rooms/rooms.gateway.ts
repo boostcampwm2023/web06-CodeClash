@@ -59,7 +59,8 @@ export class RoomsGateway {
       }
 
       socket.data.user = user;
-      socket.data.user.ready = false;
+      socket.data.ready = false;
+      socket.data.passed = false;
       socket.data.token = token;
       socket.data.type = payload.type;
 
@@ -347,23 +348,27 @@ export class RoomsGateway {
   @SubscribeMessage('pass')
   pass(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
+    let timer = this.roomsService.getTimer(roomId);
 
     client.data.passed = true;
 
-    if (this.roomsService.allUserPassed(roomId)) {
-      this.server.in(roomId).emit('game_over', {});
+    if (this.roomsService.allUserPassed(roomId) && timer) {
+      clearTimeout(timer);
+      this.roomsService.gameOver(roomId);
+      this.server.in(roomId).emit('game_over');
+      this.server.in('lobby').emit('room_game_over', { roomId });
 
       return;
     }
-    if (this.roomsService.getCountdown(roomId)) return;
 
-    const timer = setTimeout(() => {
-      this.server.in(roomId).emit('pass', {
-        userName: client.data.user.name,
-      });
+    if (timer) return;
+
+    timer = setTimeout(() => {
+      this.roomsService.gameOver(roomId);
+      this.server.in(roomId).emit('game_over');
+      this.server.in('lobby').emit('room_game_over', { roomId });
     }, TIME_LIMIT);
 
-    this.roomsService.setCountdown(roomId, true);
     this.roomsService.setTimer(roomId, timer);
   }
 }
