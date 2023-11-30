@@ -19,10 +19,13 @@ jobs:
       - name: Install dependencies and build
         run: |
           cd frontend
-          echo "REACT_APP_GIPHY_API_KEY=${{ secrets.REACT_APP_GIPHY_API_KEY }}" >> .env
-          echo "GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }}" >> .env
+          echo "REACT_APP_GIPHY_API_KEY=$REACT_APP_GIPHY_API_KEY" >> .env
+          echo "GENERATE_SOURCEMAP=$GENERATE_SOURCEMAP" >> .env
           npm install
           npm run build
+        env:
+          REACT_APP_GIPHY_API_KEY: ${{ secrets.REACT_APP_GIPHY_API_KEY }}
+          GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
 
       - name: Clean up existing files on server
         uses: appleboy/ssh-action@master
