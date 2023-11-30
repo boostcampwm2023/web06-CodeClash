@@ -29,4 +29,10 @@ export class SubmissionsService {
       problem: { id: createSubmissionDto.problemId },
     });
   }
+
+  async isExist(hashedCode: string) {
+    return await this.submissionsRepository.findOne({
+      where: { codeHash: hashedCode },
+    });
+  }
 }

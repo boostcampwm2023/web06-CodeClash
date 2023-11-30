@@ -5,6 +5,7 @@ import { ProblemsService } from 'src/problems/problems.service';
 import { SubmissionsService } from 'src/submissions/submissions.service';
 import { CreateSubmissionDto } from 'src/submissions/dto/create-submission.dto';
 import { SubmissionStatus } from 'src/submissions/entities/submission.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ScoresService {
@@ -20,6 +21,12 @@ export class ScoresService {
     private readonly submissionsService: SubmissionsService,
   ) {}
 
+  // 전달 받은 code를 hash하는 함수.
+  // hash를 통해 이미 채점한 코드인지 확인할 수 있음.
+  private hash(code: string) {
+    return bcrypt.hash(code, 3);
+  }
+
   async grade(
     submission: ScoreSubmissionDto,
     user: UserTable,
@@ -30,6 +37,16 @@ export class ScoresService {
 
     if (!problem) {
       throw new BadRequestException('Problem does not exist');
+    }
+
+    let hashedCode = await this.hash(code);
+    const submissionExist = await this.submissionsService.isExist(hashedCode);
+
+    if (submissionExist) {
+      return {
+        message: '이미 제출된 코드입니다.',
+        submission: submissionExist,
+      };
     }
 
     const promises = [];
