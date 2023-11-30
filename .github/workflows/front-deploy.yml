@@ -16,9 +16,11 @@ jobs:
         with:
           node-version: "14.x"
 
-      - name: Install dependencies
+      - name: Install dependencies and build
         run: |
           cd frontend
+          echo "REACT_APP_GIPHY_API_KEY=${{ secrets.REACT_APP_GIPHY_API_KEY }}" >> .env
+          echo "GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }}" >> .env
           npm install
           npm run build
 
