@@ -43,7 +43,7 @@ const LobbyPage: React.FC = () => {
 
   const handleRoomCreated = ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
     if (status === "success") {
-      setRoomInfo({ roomId, roomName, capacity, userList });
+      setRoomInfo({ roomId, roomName, capacity, userList, problemList: [] });
       navigate("/room");
     }
   };
