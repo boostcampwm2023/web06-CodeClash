@@ -85,7 +85,8 @@ export class ScoresService {
         status,
         problemId,
         userId: user.id,
-      } as CreateSubmissionDto);
+        codeHash: hashedCode,
+      });
     }
 
     return results;
