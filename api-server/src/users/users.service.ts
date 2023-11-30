@@ -46,6 +46,6 @@ export class UsersService {
         'submission.createdAt',
         'problem.title',
       ])
-      .getMany();
+      .getOne();
   }
 }
