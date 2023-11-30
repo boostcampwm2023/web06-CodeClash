@@ -32,9 +32,20 @@ export class UsersService {
 
   async getUserByName(name: string) {
     // user -> user.submissions -> submission.problem join
-    return await this.usersRepository.findOne({
-      where: { name },
-      relations: ['submissions', 'submissions.problem'],
-    });
+    return await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.submissions', 'submission')
+      .leftJoinAndSelect('submission.problem', 'problem')
+      .where('user.name = :name', { name })
+      .select([
+        'user.name',
+        'user.email',
+        'submission.code',
+        'submission.language',
+        'submission.status',
+        'submission.createdAt',
+        'problem.title',
+      ])
+      .getMany();
   }
 }

@@ -4,7 +4,7 @@ import { UserTable } from 'src/users/entities/user.entity';
 import { ProblemsService } from 'src/problems/problems.service';
 import { SubmissionsService } from 'src/submissions/submissions.service';
 import { SubmissionStatus } from 'src/submissions/entities/submission.entity';
-import crypt from 'crypto';
+import { SHA256, enc } from 'crypto-js';
 
 @Injectable()
 export class ScoresService {
@@ -32,7 +32,7 @@ export class ScoresService {
       throw new BadRequestException('Problem does not exist');
     }
 
-    let hashedCode = crypt.createHash('sha256').update(code).digest('hex');
+    const hashedCode = SHA256(code).toString(enc.Hex);
     const submissionExist = await this.submissionsService.isExist(hashedCode);
 
     if (submissionExist) {
