@@ -45,40 +45,24 @@ export class ProblemsService {
     return problems.map((problem) => problem.id);
   }
 
-  async findAllWithTestcases() {
-    this.problemsRepository.find({
-      relations: ['testcases'],
-      where: { testcases: { isExample: true } },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        timeLimit: true,
-        memoryLimit: true,
-        sampleCode: true,
-        testcases: {
-          input: true,
-          output: true,
-        },
-      },
-    });
-  }
+  async findProblemsWithTestcases(limit: number) {
+    const problems = await this.problemsRepository
+      .createQueryBuilder('problem')
+      .innerJoinAndSelect('problem.testcases', 'testcase')
+      .orderBy('RAND()')
+      .take(limit)
+      .select([
+        'problem.id',
+        'problem.title',
+        'problem.description',
+        'problem.memoryLimit',
+        'problem.timeLimit',
+        'problem.sampleCode',
+        'testcase.input',
+        'testcase.output',
+      ])
+      .getMany();
 
-  async getProblemsAtRandom(caseCount: number) {
-    const problems = await this.findAllWithTestcases();
-
-    if (problems.length < caseCount) {
-      throw new Error('caseCount must be lower than problem count');
-    }
-
-    const duplicated = new Set();
-
-    while (duplicated.size < caseCount) {
-      const randomIdx = Math.floor(Math.random() * problems.length);
-
-      duplicated.add(randomIdx);
-    }
-
-    return [...duplicated].map((idx: number) => problems[idx]);
+    return problems;
   }
 }

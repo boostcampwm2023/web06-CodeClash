@@ -255,7 +255,7 @@ export class RoomsGateway {
     });
 
     if (this.roomsService.checkUsersReady(roomId)) {
-      const problems = this.problemsService.getProblemsAtRandom(1);
+      const problems = this.problemsService.findProblemsWithTestcases(1);
 
       this.server.in(roomId).emit('start', {
         status: 'start',
