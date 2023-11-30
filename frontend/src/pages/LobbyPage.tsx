@@ -74,7 +74,7 @@ const LobbyPage: React.FC = () => {
   }, [socket]);
 
   return (
-    <SlidePage className="p-16 w-full h-full flex flex-row">
+    <SlidePage className="p-4 pt-12 w-full h-full flex flex-row">
       <LobbyHeader />
       <div className="h-full flex flex-col gap-2 mr-2">
         <LobbyUserListBox />
