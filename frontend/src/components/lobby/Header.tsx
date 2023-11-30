@@ -4,6 +4,7 @@ import InviteModal from "./InviteModal";
 import CreateRoomModal from "./CreateRoomModal";
 import { useLoginStore } from "../../store/useLogin";
 import { useSocketStore } from "../../store/useSocket";
+import UserInfoModal from "./UserInfoModal";
 
 enum HeaderStatus {
   LOBBY = "lobby",
@@ -21,7 +22,7 @@ export interface Iinvite {
 const LobbyHeader: React.FC = () => {
   const [selectedHeader, setSelectedHeader] = useState<HeaderStatus>(HeaderStatus.LOBBY);
   const [inviteList, setInviteList] = useState<Iinvite[]>([]);
-  const { setLogout } = useLoginStore();
+  const { userName, setLogout } = useLoginStore();
   const { socket, setSocketClear } = useSocketStore();
 
   const closeModal = () => {
@@ -71,6 +72,7 @@ const LobbyHeader: React.FC = () => {
         />
       </div>
       {selectedHeader === HeaderStatus.NOTIFICATION && <InviteModal closeModal={closeModal} inviteList={inviteList} />}
+      {selectedHeader === HeaderStatus.MYINFO && <UserInfoModal closeModal={closeModal} userName={userName} />}
       {selectedHeader === HeaderStatus.ROOM && <CreateRoomModal closeModal={closeModal} />}
     </div>
   );
