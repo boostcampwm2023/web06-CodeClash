@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import Modal from "../common/Modal";
 import { getUserInfo } from "../../api/user";
+import { Editor, Monaco } from "@monaco-editor/react";
+import { ProblemType } from "../gameplay/problemType";
+import type monaco from "monaco-editor";
 
 interface UserInfoModalProps {
   closeModal: () => void;
@@ -11,6 +14,7 @@ interface ISubmission {
   language: string;
   code: string;
   status: string;
+  problem: ProblemType;
 }
 
 interface IUserInfo {
@@ -18,6 +22,19 @@ interface IUserInfo {
   name: string;
   submissions: ISubmission[];
 }
+
+const editorOptions = {
+  minimap: {
+    enabled: false,
+  },
+  scrollbar: {
+    verticalScrollbarSize: 0,
+    horizontalScrollbarSize: 0,
+  },
+  fontFamily: "Cafe24Ssurround",
+  readOnly: true,
+  fontSize: 32,
+};
 
 const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) => {
   const [userInfo, setUserInfo] = useState<IUserInfo>();
@@ -31,6 +48,13 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     });
   }, []);
 
+  const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+    import("../../assets/theme/EditorTheme.json").then(data => {
+      monaco.editor.defineTheme("myTheme", data as monaco.editor.IStandaloneThemeData);
+      monaco.editor.setTheme("myTheme");
+    });
+  };
+
   return (
     <Modal
       title={`${userName}님의 정보`}
@@ -39,17 +63,33 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     >
       {userInfo ? (
         <div className="w-full h-full">
-          <div>EMAIL : {userInfo.email}</div>
-          <div className="bg-lightskyblue w-full h-[90%] p-2 rounded-lg">
+          <div className="p-2 flex justify-between">
+            <div>EMAIL : {userInfo.email}</div>
+            <div>
+              {userInfo.submissions.map((submission, index) => (
+                <button
+                  style={{ color: submissionIndex === index ? "black" : "white" }}
+                  key={submission.problem.title}
+                  onClick={() => setSubmissionIndex(index)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="bg-lightskyblue w-full h-[85%] p-2 rounded-lg overflow-scroll">
             {userInfo.submissions.length > 0 ? (
-              <div>
-                <div>// {userInfo.submissions[submissionIndex].language}</div>
-                <div>
-                  {userInfo.submissions[submissionIndex].code.split("\n").map(e => (
-                    <p>{e.replaceAll("  ", "　")}</p>
-                  ))}
-                </div>
-              </div>
+              <Editor
+                language="javascript"
+                value={
+                  "// " +
+                  userInfo.submissions[submissionIndex].problem.title +
+                  "\n" +
+                  userInfo.submissions[submissionIndex].code
+                }
+                onMount={handleEditorDidMount}
+                options={{ ...editorOptions }}
+              />
             ) : (
               `${userName}님의 코드 제출 기록이 없습니다`
             )}
