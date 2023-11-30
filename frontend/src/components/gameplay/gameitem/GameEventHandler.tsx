@@ -83,7 +83,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       if (key === "Control") {
         setGameItems(gameitems => {
           if (gameitems.length === 0 || !socket) return gameitems;
-          socket.emit("item", { roomId: roomId, item: gameitems[0].type });
+          socket.emit("item", { roomId, item: gameitems[0].type });
           return gameitems.slice(1);
         });
       }
