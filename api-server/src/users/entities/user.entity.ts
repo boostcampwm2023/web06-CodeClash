@@ -7,8 +7,9 @@ import {
 import { BaseTable } from 'src/common/entities/base-table.entity';
 import { SubmissionTable } from 'src/submissions/entities/submission.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
-
-//
+import { stringValidationMessage } from '../../common/validation-messages/string.validation-message';
+import { lengthValidationMessage } from 'src/common/validation-messages/length.validation-message';
+import { emailValidationMessage } from 'src/common/validation-messages/email.validation-message';
 
 enum Role {
   USER = 'user',
@@ -19,43 +20,28 @@ enum Role {
 export class UserTable extends BaseTable {
   @Column({ length: 500, unique: true })
   @IsString({
-    message: (args: ValidationArguments) => {
-      return `${args.property} must be a string`;
-    },
+    message: stringValidationMessage,
   })
   @Length(6, 20, {
-    message: (args: ValidationArguments) => {
-      return `${args.property} must be between 6 and 20 characters`;
-    },
+    message: lengthValidationMessage,
   })
   name: string;
 
   @Column({ length: 500 })
-  @IsString({
-    message: (args: ValidationArguments) => {
-      return `${args.property} must be a string`;
-    },
-  })
   @IsEmail(
     {},
     {
-      message: (args: ValidationArguments) => {
-        return `${args.property} must be a valid email`;
-      },
+      message: emailValidationMessage,
     },
   )
   email: string;
 
   @Column({ length: 500 })
   @IsString({
-    message: (args: ValidationArguments) => {
-      return `${args.property} must be a string`;
-    },
+    message: stringValidationMessage,
   })
   @Length(6, 20, {
-    message: (args: ValidationArguments) => {
-      return `${args.property} must be between 6 and 20 characters`;
-    },
+    message: lengthValidationMessage,
   })
   password: string;
 
