@@ -19,7 +19,7 @@ const RoomUserCard: React.FC<RoomUserCardProps> = ({ userName, isHost, ready }) 
     }
   }, [userName]);
   return (
-    <div className="w-full h-full text-center flex flex-col items-center justify-between p-2 border-8 border-white rounded-lg bg-skyblue text-white">
+    <div className="relative w-full h-full text-center flex flex-col items-center justify-between p-2 border-8 border-white rounded-lg bg-skyblue text-white">
       <div className="w-full border-b-8 border-white">{userName ? (isHost ? "방장" : "플레이어") : "대기중"}</div>
       {userName && (
         <>
