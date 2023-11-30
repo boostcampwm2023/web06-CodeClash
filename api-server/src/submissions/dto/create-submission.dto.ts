@@ -5,6 +5,7 @@ export class CreateSubmissionDto extends PickType(SubmissionTable, [
   'code',
   'status',
   'language',
+  'codeHash',
 ]) {
   problemId: number;
   userId: number;
