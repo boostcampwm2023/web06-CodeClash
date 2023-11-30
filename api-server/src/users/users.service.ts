@@ -31,9 +31,10 @@ export class UsersService {
   }
 
   async getUserByName(name: string) {
+    // user -> user.submissions -> submission.problem join
     return await this.usersRepository.findOne({
       where: { name },
-      relations: ['submissions'],
+      relations: ['submissions', 'submissions.problem'],
     });
   }
 }

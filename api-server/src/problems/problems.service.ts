@@ -44,4 +44,25 @@ export class ProblemsService {
 
     return problems.map((problem) => problem.id);
   }
+
+  async findProblemsWithTestcases(limit: number) {
+    const problems = await this.problemsRepository
+      .createQueryBuilder('problem')
+      .innerJoinAndSelect('problem.testcases', 'testcase')
+      .orderBy('RAND()')
+      .take(limit)
+      .select([
+        'problem.id',
+        'problem.title',
+        'problem.description',
+        'problem.memoryLimit',
+        'problem.timeLimit',
+        'problem.sampleCode',
+        'testcase.input',
+        'testcase.output',
+      ])
+      .getMany();
+
+    return problems;
+  }
 }
