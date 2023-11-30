@@ -6,15 +6,15 @@ import { SubmissionsService } from 'src/submissions/submissions.service';
 import { CreateSubmissionDto } from 'src/submissions/dto/create-submission.dto';
 import { SubmissionStatus } from 'src/submissions/entities/submission.entity';
 
-const scoringServers = [
-  'http://10.41.177.25:3000',
-  'http://10.41.177.25:3001',
-  'http://10.41.177.25:3002',
-];
-let currentServer = 0;
-
 @Injectable()
 export class ScoresService {
+  private scoringServers = [
+    'http://10.41.177.25:3000',
+    'http://10.41.177.25:3001',
+    'http://10.41.177.25:3002',
+  ];
+  private currentServer: number = 0;
+
   constructor(
     private readonly problemsService: ProblemsService,
     private readonly submissionsService: SubmissionsService,
@@ -38,7 +38,7 @@ export class ScoresService {
       if (problem.testcases[i].isExample != isExample) continue;
 
       promises.push(
-        fetch(`${scoringServers[currentServer]}/v2/scoring`, {
+        fetch(`${this.scoringServers[this.currentServer]}/v2/scoring`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -51,7 +51,8 @@ export class ScoresService {
           }),
         }),
       );
-      currentServer = (currentServer + 1) % scoringServers.length;
+      this.currentServer =
+        (this.currentServer + 1) % this.scoringServers.length;
     }
 
     let results = await Promise.all(promises);
