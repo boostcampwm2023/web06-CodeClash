@@ -1,10 +1,19 @@
 interface ChatContentProps {
+  isNotification: boolean;
   userName: string;
   createdAt: string;
   content: string;
 }
 
-const RoomChatContent: React.FC<ChatContentProps> = ({ userName, createdAt, content }) => {
+const RoomChatContent: React.FC<ChatContentProps> = ({ isNotification, userName, createdAt, content }) => {
+  if (isNotification) {
+    return (
+      <p className="opacity-70">
+        {userName}
+        {content}
+      </p>
+    );
+  }
   return (
     <div className="relative mt-4 mb-1 mx-2 p-2 border rounded-xl border-white">
       <div className="w-full absolute top-[-16px]">

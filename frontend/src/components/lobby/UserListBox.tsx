@@ -1,10 +1,7 @@
-import { ILobbyUserInfo } from "../../pages/LobbyPage";
+import { useLobbyStore } from "../../store/useLobby";
 
-interface LobbyUserListBoxProps {
-  userList: ILobbyUserInfo[];
-}
-
-const LobbyUserListBox: React.FC<LobbyUserListBoxProps> = ({ userList }) => {
+const LobbyUserListBox: React.FC = () => {
+  const { userList } = useLobbyStore();
   const userListItems = userList.map(({ userName }, idx) => (
     <div className="text-[0.75rem] cursor-pointer" key={userName + String(idx)}>
       {userName}

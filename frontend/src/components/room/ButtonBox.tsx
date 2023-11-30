@@ -1,12 +1,10 @@
+import { useRoomStore } from "../../store/useRoom";
 import { useSocketStore } from "../../store/useSocket";
 import Button from "../common/Button";
 
-interface RoomButtonBoxProps {
-  roomId: string;
-}
-
-const RoomButtonBox: React.FC<RoomButtonBoxProps> = ({ roomId }) => {
+const RoomButtonBox: React.FC = () => {
   const { socket } = useSocketStore();
+  const { roomId } = useRoomStore();
 
   const handleExitRoom = () => {
     socket?.emit("exit_room", { roomId });

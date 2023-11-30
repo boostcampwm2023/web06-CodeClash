@@ -4,10 +4,9 @@ import GamePlayBox from "../components/gameplay/PlayBox";
 import GameProblemIdx from "../components/gameplay/ProblemIdx";
 import { ProblemType } from "../components/gameplay/problemType";
 import { getProblemById } from "../api/problem";
-import { motion } from "framer-motion";
 import SlidePage from "../components/common/SlidePage";
 
-const tempProblemId = [1, 2, 4];
+const tempProblemId = [10];
 const GAME_COUNT = 3;
 const GamePlayPage: React.FC = () => {
   const [problemList, setProblemList] = useState<ProblemType[]>([]);

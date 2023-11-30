@@ -3,74 +3,42 @@ import RoomUserCard from "../components/room/UserCard";
 import RoomChatBox from "../components/room/ChatBox";
 import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
-import { useLocation, useNavigate } from "react-router-dom";
-import { IGameRoom, ILobbyUserInfo } from "./LobbyPage";
+import { useNavigate } from "react-router-dom";
 import StartAnimation from "../components/room/StartAnimation";
-import { motion } from "framer-motion";
 import SlidePage from "../components/common/SlidePage";
-
-export interface IUserInfo {
-  isHost: boolean;
-  userName: string;
-  ready: boolean;
-}
-
-interface IRoomInfo {
-  roomId: string;
-  roomName: string;
-  capacity: number;
-}
+import { UserInfo, useRoomStore } from "../store/useRoom";
+import { GameRoom, useLobbyStore } from "../store/useLobby";
 
 interface IExitRoomResponse {
   status: "success" | "fail";
-  userList: string[];
-  gameRoomList: IGameRoom[];
+  userList: UserInfo[];
+  gameRoomList: GameRoom[];
 }
 
 const RoomPage: React.FC = () => {
-  const [userList, setUserList] = useState<IUserInfo[]>([]);
-  const [roomInfo, setRoomInfo] = useState<IRoomInfo>();
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { socket } = useSocketStore();
-
-  useEffect(() => {
-    if (!location.state) {
-      navigate("/login");
-      return;
-    }
-    const { userList, roomId, roomName, capacity } = location.state.data;
-    setUserList(
-      userList.map(({ userName, ready }: ILobbyUserInfo, index: number) => ({
-        isHost: index === 0,
-        userName,
-        ready,
-      })),
-    );
-    setRoomInfo({ roomId, roomName, capacity });
-  }, [location]);
+  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady } = useRoomStore();
+  const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
-    setUserList(prev => prev.concat({ userName, isHost: false, ready: false }));
+    setAddRoomUser({ userName, ready: false });
   };
 
-  const handleUserExitRoom = ({ userName: newUserName }: { userName: string }) => {
-    setUserList(prev =>
-      prev
-        .filter(({ userName }) => userName !== newUserName)
-        .map((userInfo: IUserInfo, index: number) => ({ ...userInfo, isHost: index === 0 })),
-    );
+  const handleUserExitRoom = ({ userName }: { userName: string }) => {
+    setRemoveRoomUser(userName);
   };
 
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
     if (status === "success") {
-      navigate("/lobby", { state: { data: { userList, gameRoomList } } });
+      setLobby({ userList, gameRoomList });
+      navigate("/lobby");
     }
   };
 
   const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
-    setUserList(prev => prev.map(user => (user.userName === userName ? { ...user, ready } : user)));
+    setChangeUserReady(userName, ready);
   };
 
   const handleStart = () => {
@@ -78,7 +46,7 @@ const RoomPage: React.FC = () => {
     setTimeout(() => {
       setIsStart(false);
       setTimeout(() => {
-        navigate("/game", { state: { data: { ...roomInfo, userList } } });
+        navigate("/game");
       }, 300);
     }, 3000);
   };
@@ -102,7 +70,7 @@ const RoomPage: React.FC = () => {
     };
   }, [socket]);
 
-  const emptyList = new Array((roomInfo?.capacity ?? userList.length) - userList.length).fill({
+  const emptyList = new Array(capacity - userList.length).fill({
     isHost: false,
     userName: "대기중...",
     ready: false,
@@ -110,17 +78,17 @@ const RoomPage: React.FC = () => {
 
   const users = userList
     .concat(emptyList)
-    .map(({ isHost, userName, ready }, index) => (
-      <RoomUserCard userName={userName} isHost={isHost} ready={ready} key={userName + index} />
+    .map(({ userName, ready }, index) => (
+      <RoomUserCard userName={userName} isHost={index === 0} ready={ready} key={userName + index} />
     ));
 
   return (
-    <SlidePage className="flex justify-center items-center w-full h-full gap-3 p-16">
+    <SlidePage className=" flex justify-center items-center w-full h-full gap-3 p-8 ">
       <StartAnimation isStart={isStart} />
-      <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
+      <div className="w-[65%] h-full grid grid-cols-3 gap-2 grid-rows-2">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
-        <RoomChatBox roomId={roomInfo?.roomId || ""} />
-        <RoomButtonBox roomId={roomInfo?.roomId || ""} />
+        <RoomChatBox />
+        <RoomButtonBox />
       </div>
     </SlidePage>
   );
