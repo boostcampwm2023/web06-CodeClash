@@ -7,6 +7,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserTable } from 'src/users/entities/user.entity';
 import { UsersMockRepository } from 'src/users/mocks/repository.mock';
 import { AuthService } from 'src/auth/auth.service';
+import { ProblemsService } from 'src/problems/problems.service';
+import { ProblemTable } from 'src/problems/entities/problem.entity';
+import { ProblemsMockRepository } from 'src/problems/mocks/repository.mock';
 
 describe('RoomsGateway', () => {
   let gateway: RoomsGateway;
@@ -19,9 +22,14 @@ describe('RoomsGateway', () => {
         UsersService,
         AuthService,
         JwtService,
+        ProblemsService,
         {
           provide: getRepositoryToken(UserTable),
           useClass: UsersMockRepository,
+        },
+        {
+          provide: getRepositoryToken(ProblemTable),
+          useClass: ProblemsMockRepository,
         },
       ],
     }).compile();
