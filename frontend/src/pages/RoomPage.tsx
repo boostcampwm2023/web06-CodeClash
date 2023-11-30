@@ -83,9 +83,9 @@ const RoomPage: React.FC = () => {
     ));
 
   return (
-    <SlidePage className="flex justify-center items-center w-full h-full gap-3 p-16">
+    <SlidePage className=" flex justify-center items-center w-full h-full gap-3 p-8 ">
       <StartAnimation isStart={isStart} />
-      <div className="w-[65%] h-full grid grid-cols-3 gap-2 ">{users}</div>
+      <div className="w-[65%] h-full grid grid-cols-3 gap-2 grid-rows-2">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox />
         <RoomButtonBox />
