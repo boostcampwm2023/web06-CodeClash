@@ -24,7 +24,7 @@ export class SubmissionTable extends BaseTable {
   @Column({ type: 'enum', enum: SubmissionStatus })
   status: SubmissionStatus;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar', length: 255 })
   @Index()
   codeHash: string;
 
