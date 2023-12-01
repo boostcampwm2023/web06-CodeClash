@@ -8,6 +8,7 @@ import StartAnimation from "../components/room/StartAnimation";
 import SlidePage from "../components/common/SlidePage";
 import { UserInfo, useRoomStore } from "../store/useRoom";
 import { GameRoom, useLobbyStore } from "../store/useLobby";
+import { ProblemType } from "../components/gameplay/problemType";
 
 interface IExitRoomResponse {
   status: "success" | "fail";
@@ -41,7 +42,7 @@ const RoomPage: React.FC = () => {
     setChangeUserReady(userName, ready);
   };
 
-  const handleStart = () => {
+  const handleStart = (problemlist: { status: string; problemList: ProblemType[] }) => {
     setIsStart(true);
     setTimeout(() => {
       setIsStart(false);

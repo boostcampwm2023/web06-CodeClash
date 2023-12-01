@@ -28,10 +28,10 @@ export const useLobbyStore = create<LobbyStore>(set => ({
   userList: [],
   gameRoomList: [],
   setLobby: lobbyInfo => set(state => lobbyInfo),
-  setAddLobbyUser: userName => set(state => ({ ...state, userList: state.userList.concat({ userName }) })),
+  setAddLobbyUser: userName => set(state => ({ userList: state.userList.concat({ userName }) })),
   setRemoveLobbyUser: exitedUserName =>
-    set(state => ({ ...state, userList: state.userList.filter(({ userName }) => userName !== exitedUserName) })),
-  setAddGameRoom: gameRoom => set(state => ({ ...state, gameRoomList: state.gameRoomList.concat(gameRoom) })),
+    set(state => ({ userList: state.userList.filter(({ userName }) => userName !== exitedUserName) })),
+  setAddGameRoom: gameRoom => set(state => ({ gameRoomList: state.gameRoomList.concat(gameRoom) })),
   setRemoveGameRoom: targetRoomId =>
-    set(state => ({ ...state, gameRoomList: state.gameRoomList.filter(({ roomId }) => roomId !== targetRoomId) })),
+    set(state => ({ gameRoomList: state.gameRoomList.filter(({ roomId }) => roomId !== targetRoomId) })),
 }));
