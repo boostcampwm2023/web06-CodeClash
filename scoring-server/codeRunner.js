@@ -33,7 +33,17 @@ const attatchChildProcessEvents = (
     const endTime = Date.now();
     const runTime = endTime - startTime;
 
-    if (childMessages[1].rss / 1000000 > memoryLimit) {
+    let memoryUsage = 0;
+    let status = "fail";
+    if (childMessages.length == 2) {
+      memoryUsage = childMessages[1].rss / 1000000;
+      status = childMessages[0].toString().trim() == answer ? "pass" : "fail";
+    } else {
+      memoryUsage = 0;
+      status = "fail";
+    }
+
+    if (memoryUsage > memoryLimit) {
       error = "Memory Limit Exceeded";
     }
 
@@ -41,8 +51,8 @@ const attatchChildProcessEvents = (
       clearTimeout(timer);
       res.send({
         runTime,
-        memory: childMessages[1].rss / 1000000,
-        status: childMessages[0].toString().trim() == answer ? "pass" : "fail",
+        memory: memoryUsage,
+        status: status,
         output: output,
         error,
         answer: isExample ? answer : "",
