@@ -13,7 +13,6 @@ import { ProblemType } from "../problemType";
 import { useRoomStore } from "../../../store/useRoom";
 
 const MAX_GAME_ITEM = 2;
-const USER_COUNT = 3;
 
 interface GameEventHandlerProps {
   problemInfo: ProblemType;
@@ -26,12 +25,16 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
   const { socket } = useSocketStore();
-  const { roomId } = useRoomStore();
+  const { roomId, userList } = useRoomStore();
 
-  const handleGameEvent = gameItemHandler(setCode, disPatchEventState, USER_COUNT);
+  const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
 
   const handleGradeSubmit = () => {
     postProblemGrade(problemInfo.id, code).then(res => {
+      if (res?.data.message) {
+        alert(res?.data.message);
+        return;
+      }
       setResult(
         res?.data.map((data: any, idx: number) => {
           return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${data.memory}mb 실행시간:${

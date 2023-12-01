@@ -20,7 +20,7 @@ const RoomPage: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady } = useRoomStore();
+  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady, setProblemList } = useRoomStore();
   const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
@@ -42,7 +42,8 @@ const RoomPage: React.FC = () => {
     setChangeUserReady(userName, ready);
   };
 
-  const handleStart = (problemlist: { status: string; problemList: ProblemType[] }) => {
+  const handleStart = (problemlist: { status: string; problems: ProblemType[] }) => {
+    setProblemList(problemlist.problems);
     setIsStart(true);
     setTimeout(() => {
       setIsStart(false);

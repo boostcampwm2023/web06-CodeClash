@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useLoginStore } from "../store/useLogin";
-import { onFailed, onResponse } from "./refresh";
+import { admitAccessToken, onFailed, onResponse } from "./refresh";
 
 export const baseURL = process.env.REACT_APP_API_URL;
 export const baseAxios = axios.create({
@@ -20,3 +20,4 @@ export const gifAxios = axios.create({
 });
 
 baseAxios.interceptors.response.use(onResponse, onFailed);
+baseAxios.interceptors.request.use(admitAccessToken);
