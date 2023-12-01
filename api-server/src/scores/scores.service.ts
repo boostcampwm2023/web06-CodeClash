@@ -32,7 +32,7 @@ export class ScoresService {
       throw new BadRequestException('Problem does not exist');
     }
 
-    const hashedCode = SHA256(code).toString(enc.Hex);
+    const hashedCode = SHA256(code + problemId.toString()).toString(enc.Hex);
     const submissionExist = await this.submissionsService.isExist(hashedCode);
 
     if (submissionExist) {
