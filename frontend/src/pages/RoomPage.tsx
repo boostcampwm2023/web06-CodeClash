@@ -8,6 +8,7 @@ import StartAnimation from "../components/room/StartAnimation";
 import SlidePage from "../components/common/SlidePage";
 import { UserInfo, useRoomStore } from "../store/useRoom";
 import { GameRoom, useLobbyStore } from "../store/useLobby";
+import { ProblemType } from "../components/gameplay/problemType";
 
 interface IExitRoomResponse {
   status: "success" | "fail";
@@ -19,7 +20,7 @@ const RoomPage: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady } = useRoomStore();
+  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady, setProblemList } = useRoomStore();
   const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
@@ -41,7 +42,8 @@ const RoomPage: React.FC = () => {
     setChangeUserReady(userName, ready);
   };
 
-  const handleStart = () => {
+  const handleStart = (problemlist: { status: string; problems: ProblemType[] }) => {
+    setProblemList(problemlist.problems);
     setIsStart(true);
     setTimeout(() => {
       setIsStart(false);

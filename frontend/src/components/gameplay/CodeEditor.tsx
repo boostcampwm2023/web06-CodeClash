@@ -71,10 +71,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
   const currentPosRef = useRef<monaco.Position | null>();
 
   useEffect(() => {
-    setEditorCode(initialCode ?? "");
-  }, [initialCode]);
-
-  useEffect(() => {
     const randomKeydownHandler = (e: IKeyboardEvent) => {
       if (isInputValue(e.browserEvent.keyCode) && options?.isTypeRandom) {
         const randomCode = Math.floor(Math.random() * 2);
@@ -114,6 +110,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
         editor.setPosition(currentPosRef.current ?? e.position);
       }
     });
+
+    editor.setValue(initialCode);
   };
 
   return (

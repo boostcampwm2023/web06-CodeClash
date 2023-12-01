@@ -146,7 +146,7 @@ const typeRandom = (
   );
 };
 
-const audioNameList = ["/music/RDD.mp3", "/music/URMan.mp3"];
+const audioNameList = ["/music/STH.mp3", "/music/SZG.mp3"];
 const audio = new Audio();
 audio.volume = 0.2;
 audio.loop = true;
