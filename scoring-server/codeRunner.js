@@ -18,7 +18,7 @@ const attatchChildProcessEvents = (
 ) => {
   let output = "";
   let error = "";
-  let memoryUsage = 0;
+  let childMessages = [];
 
   child.stdout.on("data", (data) => {
     output += data.toString();
@@ -27,13 +27,13 @@ const attatchChildProcessEvents = (
     error += data.toString();
   });
   child.on("message", (data) => {
-    memoryUsage = data.rss / 1000000;
+    childMessages.push(data);
   });
   child.on("exit", (code, signal) => {
     const endTime = Date.now();
     const runTime = endTime - startTime;
 
-    if (memoryUsage > memoryLimit) {
+    if (childMessages[1].rss / 1000000 > memoryLimit) {
       error = "Memory Limit Exceeded";
     }
 
@@ -41,9 +41,9 @@ const attatchChildProcessEvents = (
       clearTimeout(timer);
       res.send({
         runTime,
-        memory: memoryUsage,
-        status: output.trim() == answer ? "pass" : "fail",
-        output: output.trim(),
+        memory: childMessages[1].rss / 1000000,
+        status: childMessages[0].toString().trim() == answer ? "pass" : "fail",
+        output: output,
         error,
         answer: isExample ? answer : "",
       });
@@ -57,7 +57,7 @@ app.post("/v2/scoring", (req, res) => {
   const input = testcase.input;
 
   userCode +=
-    "\nconsole.log(solution(" + input.slice(1, input.length - 1) + "))";
+    "\nprocess.send(solution(" + input.slice(1, input.length - 1) + "))";
   userCode += "\nprocess.send(process.memoryUsage());";
 
   const startTime = Date.now();
