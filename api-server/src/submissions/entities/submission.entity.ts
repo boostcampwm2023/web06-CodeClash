@@ -13,10 +13,22 @@ export enum SubmissionStatus {
   InternalError = 'Internal Error',
 }
 
+export enum SubmissionLanguage {
+  C = 'c',
+  CPP = 'c++',
+  JAVA = 'java',
+  PYTHON = 'python',
+  JAVASCRIPT = 'javascript',
+}
+
 @Entity({ name: 'submission' })
 export class SubmissionTable extends BaseTable {
-  @Column()
-  language: string;
+  @Column({
+    type: 'enum',
+    enum: SubmissionLanguage,
+    default: SubmissionLanguage.JAVASCRIPT,
+  })
+  language: SubmissionLanguage;
 
   @Column({ type: 'text' })
   code: string;
