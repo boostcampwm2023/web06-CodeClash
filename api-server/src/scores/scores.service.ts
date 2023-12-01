@@ -3,7 +3,10 @@ import { ScoreSubmissionDto } from './dto/score-submission.dto';
 import { UserTable } from 'src/users/entities/user.entity';
 import { ProblemsService } from 'src/problems/problems.service';
 import { SubmissionsService } from 'src/submissions/submissions.service';
-import { SubmissionStatus } from 'src/submissions/entities/submission.entity';
+import {
+  SubmissionLanguage,
+  SubmissionStatus,
+} from 'src/submissions/entities/submission.entity';
 import { SHA256, enc } from 'crypto-js';
 
 @Injectable()
@@ -32,7 +35,9 @@ export class ScoresService {
       throw new BadRequestException('Problem does not exist');
     }
 
-    const hashedCode = SHA256(code + problemId.toString()).toString(enc.Hex);
+    const hashedCode = SHA256(code + problemId.toString() + user.name).toString(
+      enc.Hex,
+    );
     const submissionExist = await this.submissionsService.isExist(hashedCode);
 
     if (submissionExist) {
@@ -74,7 +79,7 @@ export class ScoresService {
     if (!isExample) {
       await this.submissionsService.createSubmission({
         code,
-        language,
+        language: SubmissionLanguage.JAVASCRIPT,
         status,
         problemId,
         userId: user.id,
