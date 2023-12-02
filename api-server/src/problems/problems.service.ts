@@ -58,11 +58,20 @@ export class ProblemsService {
         'problem.memoryLimit',
         'problem.timeLimit',
         'problem.sampleCode',
-        'testcase.input',
-        'testcase.output',
+        'testcase',
       ])
       .getMany();
 
-    return problems;
+    return problems.map((problem) => {
+      return {
+        ...problem,
+        testcases: problem.testcases.map((testcase) => {
+          return {
+            input: testcase.input,
+            output: testcase.output,
+          };
+        }),
+      };
+    });
   }
 }
