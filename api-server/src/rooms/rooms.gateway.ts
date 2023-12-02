@@ -328,23 +328,6 @@ export class RoomsGateway {
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
-  @SubscribeMessage('game_over')
-  gameOver(@ConnectedSocket() client: Socket) {
-    const { roomId, flag } = client.data;
-
-    this.roomsService.getAllClient(roomId).forEach(({ userName }) => {
-      const userSocket = this.roomsService.getUserSocket(userName);
-
-      this.roomsService.changeReadyStatus(userSocket);
-    });
-    this.roomsService.changeRoomState(roomId, 'waiting');
-    this.server.in('lobby').emit('room_game_over', {
-      roomId,
-      status: 'waiting',
-    });
-  }
-
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('pass')
   pass(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
@@ -370,5 +353,18 @@ export class RoomsGateway {
     }, TIME_LIMIT);
 
     this.roomsService.setTimer(roomId, timer);
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('exit_result')
+  exitResult(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+
+    if (this.roomsService.roomHasUser(roomId, client.data.user.id)) {
+      client.emit('exit_result', {
+        ...this.roomsService.getGameRoom(roomId),
+        userList: this.roomsService.getAllClient(roomId),
+      });
+    }
   }
 }
