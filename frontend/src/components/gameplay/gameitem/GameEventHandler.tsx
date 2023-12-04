@@ -11,6 +11,7 @@ import EyeStolen from "./gameScreenEffect/EyeStolen";
 import { postProblemExampleGrade, postProblemGrade } from "../../../api/problem";
 import { ProblemType } from "../problemType";
 import { useRoomStore } from "../../../store/useRoom";
+import BarEffect from "../../common/BarEffect";
 
 const MAX_GAME_ITEM = 2;
 
@@ -29,11 +30,10 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const { roomId, userList } = useRoomStore();
 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
-
   const handleGradeSubmit = () => {
+    setIsSolved(status => !status);
     postProblemGrade(problemInfo.id, code)
       .then(res => {
-        console.log(res);
         if (res?.data.message) {
           alert(res?.data.message);
           return;
@@ -47,7 +47,6 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
         );
 
         if (res?.data.every((data: any) => data.status === "pass")) {
-          console.log("pass");
           setIsSolved(true);
         }
       })
@@ -143,6 +142,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
         }}
         initialCode={problemInfo?.sampleCode}
       />
+      <BarEffect isStart={isSolved} content="통과!" />
       <GameFooterBox
         handleGradeSubmit={handleGradeSubmit}
         handleExampleSubmit={handleExampleSubmit}
