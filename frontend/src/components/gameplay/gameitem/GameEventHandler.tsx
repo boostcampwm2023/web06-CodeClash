@@ -140,7 +140,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
           fontSize: gameEventState.fontSize,
           isTypeRandom: gameEventState.isTypeRandom,
         }}
-        initialCode={problemInfo?.sampleCode}
+        initialCode={problemInfo?.sampleCode ?? ""}
       />
       <BarEffect isStart={isSolved} content="통과!" />
       <GameFooterBox

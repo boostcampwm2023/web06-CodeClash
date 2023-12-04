@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useLoginStore } from "../../store/useLogin";
+import { useEffect } from "react";
 
 interface ProtectRouteProps {
   isNeedLogin?: boolean;
@@ -9,6 +10,18 @@ interface ProtectRouteProps {
 const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) => {
   const { isLogin } = useLoginStore();
   const currentLocation = useLocation();
+
+  useEffect(() => {
+    const preventClose = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", preventClose);
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+    };
+  }, []);
 
   return isLogin === isNeedLogin ? (
     <Outlet />

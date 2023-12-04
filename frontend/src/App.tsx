@@ -11,6 +11,7 @@ import { AnimatePresence } from "framer-motion";
 
 const App: React.FC = () => {
   const location = useLocation();
+
   return (
     <div className="bg-defaultPattern bg-cover w-screen h-screen">
       <MusicPlayer />
