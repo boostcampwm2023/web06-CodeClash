@@ -71,7 +71,7 @@ jobs:
             do
               docker run -d \
                 -p $((3000 + i - 1)):3000 \
-                -v /home/node_modules:/app/node_modules
+                -v /home/node_modules:/app/node_modules \
                 --cpus="1" \
                 --memory="1g" \
                 --name ${{ env.DOCKER_CONTAINER }}_$i \
