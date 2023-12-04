@@ -12,6 +12,8 @@ import { postProblemExampleGrade, postProblemGrade } from "../../../api/problem"
 import { ProblemType } from "../problemType";
 import { useRoomStore } from "../../../store/useRoom";
 import BarEffect from "../../common/BarEffect";
+import { useLoginStore } from "../../../store/useLogin";
+import Modal from "../../common/Modal";
 
 const MAX_GAME_ITEM = 2;
 
@@ -27,13 +29,26 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
   const [isSolved, setIsSolved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { userName } = useLoginStore();
   const { socket } = useSocketStore();
   const { roomId, userList } = useRoomStore();
-
+  const [modalState, setModalState] = useState({
+    isShow: false,
+    title: "",
+    content: "",
+  });
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
 
   const handleGradeSubmit = () => {
     if (isLoading) return;
+    if (isSolved) {
+      setModalState({
+        isShow: true,
+        title: "이미 통과한 문제입니다.",
+        content: "다른 유저가 완료할때까지 기다려주세요.",
+      });
+      return;
+    }
     setIsLoading(true);
     postProblemGrade(problemInfo.id, code)
       .then(res => {
@@ -51,6 +66,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
         if (res?.data.every((data: any) => data.status === "pass")) {
           setIsSolved(true);
+          socket?.emit("pass", { userName });
         }
       })
       .catch(err => {
@@ -63,6 +79,14 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
   const handleExampleSubmit = () => {
     if (isLoading) return;
+    if (isSolved) {
+      setModalState({
+        isShow: true,
+        title: "이미 통과한 문제입니다.",
+        content: "다른 유저가 완료할때까지 기다려주세요.",
+      });
+      return;
+    }
     setIsLoading(true);
     postProblemExampleGrade(problemInfo.id, code)
       .then(res => {
@@ -140,8 +164,21 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
     };
   }, [socket]);
 
+  useEffect(() => {
+    socket?.on("timeover", () => {});
+
+    return () => {
+      socket?.off("timeover");
+    };
+  }, [socket]);
+
   return (
     <>
+      {modalState.isShow && (
+        <Modal title={modalState.title} closeModal={() => setModalState(state => ({ ...state, isShow: false }))}>
+          <div>{modalState.content}</div>
+        </Modal>
+      )}
       <CodeEditor
         editorCode={code}
         setEditorCode={setCode}
@@ -152,7 +189,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
         }}
         initialCode={problemInfo?.sampleCode ?? ""}
       />
-      <BarEffect isStart={isSolved} content="통과!" />
+      <BarEffect isStart={isSolved} content="통과!" subContent="다른 유저가 완료할때까지 기다려주세요." />
       <GameFooterBox
         handleGradeSubmit={handleGradeSubmit}
         handleExampleSubmit={handleExampleSubmit}
