@@ -178,6 +178,8 @@ export class RoomsService {
   }
 
   roomHasUser(roomId: string, userId: string) {
-    return this.roomList[roomId].userList.some((user) => user.id === userId);
+    return this.roomList[roomId].userList.some(
+      (user) => user.data.user.id === userId,
+    );
   }
 }
