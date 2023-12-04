@@ -33,7 +33,7 @@ const editorOptions = {
   },
   fontFamily: "Cafe24Ssurround",
   readOnly: true,
-  fontSize: 32,
+  fontSize: 18,
 };
 
 const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) => {
@@ -66,6 +66,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
           <div className="p-2 flex justify-between">
             <div>EMAIL : {userInfo.email}</div>
             <div>
+              <span>문제 번호 선택 </span>
               {userInfo.submissions.map((submission, index) => (
                 <button
                   style={{ color: submissionIndex === index ? "black" : "white" }}
