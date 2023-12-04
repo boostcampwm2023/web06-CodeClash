@@ -2,7 +2,7 @@ import { useLobbyStore } from "../../store/useLobby";
 
 const LobbyUserListBox: React.FC = () => {
   const { userList } = useLobbyStore();
-  const userListItems = userList.map(({ userName }, idx) => (
+  const userListItems = userList?.map(({ userName }, idx) => (
     <div className="text-[0.75rem] cursor-pointer" key={userName + String(idx)}>
       {userName}
     </div>

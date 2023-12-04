@@ -5,10 +5,10 @@ import GameProblemIdx from "../components/gameplay/ProblemIdx";
 import SlidePage from "../components/common/SlidePage";
 import { useRoomStore } from "../store/useRoom";
 
-const GAME_COUNT = 3;
 const GamePlayPage: React.FC = () => {
   const { problemList } = useRoomStore();
   const [currentProblemIdx, setCurrentProblemIdx] = useState<number>(0);
+  const GAME_COUNT = problemList.length;
 
   return (
     <SlidePage className="pt-2 px-4 pb-14 w-full h-full flex flex-col items-center">

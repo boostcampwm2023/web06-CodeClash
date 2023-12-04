@@ -26,6 +26,7 @@ const App: React.FC = () => {
               <Route path="/result" element={<ResultPage />} />
             </Route>
           </Route>
+          <Route path="*" element={<Navigate to="/lobby" />} />
         </Routes>
       </AnimatePresence>
     </div>

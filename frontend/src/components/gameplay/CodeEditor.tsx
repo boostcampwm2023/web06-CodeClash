@@ -52,7 +52,7 @@ const isInputValue = (code: number) => {
 
 const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-const editorOptions = {
+const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
   minimap: {
     enabled: false,
   },
@@ -64,6 +64,9 @@ const editorOptions = {
   lineNumbersMinChars: 3,
   quickSuggestions: false,
   wordBasedSuggestions: false,
+  suggest: {
+    selectionMode: "never",
+  },
 };
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, options, initialCode }) => {
