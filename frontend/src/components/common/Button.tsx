@@ -16,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({ color, title, subTitle = "", onClick, c
   return (
     <div
       className={
-        "px-4 py-3 text-white text-center font-bold rounded-md hover:cursor-pointer border-8 border-white flex flex-col items-center justify-center " +
+        "px-4 py-3 text-white text-center font-bold rounded-md hover:cursor-pointer border-8 border-white flex flex-col items-center justify-center select-none " +
         colorVariants[color] +
         " " +
         className
