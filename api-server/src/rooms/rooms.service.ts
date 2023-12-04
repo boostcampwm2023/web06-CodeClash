@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Socket } from 'socket.io';
-import {
-  CreateRoomInfo,
-  Room,
-  RoomInfo,
-  RoomList,
-  User,
-} from './entities/room.entity';
+import { CreateRoomInfo, Room, RoomInfo, User } from './entities/room.entity';
 
 @Injectable()
 export class RoomsService {
