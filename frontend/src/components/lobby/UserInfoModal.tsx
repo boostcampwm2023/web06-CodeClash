@@ -65,12 +65,12 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
         <div className="w-full h-full">
           <div className="p-2 flex justify-between">
             <div>EMAIL : {userInfo.email}</div>
-            <div>
+            <div className="flex gap-2">
               <span>문제 번호 선택 </span>
               {userInfo.submissions.map((submission, index) => (
                 <button
                   style={{ color: submissionIndex === index ? "black" : "white" }}
-                  key={submission.problem.title}
+                  key={submission.problem.title + index}
                   onClick={() => setSubmissionIndex(index)}
                 >
                   {index + 1}
