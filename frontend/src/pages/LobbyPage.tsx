@@ -60,6 +60,7 @@ const LobbyPage: React.FC = () => {
       socket.on("user_create_room", handleUserCreateRoom);
       socket.on("create_room", handleRoomCreated);
       socket.on("delete_room", handleDeleteRoom);
+      socket.on("room_start", handleDeleteRoom);
     }
     return () => {
       if (socket) {
@@ -69,6 +70,7 @@ const LobbyPage: React.FC = () => {
         socket.off("user_create_room", handleUserCreateRoom);
         socket.off("create_room", handleRoomCreated);
         socket.off("delete_room", handleDeleteRoom);
+        socket.off("room_start", handleDeleteRoom);
       }
     };
   }, [socket]);
