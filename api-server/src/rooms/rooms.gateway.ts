@@ -7,18 +7,24 @@ import {
 } from '@nestjs/websockets';
 import { RoomsService } from './rooms.service';
 import { Server, Socket } from 'socket.io';
-import { UseFilters } from '@nestjs/common';
+import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to-ws.exception';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
-
+import { TIME_LIMIT } from './rooms.constants';
+import { RoomsInputDto } from './dtos/rooms.input.dto';
+import RoomsInviteDto from './dtos/rooms.invite.dto';
+import { plainToClass, plainToInstance } from 'class-transformer';
 @WebSocketGateway({
   namespace: 'rooms',
   path: '/api/rooms',
   cors: true,
 })
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class RoomsGateway {
+  private readonly logger = new Logger(RoomsGateway.name);
+
   constructor(
     private readonly roomsService: RoomsService,
     private readonly authService: AuthService,
@@ -58,7 +64,8 @@ export class RoomsGateway {
       }
 
       socket.data.user = user;
-      socket.data.user.ready = false;
+      socket.data.ready = false;
+      socket.data.passed = false;
       socket.data.token = token;
       socket.data.type = payload.type;
 
@@ -246,7 +253,7 @@ export class RoomsGateway {
 
   @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('ready')
-  ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
+  async ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
 
     this.server.in(roomId).emit('ready', {
@@ -255,8 +262,9 @@ export class RoomsGateway {
     });
 
     if (this.roomsService.checkUsersReady(roomId)) {
-      const problems = this.problemsService.findProblemsWithTestcases(1);
+      const problems = await this.problemsService.findProblemsWithTestcases(1);
 
+      this.roomsService.changeRoomState(roomId, 'playing');
       this.server.in(roomId).emit('start', {
         status: 'start',
         problems,
@@ -265,8 +273,6 @@ export class RoomsGateway {
       this.server.in('lobby').emit('room_start', {
         roomId,
       });
-
-      this.roomsService.changeRoomState(roomId, 'playing');
     }
   }
 
@@ -327,19 +333,71 @@ export class RoomsGateway {
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
-  @SubscribeMessage('game_over')
-  gameOver(@ConnectedSocket() client: Socket) {
+  @SubscribeMessage('pass')
+  pass(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+    let timer = this.roomsService.getTimer(roomId);
+
+    client.data.passed = true;
+
+    if (this.roomsService.allUserPassed(roomId) && timer) {
+      clearTimeout(timer);
+      this.roomsService.gameOver(roomId);
+      this.server.in(roomId).emit('game_over');
+      this.server.in('lobby').emit('room_game_over', { roomId });
+
+      return;
+    }
+
+    if (timer) return;
+
+    timer = setTimeout(() => {
+      this.roomsService.gameOver(roomId);
+      this.server.in(roomId).emit('game_over');
+      this.server.in('lobby').emit('room_game_over', { roomId });
+    }, TIME_LIMIT);
+
+    this.roomsService.setTimer(roomId, timer);
+    this.server.in(roomId).emit('countdown');
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('exit_result')
+  exitResult(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
 
-    this.roomsService.getAllClient(roomId).forEach(({ userName }) => {
-      const userSocket = this.roomsService.getUserSocket(userName);
+    if (this.roomsService.roomHasUser(roomId, client.data.user.id)) {
+      client.emit('exit_result', {
+        ...this.roomsService.getGameRoom(roomId),
+        userList: this.roomsService.getAllClient(roomId),
+      });
+    }
+  }
 
-      this.roomsService.changeReadyStatus(userSocket);
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('invite')
+  invite(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: RoomsInputDto,
+  ) {
+    const targetUserSocket = this.roomsService.getUserSocket(data.userName);
+    const dto = plainToClass(RoomsInviteDto, {
+      roomId: client.data.roomId,
+      targetUserRoomId: targetUserSocket.data.roomId,
+      userName: client.data.user.name,
     });
-    this.roomsService.changeRoomState(roomId, 'waiting');
-    this.server.in('lobby').emit('room_game_over', {
-      roomId,
-      status: 'waiting',
-    });
+
+    try {
+      const inviteInfo = this.roomsService.invite(
+        plainToClass(RoomsInviteDto, dto),
+      );
+
+      targetUserSocket.emit('invite', inviteInfo);
+    } catch (err) {
+      client.emit('invite', {
+        status: 'fail',
+        message: err.message,
+      });
+    }
   }
 }

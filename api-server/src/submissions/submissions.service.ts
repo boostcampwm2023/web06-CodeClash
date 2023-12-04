@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SubmissionTable } from './entities/submission.entity';
 import { Repository } from 'typeorm';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
+import { SearchSubmissionDto } from './dto/search-submission.dto';
 
 @Injectable()
 export class SubmissionsService {
@@ -34,5 +35,23 @@ export class SubmissionsService {
     return await this.submissionsRepository.findOne({
       where: { codeHash: hashedCode },
     });
+  }
+
+  async getLastSubmission(searchSubmissionDto: SearchSubmissionDto) {
+    const promises = [];
+
+    searchSubmissionDto.problemIds.forEach((problemId) => {
+      const lastSubmission = this.submissionsRepository.findOne({
+        where: {
+          problem: { id: problemId },
+          user: { name: searchSubmissionDto.userName },
+        },
+        order: { id: 'DESC' },
+      });
+
+      promises.push(lastSubmission);
+    });
+
+    return await Promise.all(promises);
   }
 }

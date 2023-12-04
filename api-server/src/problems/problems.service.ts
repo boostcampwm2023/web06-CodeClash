@@ -48,9 +48,8 @@ export class ProblemsService {
   async findProblemsWithTestcases(limit: number) {
     const problems = await this.problemsRepository
       .createQueryBuilder('problem')
-      .innerJoinAndSelect('problem.testcases', 'testcase')
+      .leftJoinAndSelect('problem.testcases', 'testcase')
       .orderBy('RAND()')
-      .take(limit)
       .select([
         'problem.id',
         'problem.title',
@@ -63,6 +62,6 @@ export class ProblemsService {
       ])
       .getMany();
 
-    return problems;
+    return problems.slice(0, limit);
   }
 }

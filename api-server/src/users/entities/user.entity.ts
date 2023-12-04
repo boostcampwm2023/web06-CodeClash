@@ -1,9 +1,4 @@
-import {
-  IsEmail,
-  IsString,
-  Length,
-  ValidationArguments,
-} from 'class-validator';
+import { IsEmail, IsString, Length } from 'class-validator';
 import { BaseTable } from 'src/common/entities/base-table.entity';
 import { SubmissionTable } from 'src/submissions/entities/submission.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
@@ -22,7 +17,7 @@ export class UserTable extends BaseTable {
   @IsString({
     message: stringValidationMessage,
   })
-  @Length(6, 20, {
+  @Length(2, 20, {
     message: lengthValidationMessage,
   })
   name: string;

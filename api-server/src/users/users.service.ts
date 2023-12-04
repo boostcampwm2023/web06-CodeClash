@@ -30,11 +30,27 @@ export class UsersService {
     return await this.usersRepository.findOne({ where: { email } });
   }
 
-  async getUserByName(name: string) {
+  async getUserByName(name: string, count: number = 5) {
     // user -> user.submissions -> submission.problem join
-    return await this.usersRepository.findOne({
-      where: { name },
-      relations: ['submissions', 'submissions.problem'],
-    });
+    const usersSubmissions = await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.submissions', 'submission')
+      .leftJoinAndSelect('submission.problem', 'problem')
+      .where('user.name = :name', { name })
+      .select([
+        'user.name',
+        'user.email',
+        'submission.code',
+        'submission.language',
+        'submission.status',
+        'submission.createdAt',
+        'problem.title',
+      ])
+      .getOne();
+
+    // 제출을 가장 마지막 5개만 가져온다.
+    usersSubmissions.submissions = usersSubmissions.submissions.slice(-count);
+
+    return usersSubmissions;
   }
 }
