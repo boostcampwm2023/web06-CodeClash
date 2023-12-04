@@ -166,9 +166,13 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
   useEffect(() => {
     socket?.on("timeover", () => {});
+    socket?.on("timerstart", () => {});
+    socket?.on("pass", () => {});
 
     return () => {
       socket?.off("timeover");
+      socket?.off("timerstart");
+      socket?.off("pass");
     };
   }, [socket]);
 
