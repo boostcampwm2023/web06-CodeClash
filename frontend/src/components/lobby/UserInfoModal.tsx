@@ -55,6 +55,39 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     });
   };
 
+  const userInfoHeader = ({ email, submissions }: IUserInfo) => (
+    <div className="p-2 flex justify-between">
+      <div>EMAIL : {email}</div>
+      <div className="flex gap-2">
+        <span>문제 번호 선택 </span>
+        {submissions.map((submission, index) => (
+          <button
+            style={{ color: submissionIndex === index ? "black" : "white" }}
+            key={submission.problem.title + index}
+            onClick={() => setSubmissionIndex(index)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const userCode = ({ submissions }: IUserInfo) => (
+    <div className="bg-lightskyblue w-full h-[85%] p-2 rounded-lg overflow-scroll">
+      {submissions.length > 0 ? (
+        <Editor
+          language="javascript"
+          value={`// Problem: ${submissions[submissionIndex].problem.title}\n\n${submissions[submissionIndex].code}`}
+          onMount={handleEditorDidMount}
+          options={{ ...editorOptions }}
+        />
+      ) : (
+        `${userName}님의 코드 제출 기록이 없습니다`
+      )}
+    </div>
+  );
+
   return (
     <Modal
       title={`${userName}님의 정보`}
@@ -63,38 +96,8 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     >
       {userInfo ? (
         <div className="w-full h-full">
-          <div className="p-2 flex justify-between">
-            <div>EMAIL : {userInfo.email}</div>
-            <div className="flex gap-2">
-              <span>문제 번호 선택 </span>
-              {userInfo.submissions.map((submission, index) => (
-                <button
-                  style={{ color: submissionIndex === index ? "black" : "white" }}
-                  key={submission.problem.title + index}
-                  onClick={() => setSubmissionIndex(index)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="bg-lightskyblue w-full h-[85%] p-2 rounded-lg overflow-scroll">
-            {userInfo.submissions.length > 0 ? (
-              <Editor
-                language="javascript"
-                value={
-                  "// " +
-                  userInfo.submissions[submissionIndex].problem.title +
-                  "\n" +
-                  userInfo.submissions[submissionIndex].code
-                }
-                onMount={handleEditorDidMount}
-                options={{ ...editorOptions }}
-              />
-            ) : (
-              `${userName}님의 코드 제출 기록이 없습니다`
-            )}
-          </div>
+          {userInfoHeader(userInfo)}
+          {userCode(userInfo)}
         </div>
       ) : (
         <div>{userName}님의 정보를 찾을 수 없습니다</div>

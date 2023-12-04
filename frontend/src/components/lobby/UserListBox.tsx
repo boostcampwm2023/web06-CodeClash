@@ -4,7 +4,7 @@ import UserInfoModal from "./UserInfoModal";
 
 const LobbyUserListBox: React.FC = () => {
   const { userList } = useLobbyStore();
-  const [targetUser, setTargetUser] = useState("");
+  const [targetUser, setTargetUser] = useState<string | null>(null);
   const userListItems = userList.map(({ userName }, idx) => (
     <button
       onClick={() => setTargetUser(userName)}
@@ -23,7 +23,7 @@ const LobbyUserListBox: React.FC = () => {
       <div className=" bg-lightskyblue rounded-md flex flex-col gap-1 p-2 w-full h-full overflow-scroll">
         {userListItems}
       </div>
-      {targetUser !== "" ? <UserInfoModal closeModal={() => setTargetUser("")} userName={targetUser} /> : null}
+      {targetUser !== null ? <UserInfoModal closeModal={() => setTargetUser(null)} userName={targetUser} /> : null}
     </div>
   );
 };
