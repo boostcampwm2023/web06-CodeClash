@@ -10,12 +10,14 @@ interface RoomState {
   roomId: string;
   roomName: string;
   capacity: number;
+  isStart: boolean;
   userList: UserInfo[];
   problemList: ProblemType[];
 }
 
 interface RoomAction {
   setRoomInfo: (newRoomInfo: RoomState) => void;
+  setIsStart: (isStart: boolean) => void;
   setRoomUserList: (newUserList: UserInfo[]) => void;
   setAddRoomUser: (newUser: UserInfo) => void;
   setRemoveRoomUser: (userName: string) => void;
@@ -29,9 +31,11 @@ export const useRoomStore = create<RoomStore>(set => ({
   roomId: "",
   roomName: "",
   capacity: 0,
+  isStart: false,
   userList: [],
   problemList: [],
   setRoomInfo: newRoomInfo => set(state => ({ ...newRoomInfo })),
+  setIsStart: isStart => set(state => ({ isStart })),
   setRoomUserList: userList => set(state => ({ userList })),
   setAddRoomUser: newUser => set(state => ({ userList: state.userList.concat(newUser) })),
   setRemoveRoomUser: exitedUserName =>

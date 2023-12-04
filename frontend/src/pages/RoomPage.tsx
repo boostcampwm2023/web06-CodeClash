@@ -17,10 +17,18 @@ interface IExitRoomResponse {
 }
 
 const RoomPage: React.FC = () => {
-  const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady, setProblemList } = useRoomStore();
+  const {
+    userList,
+    capacity,
+    isStart,
+    setIsStart,
+    setAddRoomUser,
+    setRemoveRoomUser,
+    setChangeUserReady,
+    setProblemList,
+  } = useRoomStore();
   const { setLobby } = useLobbyStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {

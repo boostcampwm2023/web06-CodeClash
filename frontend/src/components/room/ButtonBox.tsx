@@ -4,13 +4,14 @@ import Button from "../common/Button";
 
 const RoomButtonBox: React.FC = () => {
   const { socket } = useSocketStore();
-  const { roomId } = useRoomStore();
+  const { roomId, isStart } = useRoomStore();
 
   const handleExitRoom = () => {
     socket?.emit("exit_room", { roomId });
   };
 
   const handleClickReady = () => {
+    if (isStart) return;
     socket?.emit("ready", { roomId });
   };
 

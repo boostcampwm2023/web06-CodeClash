@@ -43,7 +43,7 @@ const LobbyRoomListBox: React.FC = () => {
 
   const handleRoomEntered = ({ status, roomId, roomName, capacity, userList }: IEnterRoomResponse) => {
     if (status === "fail") return;
-    setRoomInfo({ roomId, roomName, capacity, userList, problemList: [] });
+    setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
     navigate("/room");
   };
 
