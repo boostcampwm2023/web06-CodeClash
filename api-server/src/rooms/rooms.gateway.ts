@@ -7,18 +7,21 @@ import {
 } from '@nestjs/websockets';
 import { RoomsService } from './rooms.service';
 import { Server, Socket } from 'socket.io';
-import { Logger, UseFilters } from '@nestjs/common';
+import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to-ws.exception';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
 import { TIME_LIMIT } from './rooms.constants';
-
+import { RoomsInputDto } from './dtos/rooms.input.dto';
+import RoomsInviteDto from './dtos/rooms.invite.dto';
+import { plainToClass, plainToInstance } from 'class-transformer';
 @WebSocketGateway({
   namespace: 'rooms',
   path: '/api/rooms',
   cors: true,
 })
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class RoomsGateway {
   private readonly logger = new Logger(RoomsGateway.name);
 
@@ -355,6 +358,7 @@ export class RoomsGateway {
     }, TIME_LIMIT);
 
     this.roomsService.setTimer(roomId, timer);
+    this.server.in(roomId).emit('countdown');
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
@@ -372,49 +376,28 @@ export class RoomsGateway {
 
   @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('invite')
-  invite(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { roomId } = client.data;
-    const { userName } = data;
-    const targetUserSocket = this.roomsService.getUserSocket(userName);
-    const targetUserRoomId = targetUserSocket.data.roomId;
-
-    if (!targetUserSocket || targetUserRoomId !== 'lobby') {
-      this.logger.log(
-        `[invite] ${client.data.user.name} 사용자가 로비에 없는 사용자를 초대함`,
-      );
-      return;
-    }
-
-    if (roomId === 'lobby') {
-      this.logger.log(
-        `[invite] ${client.data.user.name} 사용자가 로비에서 초대를 시도함`,
-      );
-      return;
-    }
-
-    const { roomName, state, capacity, userCount } =
-      this.roomsService.getGameRoom(roomId);
-
-    if (state !== 'waiting') {
-      this.logger.log(
-        `[invite] ${client.data.user.name} 사용자가 이미 게임이 시작된 방에 초대를 시도함`,
-      );
-      return;
-    }
-
-    if (userCount >= capacity) {
-      this.logger.log(
-        `[invite] ${client.data.user.name} 사용자가 꽉 찬 방에 초대를 시도함`,
-      );
-      return;
-    }
-
-    targetUserSocket.emit('invite', {
-      roomId,
-      roomName,
-      userCount,
-      capacity,
+  invite(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: RoomsInputDto,
+  ) {
+    const targetUserSocket = this.roomsService.getUserSocket(data.userName);
+    const dto = plainToClass(RoomsInviteDto, {
+      roomId: client.data.roomId,
+      targetUserRoomId: targetUserSocket.data.roomId,
       userName: client.data.user.name,
     });
+
+    try {
+      const inviteInfo = this.roomsService.invite(
+        plainToClass(RoomsInviteDto, dto),
+      );
+
+      targetUserSocket.emit('invite', inviteInfo);
+    } catch (err) {
+      client.emit('invite', {
+        status: 'fail',
+        message: err.message,
+      });
+    }
   }
 }

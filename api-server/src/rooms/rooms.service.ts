@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Socket } from 'socket.io';
 import { CreateRoomInfo, Room, RoomInfo, User } from './entities/room.entity';
+import { RoomsInputDto } from './dtos/rooms.input.dto';
+import RoomsInviteDto from './dtos/rooms.invite.dto';
 
 @Injectable()
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class RoomsService {
+  private logger = new Logger('RoomsService');
   private roomList: Record<string, Room> = {
     lobby: {
       roomId: 'lobby',
@@ -175,5 +179,44 @@ export class RoomsService {
     return this.roomList[roomId].userList.some(
       (user) => user.data.user.id === userId,
     );
+  }
+
+  invite(dto: RoomsInviteDto) {
+    const { roomId, targetUserRoomId, userName } = dto;
+    const { roomName, state, capacity, userCount } = this.getGameRoom(roomId);
+
+    if (targetUserRoomId !== 'lobby') {
+      this.logger.log(
+        `[invite] ${userName} 사용자가 로비에 없는 사용자를 초대함`,
+      );
+      throw new Error('초대한 유저가 로비에 없습니다.');
+    }
+
+    if (roomId === 'lobby') {
+      this.logger.log(`[invite] ${userName} 사용자가 로비에서 초대를 시도함`);
+      throw new Error('로비에서는 초대할 수 없습니다.');
+    }
+
+    if (state !== 'waiting') {
+      this.logger.log(
+        `[invite] ${userName} 사용자가 이미 게임이 시작된 방에 초대를 시도함`,
+      );
+      throw new Error('이미 게임이 시작된 방에는 초대할 수 없습니다.');
+    }
+
+    if (userCount >= capacity) {
+      this.logger.log(`[invite] ${userName} 사용자가 꽉 찬 방에 초대를 시도함`);
+
+      throw new Error('꽉 찬 방에는 초대할 수 없습니다.');
+    }
+
+    return {
+      status: 'success',
+      roomId,
+      roomName,
+      userCount,
+      capacity,
+      userName,
+    };
   }
 }
