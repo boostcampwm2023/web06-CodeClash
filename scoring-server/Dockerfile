@@ -1,12 +1,14 @@
-FROM node:18-alpine
+FROM node:18-slim
 
 RUN mkdir -p /app
 WORKDIR /app
 
 ADD . /app/
 
-RUN npm install
-
 EXPOSE 3000
 
-ENTRYPOINT npm start
+ENTRYPOINT node codeRunner.js
+
+RUN useradd chanwoo -s /bin/sh
+
+USER chanwoo
