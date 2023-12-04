@@ -17,6 +17,8 @@ module.exports = {
         yellow: "#FEB938",
         black: "#222126",
         white: "#FEFEFD",
+        wincrown: "#FFCF46",
+        crownorange: "#FE860C",
       },
       backgroundImage: {
         defaultPattern: "url('/src/assets/img/backgroundimage.webp')",

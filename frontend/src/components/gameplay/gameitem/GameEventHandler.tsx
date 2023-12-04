@@ -8,9 +8,10 @@ import { gameItemReducer, initialGameItemState } from "./gameItemReducer";
 import { gameItemHandler } from "./gameItemHandler";
 import { engToKor, korToEng } from "korsearch";
 import EyeStolen from "./gameScreenEffect/EyeStolen";
-import { postProblemGrade } from "../../../api/problem";
+import { postProblemExampleGrade, postProblemGrade } from "../../../api/problem";
 import { ProblemType } from "../problemType";
 import { useRoomStore } from "../../../store/useRoom";
+import BarEffect from "../../common/BarEffect";
 
 const MAX_GAME_ITEM = 2;
 
@@ -24,25 +25,57 @@ interface GameEventHandlerProps {
 const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, setCode, setResult }) => {
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
+  const [isSolved, setIsSolved] = useState(false);
   const { socket } = useSocketStore();
   const { roomId, userList } = useRoomStore();
 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
-
   const handleGradeSubmit = () => {
-    postProblemGrade(problemInfo.id, code).then(res => {
-      if (res?.data.message) {
-        alert(res?.data.message);
-        return;
-      }
-      setResult(
-        res?.data.map((data: any, idx: number) => {
-          return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${data.memory}mb 실행시간:${
-            data.runTime
-          }ms\n`;
-        }),
-      );
-    });
+    setIsSolved(status => !status);
+    postProblemGrade(problemInfo.id, code)
+      .then(res => {
+        if (res?.data.message) {
+          alert(res?.data.message);
+          return;
+        }
+        setResult(
+          res?.data.map((data: any, idx: number) => {
+            return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${
+              data.memory
+            }mb 실행시간:${data.runTime}ms\n`;
+          }),
+        );
+
+        if (res?.data.every((data: any) => data.status === "pass")) {
+          setIsSolved(true);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const handleExampleSubmit = () => {
+    postProblemExampleGrade(problemInfo.id, code)
+      .then(res => {
+        console.log(res);
+        if (res?.data.message) {
+          alert(res?.data.message);
+          return;
+        }
+        setResult(
+          res?.data.map((data: any, idx: number) => {
+            return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${
+              data.memory
+            }mb 실행시간:${data.runTime}ms\n${data.output ? "출력 : " + data.output : ""}${
+              data.error ? "에러 : " + data.error : ""
+            }`;
+          }),
+        );
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
   // 언어 뒤집기
   useEffect(() => {
@@ -107,9 +140,14 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
           fontSize: gameEventState.fontSize,
           isTypeRandom: gameEventState.isTypeRandom,
         }}
-        initialCode={problemInfo?.sampleCode}
+        initialCode={problemInfo?.sampleCode ?? ""}
       />
-      <GameFooterBox handleGradeSubmit={handleGradeSubmit} items={gameItems} />
+      <BarEffect isStart={isSolved} content="통과!" />
+      <GameFooterBox
+        handleGradeSubmit={handleGradeSubmit}
+        handleExampleSubmit={handleExampleSubmit}
+        items={gameItems}
+      />
       {gameEventState.isScreenBlock && <ScreenBlock />}
       {gameEventState.isEyeStolen && <EyeStolen />}
     </>

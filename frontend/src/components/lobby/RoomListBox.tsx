@@ -62,7 +62,7 @@ const LobbyRoomListBox: React.FC = () => {
       </div>
       <div className=" overflow-scroll p-1">
         {gameRoomList
-          .filter(({ state }) => state === "waiting")
+          ?.filter(({ state }) => state === "waiting")
           .map(({ roomId, roomName, capacity, userCount, state }) => (
             <LobbyRoomListItem
               key={roomId}

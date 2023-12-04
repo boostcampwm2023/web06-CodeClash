@@ -4,7 +4,7 @@ import RoomChatBox from "../components/room/ChatBox";
 import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
 import { useNavigate } from "react-router-dom";
-import StartAnimation from "../components/room/StartAnimation";
+import BarEffect from "../components/common/BarEffect";
 import SlidePage from "../components/common/SlidePage";
 import { UserInfo, useRoomStore } from "../store/useRoom";
 import { GameRoom, useLobbyStore } from "../store/useLobby";
@@ -86,7 +86,7 @@ const RoomPage: React.FC = () => {
 
   return (
     <SlidePage className=" flex justify-center items-center w-full h-full gap-3 p-8 ">
-      <StartAnimation isStart={isStart} />
+      <BarEffect isStart={isStart} content="전투 시작!" />
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 grid-rows-2">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox />
