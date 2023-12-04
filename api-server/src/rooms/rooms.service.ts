@@ -176,4 +176,8 @@ export class RoomsService {
     this.changeRoomState(roomId, 'waiting');
     this.roomList[roomId].timer = null;
   }
+
+  roomHasUser(roomId: string, userId: string) {
+    return this.roomList[roomId].userList.some((user) => user.id === userId);
+  }
 }
