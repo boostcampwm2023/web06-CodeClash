@@ -13,7 +13,7 @@ const attatchChildProcessEvents = (
   timer,
   startTime,
   memoryLimit,
-  answer,
+  testcase,
   isExample
 ) => {
   let output = "";
@@ -37,7 +37,8 @@ const attatchChildProcessEvents = (
     let status = "fail";
     if (childMessages.length == 2) {
       memoryUsage = childMessages[1].rss / 1000000;
-      status = childMessages[0].toString().trim() == answer ? "pass" : "fail";
+      status =
+        childMessages[0].toString().trim() == testcase.output ? "pass" : "fail";
     } else {
       memoryUsage = 0;
       status = "fail";
@@ -55,7 +56,8 @@ const attatchChildProcessEvents = (
         status: status,
         output: output,
         error,
-        answer: isExample ? answer : "",
+        answer: isExample ? testcase.output : "",
+        testcase: isExample ? testcase : "",
       });
     }
   });
@@ -86,6 +88,7 @@ app.post("/v2/scoring", (req, res) => {
       output: "",
       error: "Time Limit Exceeded",
       answer: isExample ? testcase.output : "",
+      testcase: isExample ? testcase : "",
     });
   }, timeLimit);
 
@@ -95,7 +98,7 @@ app.post("/v2/scoring", (req, res) => {
     timer,
     startTime,
     memoryLimit,
-    testcase.output,
+    testcase,
     isExample
   );
 });
