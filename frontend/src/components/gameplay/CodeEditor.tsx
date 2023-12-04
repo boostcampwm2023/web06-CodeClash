@@ -52,7 +52,7 @@ const isInputValue = (code: number) => {
 
 const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-const editorOptions = {
+const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
   minimap: {
     enabled: false,
   },
@@ -64,15 +64,14 @@ const editorOptions = {
   lineNumbersMinChars: 3,
   quickSuggestions: false,
   wordBasedSuggestions: false,
+  suggest: {
+    selectionMode: "never",
+  },
 };
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, options, initialCode }) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const currentPosRef = useRef<monaco.Position | null>();
-
-  useEffect(() => {
-    setEditorCode(initialCode ?? "");
-  }, [initialCode]);
 
   useEffect(() => {
     const randomKeydownHandler = (e: IKeyboardEvent) => {
@@ -114,6 +113,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
         editor.setPosition(currentPosRef.current ?? e.position);
       }
     });
+
+    editor.setValue(initialCode);
   };
 
   return (

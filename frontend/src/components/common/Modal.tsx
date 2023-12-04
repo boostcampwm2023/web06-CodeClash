@@ -10,7 +10,10 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ title, closeModal, children, className = "" }) => {
   return createPortal(
-    <div className="absolute top-0 flex justify-center items-center w-screen h-screen bg-black/50" onClick={closeModal}>
+    <div
+      className="absolute top-0 z-50 flex justify-center items-center w-screen h-screen bg-black/50"
+      onClick={closeModal}
+    >
       <motion.div
         initial={{
           scale: 0.25,

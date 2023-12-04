@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { ProblemType } from "../components/gameplay/problemType";
 
 export interface UserInfo {
   userName: string;
@@ -10,6 +11,7 @@ interface RoomState {
   roomName: string;
   capacity: number;
   userList: UserInfo[];
+  problemList: ProblemType[];
 }
 
 interface RoomAction {
@@ -18,6 +20,7 @@ interface RoomAction {
   setAddRoomUser: (newUser: UserInfo) => void;
   setRemoveRoomUser: (userName: string) => void;
   setChangeUserReady: (userName: string, ready: boolean) => void;
+  setProblemList: (problemList: ProblemType[]) => void;
 }
 
 interface RoomStore extends RoomState, RoomAction {}
@@ -27,14 +30,15 @@ export const useRoomStore = create<RoomStore>(set => ({
   roomName: "",
   capacity: 0,
   userList: [],
+  problemList: [],
   setRoomInfo: newRoomInfo => set(state => ({ ...newRoomInfo })),
-  setRoomUserList: userList => set(state => ({ ...state, userList })),
-  setAddRoomUser: newUser => set(state => ({ ...state, userList: state.userList.concat(newUser) })),
+  setRoomUserList: userList => set(state => ({ userList })),
+  setAddRoomUser: newUser => set(state => ({ userList: state.userList.concat(newUser) })),
   setRemoveRoomUser: exitedUserName =>
-    set(state => ({ ...state, userList: state.userList.filter(({ userName }) => userName !== exitedUserName) })),
+    set(state => ({ userList: state.userList.filter(({ userName }) => userName !== exitedUserName) })),
   setChangeUserReady: (userName, ready) =>
     set(state => ({
-      ...state,
       userList: state.userList.map(user => (user.userName === userName ? { ...user, ready } : user)),
     })),
+  setProblemList: problemList => set(state => ({ problemList })),
 }));

@@ -16,6 +16,7 @@
     "@uiw/react-markdown-preview": "^5.0.3",
     "axios": "^1.6.2",
     "framer-motion": "^10.16.5",
+    "hast-util-raw": "^9.0.1",
     "korsearch": "^1.1.5",
     "monaco-editor": "^0.44.0",
     "prettier": "^3.1.0",

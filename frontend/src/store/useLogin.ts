@@ -39,9 +39,9 @@ export const useLoginStore = create<LoginStore>(
       accessToken: "",
       loginAt: 0,
       expireTime: day, // 1day
-      setEmail: email => set(state => ({ email: email })),
+      setEmail: email => set(state => ({ email })),
       setUserName: userName => set(state => ({ userName })),
-      setIsLogin: isLogin => set(state => ({ isLogin: isLogin })),
+      setIsLogin: isLogin => set(state => ({ isLogin })),
       setLogout: () =>
         set(state => ({
           email: "",

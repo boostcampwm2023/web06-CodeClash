@@ -43,7 +43,7 @@ const LobbyRoomListBox: React.FC = () => {
 
   const handleRoomEntered = ({ status, roomId, roomName, capacity, userList }: IEnterRoomResponse) => {
     if (status === "fail") return;
-    setRoomInfo({ roomId, roomName, capacity, userList });
+    setRoomInfo({ roomId, roomName, capacity, userList, problemList: [] });
     navigate("/room");
   };
 
@@ -62,7 +62,7 @@ const LobbyRoomListBox: React.FC = () => {
       </div>
       <div className=" overflow-scroll p-1">
         {gameRoomList
-          .filter(({ state }) => state === "waiting")
+          ?.filter(({ state }) => state === "waiting")
           .map(({ roomId, roomName, capacity, userCount, state }) => (
             <LobbyRoomListItem
               key={roomId}

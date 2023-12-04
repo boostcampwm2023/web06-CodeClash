@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { baseURL } from "./baseAxios";
 import { useLoginStore } from "../store/useLogin";
 
@@ -22,4 +22,11 @@ export const onFailed = async (error: any) => {
     });
   }
   return Promise.reject(error);
+};
+
+export const admitAccessToken = async (config: InternalAxiosRequestConfig) => {
+  const { accessToken } = useLoginStore.getState();
+  if (!accessToken) return config;
+  config.headers.Authorization = `Bearer ${accessToken}`;
+  return config;
 };
