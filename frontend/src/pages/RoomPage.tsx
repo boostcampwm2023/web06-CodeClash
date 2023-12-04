@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import RoomUserCard from "../components/room/UserCard";
 import RoomChatBox from "../components/room/ChatBox";
 import RoomButtonBox from "../components/room/ButtonBox";
@@ -23,6 +23,7 @@ const RoomPage: React.FC = () => {
     userList,
     capacity,
     isStart,
+    clearRoomInfo,
     setIsStart,
     setAddRoomUser,
     setRemoveRoomUser,
@@ -42,6 +43,7 @@ const RoomPage: React.FC = () => {
   const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
     if (status === "success") {
       setLobby({ userList, gameRoomList });
+      clearRoomInfo();
       navigate("/lobby");
     }
   };
@@ -50,8 +52,8 @@ const RoomPage: React.FC = () => {
     setChangeUserReady(userName, ready);
   };
 
-  const handleStart = (problemlist: { status: string; problems: ProblemType[] }) => {
-    setProblemList(problemlist.problems);
+  const handleStart = ({ problems }: { problems: ProblemType[] }) => {
+    setProblemList(problems);
     setIsStart(true);
     setTimeout(() => {
       setIsStart(false);
