@@ -26,12 +26,15 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
   const [isSolved, setIsSolved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { socket } = useSocketStore();
   const { roomId, userList } = useRoomStore();
 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
+
   const handleGradeSubmit = () => {
-    setIsSolved(status => !status);
+    if (isLoading) return;
+    setIsLoading(true);
     postProblemGrade(problemInfo.id, code)
       .then(res => {
         if (res?.data.message) {
@@ -52,13 +55,17 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       })
       .catch(err => {
         console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   const handleExampleSubmit = () => {
+    if (isLoading) return;
+    setIsLoading(true);
     postProblemExampleGrade(problemInfo.id, code)
       .then(res => {
-        console.log(res);
         if (res?.data.message) {
           alert(res?.data.message);
           return;
@@ -75,6 +82,9 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       })
       .catch(err => {
         console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
   // 언어 뒤집기
