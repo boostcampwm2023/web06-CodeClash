@@ -272,4 +272,8 @@ export class RoomsService {
       userName,
     };
   }
+
+  roomUserCount(roomId: string) {
+    return this.roomList[roomId].userList.length;
+  }
 }

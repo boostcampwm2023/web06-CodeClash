@@ -194,7 +194,7 @@ export class RoomsGateway {
 
     this.server.in(LOBBY_ID).emit('change_user_count', {
       roomId,
-      userCount: this.roomsService.roomInfo(roomId).userList.length,
+      userCount: this.roomsService.roomUserCount(roomId),
     });
 
     return {
@@ -212,6 +212,10 @@ export class RoomsGateway {
     client.rooms.clear();
     if (roomExists) {
       this.server.in(roomId).emit('user_exit_room', { userName });
+      this.server.in(LOBBY_ID).emit('change_user_count', {
+        roomId,
+        userCount: this.roomsService.roomUserCount(roomId),
+      });
     } else {
       this.server.in(LOBBY_ID).emit('delete_room', { roomId });
     }
