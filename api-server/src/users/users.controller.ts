@@ -16,6 +16,10 @@ export class UsersController {
     return {
       name: user.name,
       email: user.email,
+      acceptCount: user.acceptCount,
+      failCount: user.failCount,
+      winCount: user.winCount,
+      totalCount: user.totalCount,
       submissions: user.submissions,
     };
   }
