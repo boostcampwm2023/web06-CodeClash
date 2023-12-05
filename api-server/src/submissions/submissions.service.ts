@@ -44,6 +44,7 @@ export class SubmissionsService {
       .where('submission.user_id = :userId', { userId })
       .skip(page * limit)
       .take(limit)
+      .orderBy('submission.id', 'DESC')
       .select([
         'submission.id',
         'submission.language',
