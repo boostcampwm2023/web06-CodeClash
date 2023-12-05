@@ -7,10 +7,12 @@ import RoomsInviteDto from './dtos/rooms.invite.dto';
 import {
   DEFAULT_ROOM_NAME,
   LOBBY_ID,
+  MAX_ITEM_CAPACITY,
   MAX_LOBBY_CAPACITY,
+  NUM_OF_ITEMS,
 } from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
-import { RoomsUserDto } from './dtos/rooms.user.dto';
+import { ItemList, RoomsUserDto } from './dtos/rooms.user.dto';
 
 @Injectable()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -24,7 +26,7 @@ export class RoomsService {
       capacity: MAX_LOBBY_CAPACITY,
       state: 'waiting',
       timer: null,
-      itemCreater: null,
+      itemCreator: null,
     },
   };
 
@@ -75,7 +77,7 @@ export class RoomsService {
       capacity,
       state: 'waiting',
       timer: null,
-      itemCreater: null,
+      itemCreator: null,
     };
 
     return roomId;
@@ -212,6 +214,49 @@ export class RoomsService {
     return this.roomList[roomId].timer;
   }
 
+  setItemCreator(roomId: string, itemCreater: NodeJS.Timeout) {
+    this.roomList[roomId].itemCreator = itemCreater;
+  }
+
+  getItemCreator(roomId: string): NodeJS.Timeout | null {
+    return this.roomList[roomId].itemCreator;
+  }
+
+  assignItem(roomId: string, userName: string) {
+    const user = this.roomList[roomId].userList.find(
+      (user) => user.userName === userName,
+    );
+
+    if (!user) {
+      this.logger.log(
+        `[assignItem] ${userName} 사용자가 존재하지 않는 사용자임`,
+      );
+      throw new WsException('사용자가 존재하지 않습니다.');
+    }
+
+    const itemCount = Object.values(user.itemList).length;
+
+    if (itemCount >= MAX_ITEM_CAPACITY) {
+      return null;
+    }
+
+    const item = this.randomItem();
+
+    if (user.itemList[item] === undefined) {
+      user.itemList[item] = 1;
+    } else {
+      user.itemList[item] += 1;
+    }
+
+    return item;
+  }
+
+  randomItem(): ItemList {
+    const item = Math.floor(Math.random() * NUM_OF_ITEMS);
+
+    return item;
+  }
+
   allUserPassed(roomId: string) {
     return this.roomList[roomId].userList.every((user) => user.passed);
   }
@@ -224,7 +269,7 @@ export class RoomsService {
     });
     this.roomList[roomId].state = 'waiting';
     this.roomList[roomId].timer = null;
-    this.roomList[roomId].itemCreater = null;
+    this.roomList[roomId].itemCreator = null;
   }
 
   roomHasUser(roomId: string, userName: string) {
@@ -284,5 +329,35 @@ export class RoomsService {
     user.ready = !user.ready;
 
     return user.ready;
+  }
+
+  roomSocketIdList(roomId: string) {
+    return this.roomList[roomId].userList.map((user) => user.socketId);
+  }
+
+  useItem(roomId: string, userName: string, item: ItemList) {
+    const user = this.roomList[roomId].userList.find(
+      (user) => user.userName === userName,
+    );
+
+    if (!user) {
+      this.logger.log(`[item] ${userName} 사용자가 존재하지 않는 사용자임`);
+      throw new WsException('사용자가 존재하지 않습니다.');
+    }
+
+    if (!user.itemList[item]) {
+      this.logger.log(
+        `[item] ${userName} 사용자가 존재하지 않는 아이템을 사용함`,
+      );
+      throw new WsException('존재하지 않는 아이템입니다.');
+    }
+
+    user.itemList[item] -= 1;
+
+    if (user.itemList[item] === 0) {
+      delete user.itemList[item];
+    }
+
+    return 'success';
   }
 }

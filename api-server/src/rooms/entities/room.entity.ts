@@ -8,7 +8,7 @@ export interface Room {
   capacity: number;
   state: 'waiting' | 'playing';
   timer: NodeJS.Timeout | null;
-  itemCreater: NodeJS.Timeout | null;
+  itemCreator: NodeJS.Timeout | null;
 }
 
 export interface RoomList {
