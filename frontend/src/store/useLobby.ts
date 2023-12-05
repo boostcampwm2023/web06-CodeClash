@@ -20,6 +20,7 @@ interface LobbyAction {
   setRemoveLobbyUser: (userName: string) => void;
   setAddGameRoom: (gameRoom: GameRoom) => void;
   setRemoveGameRoom: (roomId: string) => void;
+  setRoomUserCount: (roomId: string, userCount: number) => void;
 }
 
 interface LobbyStore extends LobbyState, LobbyAction {}
@@ -34,4 +35,10 @@ export const useLobbyStore = create<LobbyStore>(set => ({
   setAddGameRoom: gameRoom => set(state => ({ gameRoomList: state.gameRoomList.concat(gameRoom) })),
   setRemoveGameRoom: targetRoomId =>
     set(state => ({ gameRoomList: state.gameRoomList.filter(({ roomId }) => roomId !== targetRoomId) })),
+  setRoomUserCount: (roomId, userCount) =>
+    set(state => ({
+      gameRoomList: state.gameRoomList.map(gameRoom =>
+        gameRoom.roomId === roomId ? { ...gameRoom, userCount } : gameRoom,
+      ),
+    })),
 }));

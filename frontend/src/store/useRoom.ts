@@ -15,6 +15,7 @@ interface RoomState {
 }
 
 interface RoomAction {
+  setRoomId: (newRoomId: string) => void;
   setRoomInfo: (newRoomInfo: RoomState) => void;
   setRoomUserList: (newUserList: UserInfo[]) => void;
   setAddRoomUser: (newUser: UserInfo) => void;
@@ -31,6 +32,7 @@ export const useRoomStore = create<RoomStore>(set => ({
   capacity: 0,
   userList: [],
   problemList: [],
+  setRoomId: newRoomId => set(state => ({ roomId: newRoomId })),
   setRoomInfo: newRoomInfo => set(state => ({ ...newRoomInfo })),
   setRoomUserList: userList => set(state => ({ userList })),
   setAddRoomUser: newUser => set(state => ({ userList: state.userList.concat(newUser) })),
