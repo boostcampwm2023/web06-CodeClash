@@ -12,10 +12,10 @@ import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
-import { TIME_LIMIT } from './rooms.constants';
+import { NUM_OF_ROUNDS, TIME_LIMIT } from './rooms.constants';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 @WebSocketGateway({
   namespace: 'rooms',
   path: '/api/rooms',
@@ -122,6 +122,24 @@ export class RoomsGateway {
   }
 
   @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('lobby_info')
+  lobbyInfo(@ConnectedSocket() client: Socket) {
+    client.emit('lobby_info', {
+      userList: this.roomsService.getAllClient('lobby'),
+      gameRoomList: this.roomsService.getAllGameRoom(),
+    });
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('room_info')
+  roomInfo(@ConnectedSocket() client: Socket) {
+    client.emit('room_info', {
+      ...this.roomsService.getGameRoom(client.data.roomId),
+      userList: this.roomsService.getAllClient(client.data.roomId),
+    });
+  }
+
+  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('create_room')
   createRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { capacity, roomName } = data;
@@ -178,8 +196,6 @@ export class RoomsGateway {
     client.emit('enter_room', {
       status: 'success',
       message: '방에 입장했습니다.',
-      userList: this.roomsService.getAllClient(roomId),
-      ...roomInfo,
     });
   }
 
@@ -211,8 +227,6 @@ export class RoomsGateway {
     client.emit('exit_room', {
       status: 'success',
       message: '방에서 나왔습니다.',
-      userList: this.roomsService.getAllClient('lobby'),
-      gameRoomList: this.roomsService.getAllGameRoom(),
     });
   }
 
@@ -262,7 +276,8 @@ export class RoomsGateway {
     });
 
     if (this.roomsService.checkUsersReady(roomId)) {
-      const problems = await this.problemsService.findProblemsWithTestcases(1);
+      const problems =
+        await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
 
       this.roomsService.changeRoomState(roomId, 'playing');
       this.server.in(roomId).emit('start', {
