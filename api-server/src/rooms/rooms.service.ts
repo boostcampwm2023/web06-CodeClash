@@ -4,6 +4,8 @@ import { Socket } from 'socket.io';
 import { CreateRoomInfo, Room, RoomInfo, User } from './entities/room.entity';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
+import { LOBBY_ID } from './rooms.constants';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -17,6 +19,7 @@ export class RoomsService {
       capacity: 1000,
       state: 'waiting',
       timer: null,
+      itmeCreater: null,
     },
   };
 
@@ -24,11 +27,34 @@ export class RoomsService {
 
   constructor() {}
 
-  createRoom(
-    client: Socket,
-    roomName: string,
-    capacity: number,
-  ): CreateRoomInfo {
+  roomInfo(roomId: string) {
+    const room = this.roomList[roomId];
+
+    return {
+      ...room,
+      userList: room.userList.map((user) => {
+        return {
+          userName: user.data.user.name,
+          ready: user.data.ready,
+        };
+      }),
+    };
+  }
+
+  lobbyInfo() {
+    const lobby = this.roomList[LOBBY_ID];
+
+    return {
+      ...lobby,
+      userList: lobby.userList.map((user) => {
+        return {
+          userName: user.data.user.name,
+        };
+      }),
+    };
+  }
+
+  createRoom(client: Socket, roomName: string, capacity: number): string {
     const roomId = uuid();
 
     this.exitRoom(client, 'lobby');
@@ -40,17 +66,12 @@ export class RoomsService {
       capacity,
       state: 'waiting',
       timer: null,
+      itmeCreater: null,
     };
 
     this.enterRoom(client, roomId);
 
-    return {
-      roomId,
-      roomName,
-      userList: this.getAllClient(roomId),
-      capacity,
-      state: 'waiting',
-    };
+    return roomId;
   }
 
   enterRoom(client: Socket, roomId: string) {
@@ -189,25 +210,25 @@ export class RoomsService {
       this.logger.log(
         `[invite] ${userName} 사용자가 로비에 없는 사용자를 초대함`,
       );
-      throw new Error('초대한 유저가 로비에 없습니다.');
+      throw new WsException('초대한 유저가 로비에 없습니다.');
     }
 
     if (roomId === 'lobby') {
       this.logger.log(`[invite] ${userName} 사용자가 로비에서 초대를 시도함`);
-      throw new Error('로비에서는 초대할 수 없습니다.');
+      throw new WsException('로비에서는 초대할 수 없습니다.');
     }
 
     if (state !== 'waiting') {
       this.logger.log(
         `[invite] ${userName} 사용자가 이미 게임이 시작된 방에 초대를 시도함`,
       );
-      throw new Error('이미 게임이 시작된 방에는 초대할 수 없습니다.');
+      throw new WsException('이미 게임이 시작된 방에는 초대할 수 없습니다.');
     }
 
     if (userCount >= capacity) {
       this.logger.log(`[invite] ${userName} 사용자가 꽉 찬 방에 초대를 시도함`);
 
-      throw new Error('꽉 찬 방에는 초대할 수 없습니다.');
+      throw new WsException('꽉 찬 방에는 초대할 수 없습니다.');
     }
 
     return {
