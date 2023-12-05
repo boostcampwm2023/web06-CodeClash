@@ -35,7 +35,6 @@ const RoomPage: React.FC = () => {
   };
 
   const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
-    console.log(userName, ready);
     setChangeUserReady(userName, ready);
   };
 
