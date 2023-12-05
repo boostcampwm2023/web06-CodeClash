@@ -35,7 +35,7 @@ export class UsersController {
       winCount: user.winCount,
       totalCount: user.totalCount,
       submissions: await this.submissionsService.paginateSubmissions(
-        userName,
+        user.id,
         page ? parseInt(page) : 0,
         limit ? parseInt(limit) : 5,
       ),
