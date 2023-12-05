@@ -1,5 +1,4 @@
 import { Variants, motion } from "framer-motion";
-import starteffectimage from "../../assets/img/starteffectimage.png";
 
 const itemVariants: Variants = {
   open: {
@@ -53,24 +52,28 @@ const containerVariants: Variants = {
   },
 };
 
-interface StartAnimationProps {
+interface BarEffectProps {
   isStart: boolean;
+  content: string;
+  isWinner?: boolean;
+  subContent?: string;
 }
 
-const StartAnimation: React.FC<StartAnimationProps> = ({ isStart }) => {
+const BarEffect: React.FC<BarEffectProps> = ({ isStart, content, isWinner, subContent }) => {
   return (
     <motion.nav
       initial={false}
       animate={isStart ? "open" : "closed"}
-      className="absolute z-50 w-full flex items-center justify-center"
+      className="absolute z-50 w-full flex items-center justify-center left-[50%] -translate-x-[50%] top-[50%] -translate-y-[50%]"
       variants={containerVariants}
       style={{ pointerEvents: isStart ? "auto" : "none" }}
     >
       <motion.div className="relative z-10" variants={itemVariants}>
-        <div className="relative z-50 w-[200vw] h-[6rem] bg-barPattern bg-center shadow-inner -rotate-3 border-b-pink border-b-[0.5vh] flex items-center justify-center">
-          <p className="relative top-[0.2rem] text-[4rem] text-white drop-shadow-textBlack border-pink font-outline-2">
-            전투 시작!
+        <div className="relative z-50 w-[200vw] h-[6rem] bg-barPattern bg-center shadow-inner -rotate-3 border-b-pink border-b-[0.5vh] flex flex-col items-center justify-center">
+          <p className="relative text-[4rem] text-white drop-shadow-textBlack border-pink font-outline-2 h-[4rem] flex items-center justify-center">
+            {content}
           </p>
+          {subContent && <p className="text-[1rem] text-white drop-shadow-textBlack h-[1rem]">{subContent}</p>}
         </div>
         <div className="absolute w-[200vw] h-[6.4rem] top-[-0.2rem] bg-white shadow-inner -rotate-3 border-b-[0.25rem] z-0"></div>
       </motion.div>
@@ -94,4 +97,4 @@ const StartAnimation: React.FC<StartAnimationProps> = ({ isStart }) => {
   );
 };
 
-export default StartAnimation;
+export default BarEffect;

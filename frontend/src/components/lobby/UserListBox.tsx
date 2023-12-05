@@ -1,11 +1,18 @@
+import { useState } from "react";
 import { useLobbyStore } from "../../store/useLobby";
+import UserInfoModal from "./UserInfoModal";
 
 const LobbyUserListBox: React.FC = () => {
   const { userList } = useLobbyStore();
+  const [targetUser, setTargetUser] = useState<string | null>(null);
   const userListItems = userList.map(({ userName }, idx) => (
-    <div className="text-[0.75rem] cursor-pointer" key={userName + String(idx)}>
+    <button
+      onClick={() => setTargetUser(userName)}
+      className="text-[0.75rem] cursor-pointer text-start"
+      key={userName + String(idx)}
+    >
       {userName}
-    </div>
+    </button>
   ));
 
   return (
@@ -16,6 +23,7 @@ const LobbyUserListBox: React.FC = () => {
       <div className=" bg-lightskyblue rounded-md flex flex-col gap-1 p-2 w-full h-full overflow-scroll">
         {userListItems}
       </div>
+      {targetUser !== null ? <UserInfoModal closeModal={() => setTargetUser(null)} userName={targetUser} /> : null}
     </div>
   );
 };

@@ -4,24 +4,27 @@ import RoomChatBox from "../components/room/ChatBox";
 import RoomButtonBox from "../components/room/ButtonBox";
 import { useSocketStore } from "../store/useSocket";
 import { useNavigate } from "react-router-dom";
-import StartAnimation from "../components/room/StartAnimation";
+import BarEffect from "../components/common/BarEffect";
 import SlidePage from "../components/common/SlidePage";
-import { UserInfo, useRoomStore } from "../store/useRoom";
-import { GameRoom, useLobbyStore } from "../store/useLobby";
+import { useRoomStore } from "../store/useRoom";
 import { ProblemType } from "../components/gameplay/problemType";
-
-interface IExitRoomResponse {
-  status: "success" | "fail";
-  userList: UserInfo[];
-  gameRoomList: GameRoom[];
-}
+import { ICreateRoomResponse } from "../components/lobby/CreateRoomModal";
 
 const RoomPage: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
-  const { userList, capacity, setAddRoomUser, setRemoveRoomUser, setChangeUserReady, setProblemList } = useRoomStore();
-  const { setLobby } = useLobbyStore();
+  const {
+    roomId,
+    userList,
+    capacity,
+    setAddRoomUser,
+    setRemoveRoomUser,
+    setChangeUserReady,
+    setProblemList,
+    setRoomInfo,
+    setRoomId,
+  } = useRoomStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
     setAddRoomUser({ userName, ready: false });
@@ -29,13 +32,6 @@ const RoomPage: React.FC = () => {
 
   const handleUserExitRoom = ({ userName }: { userName: string }) => {
     setRemoveRoomUser(userName);
-  };
-
-  const handleEnterLobby = ({ status, userList, gameRoomList }: IExitRoomResponse) => {
-    if (status === "success") {
-      setLobby({ userList, gameRoomList });
-      navigate("/lobby");
-    }
   };
 
   const handleUserReady = ({ userName, ready }: { userName: string; ready: boolean }) => {
@@ -53,26 +49,40 @@ const RoomPage: React.FC = () => {
     }, 3000);
   };
 
+  const handleEnterRoom = ({ status, message }: { status: string; message: string }) => {
+    if (status === "fail") {
+      alert(message);
+      navigate("/lobby");
+    }
+    if (status === "success") {
+      socket?.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
+        setRoomInfo({ roomId, roomName, capacity, userList, problemList: [] });
+      });
+    }
+  };
+
   useEffect(() => {
     if (socket) {
+      socket.emit("enter_room", { roomId }, handleEnterRoom);
       socket.on("user_enter_room", handleUserEnterRoom);
       socket.on("user_exit_room", handleUserExitRoom);
-      socket.on("exit_room", handleEnterLobby);
       socket.on("ready", handleUserReady);
       socket.on("start", handleStart);
     }
     return () => {
       if (socket) {
+        socket.emit("exit_room", { roomId }, () => {
+          setRoomId("");
+        });
         socket.off("user_enter_room", handleUserEnterRoom);
         socket.off("user_exit_room", handleUserExitRoom);
-        socket.off("exit_room", handleEnterLobby);
         socket.off("ready", handleUserReady);
         socket.off("start", handleStart);
       }
     };
-  }, [socket]);
+  }, [socket, roomId]);
 
-  const emptyList = new Array(capacity - userList.length).fill({
+  const emptyList = new Array(capacity - userList.length < 0 ? 0 : capacity - userList.length).fill({
     isHost: false,
     userName: "대기중...",
     ready: false,
@@ -86,7 +96,7 @@ const RoomPage: React.FC = () => {
 
   return (
     <SlidePage className=" flex justify-center items-center w-full h-full gap-3 p-8 ">
-      <StartAnimation isStart={isStart} />
+      <BarEffect isStart={isStart} content="전투 시작!" />
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 grid-rows-2">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox />
