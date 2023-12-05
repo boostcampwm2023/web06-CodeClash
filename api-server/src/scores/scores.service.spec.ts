@@ -7,6 +7,9 @@ import { ProblemTable } from 'src/problems/entities/problem.entity';
 import { ProblemsMockRepository } from 'src/problems/mocks/repository.mock';
 import { SubmissionTable } from 'src/submissions/entities/submission.entity';
 import { SubmissionsMockRepository } from 'src/submissions/mocks/repository.mock';
+import { UsersService } from 'src/users/users.service';
+import { UserTable } from 'src/users/entities/user.entity';
+import { UsersMockRepository } from 'src/users/mocks/repository.mock';
 
 describe('ScoresService', () => {
   let service: ScoresService;
@@ -17,6 +20,7 @@ describe('ScoresService', () => {
         ScoresService,
         ProblemsService,
         SubmissionsService,
+        UsersService,
         {
           provide: getRepositoryToken(ProblemTable),
           useClass: ProblemsMockRepository,
@@ -24,6 +28,10 @@ describe('ScoresService', () => {
         {
           provide: getRepositoryToken(SubmissionTable),
           useClass: SubmissionsMockRepository,
+        },
+        {
+          provide: getRepositoryToken(UserTable),
+          useClass: UsersMockRepository,
         },
       ],
     }).compile();
