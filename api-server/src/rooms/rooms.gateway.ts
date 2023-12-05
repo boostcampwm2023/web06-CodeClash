@@ -258,7 +258,7 @@ export class RoomsGateway {
   ready(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
-    const ready = this.roomsService.ready(roomId, userName);
+    const ready = this.roomsService.switchReady(roomId, userName);
 
     this.server.in(roomId).emit('ready', { userName, ready });
     if (this.roomsService.allUserReady(roomId)) {
@@ -272,7 +272,7 @@ export class RoomsGateway {
 
     this.roomsService.changeRoomState(roomId, 'playing');
     this.server.in(roomId).emit('start', { problems });
-    this.server.in(LOBBY_ID).emit('room_start', { roomId });
+    this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
   }
   /*
   @SubscribeMessage('kick')

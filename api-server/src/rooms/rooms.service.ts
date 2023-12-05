@@ -176,12 +176,6 @@ export class RoomsService {
       });
   }
 
-  changeReadyStatus(client: Socket) {
-    client.data.ready = !client.data.ready;
-
-    return client.data.ready;
-  }
-
   allUserReady(roomId: string) {
     return this.roomList[roomId].userList.every((user) => user.ready);
   }
@@ -282,7 +276,7 @@ export class RoomsService {
     return this.roomList[roomId].userList.length;
   }
 
-  ready(roomId: string, userName: string) {
+  switchReady(roomId: string, userName: string) {
     const user = this.roomList[roomId].userList.find(
       (user) => user.userName === userName,
     );
