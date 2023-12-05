@@ -37,6 +37,30 @@ export class SubmissionsService {
     });
   }
 
+  async paginateSubmissions(userId: number, page: number, limit: number = 5) {
+    return await this.submissionsRepository
+      .createQueryBuilder('submission')
+      .leftJoinAndSelect('submission.problem', 'problem')
+      .where('submission.user_id = :userId', { userId })
+      .skip(page * limit)
+      .take(limit)
+      .select([
+        'submission.id',
+        'submission.language',
+        'submission.code',
+        'submission.codeHash',
+        'submission.status',
+        'submission.createdAt',
+        'problem.id',
+        'problem.title',
+      ])
+      .getMany();
+  }
+
+  async getCountOfSubmissions() {
+    return await this.submissionsRepository.count();
+  }
+
   async getLastSubmission(searchSubmissionDto: SearchSubmissionDto) {
     const promises = [];
 

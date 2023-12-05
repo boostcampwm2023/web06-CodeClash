@@ -30,27 +30,35 @@ export class UsersService {
     return await this.usersRepository.findOne({ where: { email } });
   }
 
-  async getUserByName(name: string, count: number = 5) {
-    // user -> user.submissions -> submission.problem join
-    const usersSubmissions = await this.usersRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.submissions', 'submission')
-      .leftJoinAndSelect('submission.problem', 'problem')
-      .where('user.name = :name', { name })
-      .select([
-        'user.name',
-        'user.email',
-        'submission.code',
-        'submission.language',
-        'submission.status',
-        'submission.createdAt',
-        'problem.title',
-      ])
-      .getOne();
+  async getUserByName(name: string) {
+    return await this.usersRepository.findOne({ where: { name } });
+  }
 
-    // 제출을 가장 마지막 5개만 가져온다.
-    usersSubmissions.submissions = usersSubmissions.submissions.slice(-count);
+  // 제출한 코드가 맞았을 경우
+  async increaseAcceptCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.acceptCount += 1;
+    return await this.usersRepository.save(user);
+  }
 
-    return usersSubmissions;
+  // 제출한 코드가 틀렸을 경우
+  async increaseFailCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.failCount += 1;
+    return await this.usersRepository.save(user);
+  }
+
+  // 하나의 room에서 1등했을 경우
+  async increaseWinCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.winCount += 1;
+    return await this.usersRepository.save(user);
+  }
+
+  // 하나의 room에서 게임이 시작한 경우
+  async increaseTotalCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.totalCount += 1;
+    return await this.usersRepository.save(user);
   }
 }
