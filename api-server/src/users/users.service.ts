@@ -53,4 +53,16 @@ export class UsersService {
 
     return usersSubmissions;
   }
+
+  async increaseAcceptCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.acceptCount += 1;
+    return await this.usersRepository.save(user);
+  }
+
+  async increaseFailCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.failCount += 1;
+    return await this.usersRepository.save(user);
+  }
 }

@@ -8,6 +8,7 @@ import {
   SubmissionStatus,
 } from 'src/submissions/entities/submission.entity';
 import { SHA256, enc } from 'crypto-js';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ScoresService {
@@ -21,6 +22,7 @@ export class ScoresService {
   constructor(
     private readonly problemsService: ProblemsService,
     private readonly submissionsService: SubmissionsService,
+    private readonly usersService: UsersService,
   ) {}
 
   async grade(
@@ -77,6 +79,12 @@ export class ScoresService {
       : SubmissionStatus.WrongAnswer;
 
     if (!isExample) {
+      if (status == SubmissionStatus.Accepted) {
+        await this.usersService.increaseAcceptCount(user.name);
+      } else {
+        await this.usersService.increaseFailCount(user.name);
+      }
+
       await this.submissionsService.createSubmission({
         code,
         language: SubmissionLanguage.JAVASCRIPT,
