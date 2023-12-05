@@ -192,6 +192,11 @@ export class RoomsGateway {
       } 방에 접속했습니다.`,
     });
 
+    this.server.in(LOBBY_ID).emit('change_user_count', {
+      roomId,
+      userCount: this.roomsService.roomUserCount(roomId),
+    });
+
     return {
       status: 'success',
       roomId,
@@ -199,17 +204,18 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('exit_room')
-  exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { roomId } = data;
-
-    this.logger.log('exit_room gateway roomID ' + roomId);
+  exitRoom(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const roomExists = this.roomsService.exitRoom(roomId, userName);
 
-    this.logger.log('exit_room gateway roomExists ' + roomExists);
     client.rooms.clear();
     if (roomExists) {
       this.server.in(roomId).emit('user_exit_room', { userName });
+      this.server.in(LOBBY_ID).emit('change_user_count', {
+        roomId,
+        userCount: this.roomsService.roomUserCount(roomId),
+      });
     } else {
       this.server.in(LOBBY_ID).emit('delete_room', { roomId });
     }
