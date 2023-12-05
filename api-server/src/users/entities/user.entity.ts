@@ -43,6 +43,12 @@ export class UserTable extends BaseTable {
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
+  @Column({ type: 'int', default: 0 })
+  acceptCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  failCount: number;
+
   @OneToMany(() => SubmissionTable, (submission) => submission.user)
   submissions: SubmissionTable[];
 }
