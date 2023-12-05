@@ -281,4 +281,14 @@ export class RoomsService {
   roomUserCount(roomId: string) {
     return this.roomList[roomId].userList.length;
   }
+
+  ready(roomId: string, userName: string) {
+    const user = this.roomList[roomId].userList.find(
+      (user) => user.userName === userName,
+    );
+
+    user.ready = !user.ready;
+
+    return user.ready;
+  }
 }

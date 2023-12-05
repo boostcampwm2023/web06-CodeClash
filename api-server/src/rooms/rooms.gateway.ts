@@ -67,8 +67,6 @@ export class RoomsGateway {
       }
 
       socket.data.user = user;
-      socket.data.ready = false;
-      socket.data.passed = false;
       socket.data.token = token;
       socket.data.type = payload.type;
 
@@ -257,30 +255,25 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('ready')
-  async ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { roomId } = data;
+  ready(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+    const { name: userName } = client.data.user;
+    const ready = this.roomsService.ready(roomId, userName);
 
-    this.server.in(roomId).emit('ready', {
-      userName: client.data.user.name,
-      ready: this.roomsService.changeReadyStatus(client),
-    });
-
+    this.server.in(roomId).emit('ready', { userName, ready });
     if (this.roomsService.allUserReady(roomId)) {
-      const problems =
-        await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
-
-      this.roomsService.changeRoomState(roomId, 'playing');
-      this.server.in(roomId).emit('start', {
-        status: 'start',
-        problems,
-      });
-
-      this.server.in('lobby').emit('room_start', {
-        roomId,
-      });
+      this.start(roomId);
     }
   }
 
+  private async start(roomId: string) {
+    const problems =
+      await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
+
+    this.roomsService.changeRoomState(roomId, 'playing');
+    this.server.in(roomId).emit('start', { problems });
+    this.server.in(LOBBY_ID).emit('room_start', { roomId });
+  }
   /*
   @SubscribeMessage('kick')
   kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
