@@ -34,7 +34,15 @@ export class AuthController {
         sameSite: 'none',
         secure: true,
       })
-      .send({ accessToken, userName: user.name, email: user.email });
+      .send({
+        accessToken,
+        userName: user.name,
+        email: user.email,
+        acceptCount: user.acceptCount,
+        failCount: user.failCount,
+        winCount: user.winCount,
+        totalCount: user.totalCount,
+      });
   }
 
   @Post('register/email')
@@ -52,7 +60,15 @@ export class AuthController {
         sameSite: 'none',
         secure: true,
       })
-      .send({ accessToken, userName: user.name, email: user.email });
+      .send({
+        accessToken,
+        userName: user.name,
+        email: user.email,
+        acceptCount: user.acceptCount,
+        failCount: user.failCount,
+        winCount: user.winCount,
+        totalCount: user.totalCount,
+      });
   }
 
   @Get('token/access')

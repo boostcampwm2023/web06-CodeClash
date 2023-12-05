@@ -49,6 +49,12 @@ export class UserTable extends BaseTable {
   @Column({ type: 'int', default: 0 })
   failCount: number;
 
+  @Column({ type: 'int', default: 0 })
+  winCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  totalCount: number;
+
   @OneToMany(() => SubmissionTable, (submission) => submission.user)
   submissions: SubmissionTable[];
 }

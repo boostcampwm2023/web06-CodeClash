@@ -54,15 +54,31 @@ export class UsersService {
     return usersSubmissions;
   }
 
+  // 제출한 코드가 맞았을 경우
   async increaseAcceptCount(name: string) {
     const user = await this.usersRepository.findOne({ where: { name } });
     user.acceptCount += 1;
     return await this.usersRepository.save(user);
   }
 
+  // 제출한 코드가 틀렸을 경우
   async increaseFailCount(name: string) {
     const user = await this.usersRepository.findOne({ where: { name } });
     user.failCount += 1;
+    return await this.usersRepository.save(user);
+  }
+
+  // 하나의 room에서 1등했을 경우
+  async increaseWinCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.winCount += 1;
+    return await this.usersRepository.save(user);
+  }
+
+  // 하나의 room에서 게임이 시작한 경우
+  async increaseTotalCount(name: string) {
+    const user = await this.usersRepository.findOne({ where: { name } });
+    user.totalCount += 1;
     return await this.usersRepository.save(user);
   }
 }
