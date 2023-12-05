@@ -201,9 +201,12 @@ export class RoomsGateway {
   @SubscribeMessage('exit_room')
   exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
+
+    this.logger.log('exit_room gateway roomID ' + roomId);
     const { userName } = client.data.user;
     const roomExists = this.roomsService.exitRoom(roomId, userName);
 
+    this.logger.log('exit_room gateway roomExists ' + roomExists);
     client.rooms.clear();
     if (roomExists) {
       this.server.in(roomId).emit('user_exit_room', { userName });
