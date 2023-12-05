@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 import { CreateRoomInfo, Room, RoomInfo, User } from './entities/room.entity';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
-import { LOBBY_ID } from './rooms.constants';
+import { LOBBY_ID, MAX_LOBBY_CAPACITY } from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
 import { RoomsUserDto } from './dtos/rooms.user.dto';
 
@@ -17,7 +17,7 @@ export class RoomsService {
       roomId: LOBBY_ID,
       roomName: '로비',
       userList: [],
-      capacity: 1000,
+      capacity: MAX_LOBBY_CAPACITY,
       state: 'waiting',
       timer: null,
       itemCreater: null,
@@ -56,6 +56,7 @@ export class RoomsService {
           userName: user.userName,
         };
       }),
+      roomList: this.getAllGameRoom(),
     };
   }
 
@@ -125,8 +126,14 @@ export class RoomsService {
       (user) => user.userName !== userName,
     );
 
+    this.logger.log(
+      `[exitRoom Service] roomId: ${roomId}, this.roomList[roomId].userList.length: ${this.roomList[roomId].userList.length}`,
+    );
+
     if (roomId !== LOBBY_ID && this.roomList[roomId].userList.length === 0) {
       delete this.roomList[roomId];
+
+      this.logger.log('여기 오니?');
 
       return false;
     }
