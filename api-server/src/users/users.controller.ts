@@ -41,7 +41,7 @@ export class UsersController {
       ),
       pageEnd:
         (await this.submissionsService.getCountOfSubmissions()) /
-        (limit ? parseInt(limit) : 5),
+        Math.floor(limit ? parseInt(limit) : 5),
     };
   }
 }
