@@ -126,14 +126,8 @@ export class RoomsService {
       (user) => user.userName !== userName,
     );
 
-    this.logger.log(
-      `[exitRoom Service] roomId: ${roomId}, this.roomList[roomId].userList.length: ${this.roomList[roomId].userList.length}`,
-    );
-
     if (roomId !== LOBBY_ID && this.roomList[roomId].userList.length === 0) {
       delete this.roomList[roomId];
-
-      this.logger.log('여기 오니?');
 
       return false;
     }
