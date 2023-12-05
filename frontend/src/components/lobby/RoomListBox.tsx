@@ -34,26 +34,13 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName,
 const LobbyRoomListBox: React.FC = () => {
   const { socket } = useSocketStore();
   const navigate = useNavigate();
-  const { setRoomInfo } = useRoomStore();
+  const { setRoomId } = useRoomStore();
   const { gameRoomList } = useLobbyStore();
 
   const handleEnterRoom = (roomId: string) => {
-    socket?.emit("enter_room", { roomId });
-  };
-
-  const handleRoomEntered = ({ status, roomId, roomName, capacity, userList }: IEnterRoomResponse) => {
-    if (status === "fail") return;
-    setRoomInfo({ roomId, roomName, capacity, userList, problemList: [] });
+    setRoomId(roomId);
     navigate("/room");
   };
-
-  useEffect(() => {
-    socket?.on("enter_room", handleRoomEntered);
-
-    return () => {
-      socket?.off("enter_room", handleRoomEntered);
-    };
-  }, [socket]);
 
   return (
     <div className="h-full flex flex-col flex-grow gap-4 border-[3px] border-white rounded-lg bg-skyblue p-4 ">
