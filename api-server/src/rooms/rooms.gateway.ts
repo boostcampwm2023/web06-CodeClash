@@ -12,7 +12,7 @@ import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
-import { NUM_OF_ROUNDS, TIME_LIMIT } from './rooms.constants';
+import { LOBBY_ID, NUM_OF_ROUNDS, TIME_LIMIT } from './rooms.constants';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import { plainToClass } from 'class-transformer';
@@ -21,6 +21,7 @@ import { plainToClass } from 'class-transformer';
   path: '/api/rooms',
   cors: true,
 })
+@UseFilters(HttpToSocketExceptionFilter)
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class RoomsGateway {
   private readonly logger = new Logger(RoomsGateway.name);
@@ -69,20 +70,7 @@ export class RoomsGateway {
       socket.data.token = token;
       socket.data.type = payload.type;
 
-      this.server.in('lobby').emit('user_enter_lobby', {
-        userName: socket.data.user.name,
-        message: `${socket.data.user.name} is connected to lobby`,
-      });
-
-      this.roomsService.enterRoom(socket, 'lobby');
       this.roomsService.registerUserSocket(socket, user.name);
-
-      socket.emit('connection', {
-        status: 'success',
-        message: '로비에 접속했습니다.',
-        userList: this.roomsService.getAllClient('lobby'),
-        gameRoomList: this.roomsService.getAllGameRoom(),
-      });
     } catch (e) {
       socket.emit('connection', {
         status: 'fail',
@@ -121,43 +109,45 @@ export class RoomsGateway {
     }
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('lobby_info')
   lobbyInfo(@ConnectedSocket() client: Socket) {
-    client.emit('lobby_info', {
-      userList: this.roomsService.getAllClient('lobby'),
-      gameRoomList: this.roomsService.getAllGameRoom(),
-    });
+    return this.roomsService.lobbyInfo();
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('room_info')
-  roomInfo(@ConnectedSocket() client: Socket) {
-    client.emit('room_info', {
-      ...this.roomsService.getGameRoom(client.data.roomId),
-      userList: this.roomsService.getAllClient(client.data.roomId),
-    });
+  roomInfo(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: RoomsInputDto,
+  ) {
+    return this.roomsService.roomInfo(data.roomId);
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
+  @SubscribeMessage('enter_lobby')
+  enterLobby(@ConnectedSocket() client: Socket) {
+    this.roomsService.enterRoom(client, LOBBY_ID);
+    this.server.in('lobby').emit('user_enter_lobby', {
+      userName: client.data.user.name,
+    });
+
+    return { status: 'success' };
+  }
+
   @SubscribeMessage('create_room')
   createRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { capacity, roomName } = data;
-
-    const roomInfo = this.roomsService.createRoom(client, roomName, capacity);
-    client.emit('create_room', {
-      status: 'success',
-      message: '방이 생성되었습니다.',
-      ...roomInfo,
-    });
+    const roomId = this.roomsService.createRoom(client, roomName, capacity);
 
     this.server.in('lobby').emit('user_create_room', {
-      ...this.roomsService.getGameRoom(roomInfo.roomId),
+      ...this.roomsService.roomInfo(roomId),
       userName: client.data.user.name,
     });
+
+    return {
+      status: 'success',
+      roomId,
+    };
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('enter_room')
   enterRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
@@ -193,13 +183,13 @@ export class RoomsGateway {
     });
 
     this.roomsService.enterRoom(client, roomId);
-    client.emit('enter_room', {
+
+    return {
       status: 'success',
-      message: '방에 입장했습니다.',
-    });
+      roomId,
+    };
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('exit_room')
   exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
@@ -224,13 +214,10 @@ export class RoomsGateway {
     });
 
     this.roomsService.enterRoom(client, 'lobby');
-    client.emit('exit_room', {
-      status: 'success',
-      message: '방에서 나왔습니다.',
-    });
+
+    return { status: 'success', roomId };
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('chat')
   chat(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId, message } = data;
@@ -241,7 +228,6 @@ export class RoomsGateway {
     });
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('dm')
   dm(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, message } = data;
@@ -265,7 +251,6 @@ export class RoomsGateway {
     }
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('ready')
   async ready(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
@@ -291,7 +276,6 @@ export class RoomsGateway {
     }
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('kick')
   kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, roomId } = data;
@@ -330,13 +314,10 @@ export class RoomsGateway {
       targetUser.emit('exit_room', {
         status: 'success',
         message: '방에서 강퇴되었습니다..',
-        userList: this.roomsService.getAllClient('lobby'),
-        gameRoomList: this.roomsService.getAllGameRoom(),
       });
     }
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('item')
   item(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId, item } = data;
@@ -347,7 +328,6 @@ export class RoomsGateway {
     });
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('pass')
   pass(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
@@ -376,20 +356,15 @@ export class RoomsGateway {
     this.server.in(roomId).emit('countdown');
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('exit_result')
   exitResult(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
 
     if (this.roomsService.roomHasUser(roomId, client.data.user.id)) {
-      client.emit('exit_result', {
-        ...this.roomsService.getGameRoom(roomId),
-        userList: this.roomsService.getAllClient(roomId),
-      });
+      client.emit('exit_result');
     }
   }
 
-  @UseFilters(HttpToSocketExceptionFilter)
   @SubscribeMessage('invite')
   invite(
     @ConnectedSocket() client: Socket,
@@ -401,18 +376,12 @@ export class RoomsGateway {
       targetUserRoomId: targetUserSocket.data.roomId,
       userName: client.data.user.name,
     });
+    const inviteInfo = this.roomsService.invite(
+      plainToClass(RoomsInviteDto, dto),
+    );
 
-    try {
-      const inviteInfo = this.roomsService.invite(
-        plainToClass(RoomsInviteDto, dto),
-      );
+    targetUserSocket.emit('invite', inviteInfo);
 
-      targetUserSocket.emit('invite', inviteInfo);
-    } catch (err) {
-      client.emit('invite', {
-        status: 'fail',
-        message: err.message,
-      });
-    }
+    return { status: 'success' };
   }
 }
