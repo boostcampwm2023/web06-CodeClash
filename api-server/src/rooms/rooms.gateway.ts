@@ -103,9 +103,9 @@ export class RoomsGateway {
             message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
           });
         } else {
-          this.server.in('lobby').emit('delete_room', {
-            roomId: socket.data.roomId,
-          });
+          this.server
+            .in('lobby')
+            .emit('delete_room', { roomId: socket.data.roomId });
         }
       }
     }
@@ -199,8 +199,8 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('exit_room')
-  exitRoom(@ConnectedSocket() client: Socket) {
-    const { roomId } = client.data;
+  exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { roomId } = data;
     const { userName } = client.data.user;
     const roomExists = this.roomsService.exitRoom(roomId, userName);
 

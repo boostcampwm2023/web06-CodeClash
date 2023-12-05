@@ -14,7 +14,7 @@ export class RoomsService {
   private logger = new Logger('RoomsService');
   private roomList: Record<string, Room> = {
     lobby: {
-      roomId: 'lobby',
+      roomId: LOBBY_ID,
       roomName: '로비',
       userList: [],
       capacity: 1000,
