@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SubmissionsController } from './submissions.controller';
 import { SubmissionsService } from './submissions.service';
 import { AuthModule } from 'src/auth/auth.module';
-import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SubmissionTable } from './entities/submission.entity';
@@ -17,7 +16,6 @@ describe('SubmissionsController', () => {
       providers: [
         SubmissionsService,
         AuthModule,
-        UsersModule,
         JwtModule,
         {
           provide: getRepositoryToken(SubmissionTable),

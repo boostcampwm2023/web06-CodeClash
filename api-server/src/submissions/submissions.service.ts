@@ -37,6 +37,19 @@ export class SubmissionsService {
     });
   }
 
+  async paginateSubmissions(userName, page: number, limit: number = 5) {
+    return await this.submissionsRepository.find({
+      where: { user: { name: userName } },
+      skip: page * limit,
+      take: limit,
+      order: { id: 'DESC' },
+    });
+  }
+
+  async getCountOfSubmissions() {
+    return await this.submissionsRepository.count();
+  }
+
   async getLastSubmission(searchSubmissionDto: SearchSubmissionDto) {
     const promises = [];
 
