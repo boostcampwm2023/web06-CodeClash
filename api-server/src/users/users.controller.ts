@@ -34,13 +34,13 @@ export class UsersController {
       failCount: user.failCount,
       winCount: user.winCount,
       totalCount: user.totalCount,
-      submissions: await this.submissionsService.paginateSubmissions(
+      submissions: await this.submissionsService.paginateSubmissionsByUserId(
         user.id,
         page ? parseInt(page) : 0,
         limit ? parseInt(limit) : 5,
       ),
       pageEnd: Math.floor(
-        (await this.submissionsService.getCountOfSubmissions()) /
+        (await this.submissionsService.getCountOfSubmissionsByUserId(user.id)) /
           (limit ? parseInt(limit) : 5),
       ),
     };

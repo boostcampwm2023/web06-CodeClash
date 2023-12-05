@@ -37,7 +37,11 @@ export class SubmissionsService {
     });
   }
 
-  async paginateSubmissions(userId: number, page: number, limit: number = 5) {
+  async paginateSubmissionsByUserId(
+    userId: number,
+    page: number,
+    limit: number = 5,
+  ) {
     return await this.submissionsRepository
       .createQueryBuilder('submission')
       .leftJoinAndSelect('submission.problem', 'problem')
@@ -58,8 +62,10 @@ export class SubmissionsService {
       .getMany();
   }
 
-  async getCountOfSubmissions() {
-    return await this.submissionsRepository.count();
+  async getCountOfSubmissionsByUserId(userId: number) {
+    return await this.submissionsRepository.count({
+      where: { user: { id: userId } },
+    });
   }
 
   async getLastSubmission(searchSubmissionDto: SearchSubmissionDto) {
