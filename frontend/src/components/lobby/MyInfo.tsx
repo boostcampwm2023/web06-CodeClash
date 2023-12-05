@@ -3,7 +3,7 @@ import { useLoginStore } from "../../store/useLogin";
 import { hashAvatarIdx } from "../../utils/avatar";
 
 const LobbyMyInfo: React.FC = () => {
-  const { userName } = useLoginStore();
+  const { userName, acceptCount, failCount, winCount, totalCount } = useLoginStore();
   const [avatar, setAvatar] = useState<string>("");
 
   useEffect(() => {
@@ -20,8 +20,14 @@ const LobbyMyInfo: React.FC = () => {
         className="bg-pink border-[3px] object-cover border-white rounded-full h-[4rem] aspect-square "
         src={avatar}
       ></img>
-      <div>
-        <p>{userName}</p>
+      <div className="flex flex-col">
+        <div>{userName}</div>
+        <div className="grid grid-cols-2">
+          <p className="tracking-[1rem]">승률</p>
+          <p className="text-end">{`${Math.floor((winCount / totalCount) * 100) || 0} %`}</p>
+          <p>정답률</p>
+          <p className="text-end">{`${Math.floor((acceptCount / (acceptCount + failCount)) * 100) || 0} %`}</p>
+        </div>
       </div>
     </div>
   );
