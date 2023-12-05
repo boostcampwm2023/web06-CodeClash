@@ -33,5 +33,5 @@ export interface CreateRoomInfo {
 export interface User {
   userName: string;
   ready: boolean;
-  itemList: Record<string, number>;
+  itemList?: Record<string, number>;
 }
