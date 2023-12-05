@@ -16,6 +16,8 @@ import { LOBBY_ID, NUM_OF_ROUNDS, TIME_LIMIT } from './rooms.constants';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import { plainToClass } from 'class-transformer';
+import { RoomsUserDto } from './dtos/rooms.user.dto';
+
 @WebSocketGateway({
   namespace: 'rooms',
   path: '/api/rooms',
@@ -86,16 +88,16 @@ export class RoomsGateway {
       return;
     }
 
-    this.roomsService.exitRoom(socket, socket.data.roomId);
+    this.roomsService.exitRoom(socket.data.roomId, socket.data.user.name);
     this.roomsService.deleteUserSocket(socket.data.user.name);
     if (socket.data.roomId) {
-      if (socket.data.roomId === 'lobby') {
+      if (socket.data.roomId === LOBBY_ID) {
         this.server.in(socket.data.roomId).emit('user_exit_lobby', {
           userName: socket.data.user.name,
           message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
         });
       } else {
-        if (this.roomsService.getGameRoom(socket.data.roomId)) {
+        if (this.roomsService.roomInfo(socket.data.roomId)) {
           this.server.in(socket.data.roomId).emit('user_exit_room', {
             userName: socket.data.user.name,
             message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
@@ -124,8 +126,29 @@ export class RoomsGateway {
 
   @SubscribeMessage('enter_lobby')
   enterLobby(@ConnectedSocket() client: Socket) {
-    this.roomsService.enterRoom(client, LOBBY_ID);
-    this.server.in('lobby').emit('user_enter_lobby', {
+    const roomsUserDto = plainToClass(RoomsUserDto, {
+      socketId: client.id,
+      userName: client.data.user.name,
+      ready: false,
+      passed: false,
+      itemList: {},
+    });
+
+    this.roomsService.enterRoom(LOBBY_ID, client.data.roomId, roomsUserDto);
+    client.join(LOBBY_ID);
+    client.data.roomId = LOBBY_ID;
+    client.to(LOBBY_ID).emit('user_enter_lobby', {
+      userName: roomsUserDto.userName,
+    });
+
+    return { status: 'success' };
+  }
+
+  @SubscribeMessage('exit_lobby')
+  exitLobby(@ConnectedSocket() client: Socket) {
+    this.roomsService.exitRoom(LOBBY_ID, client.data.user.name);
+    client.rooms.clear();
+    this.server.in(LOBBY_ID).emit('user_exit_lobby', {
       userName: client.data.user.name,
     });
 
@@ -135,7 +158,7 @@ export class RoomsGateway {
   @SubscribeMessage('create_room')
   createRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { capacity, roomName } = data;
-    const roomId = this.roomsService.createRoom(client, roomName, capacity);
+    const roomId = this.roomsService.createRoom(roomName, capacity);
 
     this.server.in('lobby').emit('user_create_room', {
       ...this.roomsService.roomInfo(roomId),
@@ -151,38 +174,23 @@ export class RoomsGateway {
   @SubscribeMessage('enter_room')
   enterRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = data;
-    const roomInfo = this.roomsService.getGameRoom(roomId);
-
-    if (roomInfo.userCount >= roomInfo.capacity) {
-      client.emit('enter_room', {
-        status: 'fail',
-        message: '방이 꽉 찼습니다.',
-      });
-      return;
-    }
-
-    if (roomInfo.state !== 'waiting') {
-      client.emit('enter_room', {
-        status: 'fail',
-        message: '이미 시작된 방입니다.',
-      });
-      return;
-    }
-
-    this.roomsService.exitRoom(client, 'lobby');
-    this.server.in('lobby').emit('user_exit_lobby', {
+    const dto = plainToClass(RoomsUserDto, {
+      socketId: client.id,
       userName: client.data.user.name,
-      message: `${client.data.user.name} is disconnected from lobby`,
+      ready: false,
+      itemList: {},
     });
 
-    this.server.in(roomId).emit('user_enter_room', {
-      userName: client.data.user.name,
-      message: `${client.data.user.name} 님이 ${
+    this.roomsService.enterRoom(roomId, client.data.roomId, dto);
+    client.join(roomId);
+    client.data.roomId = roomId;
+
+    client.to(roomId).emit('user_enter_room', {
+      userName: dto.userName,
+      message: `${dto.userName} 님이 ${
         this.roomsService.getGameRoom(roomId).roomName
       } 방에 접속했습니다.`,
     });
-
-    this.roomsService.enterRoom(client, roomId);
 
     return {
       status: 'success',
@@ -191,29 +199,17 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('exit_room')
-  exitRoom(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { roomId } = data;
+  exitRoom(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+    const { userName } = client.data.user;
+    const roomExists = this.roomsService.exitRoom(roomId, userName);
 
-    this.roomsService.exitRoom(client, roomId);
-    if (this.roomsService.getGameRoom(roomId)) {
-      this.server.in(roomId).emit('user_exit_room', {
-        userName: client.data.user.name,
-        message: `${client.data.user.name} 님이 ${
-          this.roomsService.getGameRoom(roomId).roomName
-        } 방에서 나갔습니다.`,
-      });
+    client.rooms.clear();
+    if (roomExists) {
+      this.server.in(roomId).emit('user_exit_room', { userName });
     } else {
-      this.server.in('lobby').emit('delete_room', {
-        roomId,
-      });
+      this.server.in(LOBBY_ID).emit('delete_room', { roomId });
     }
-
-    this.server.in('lobby').emit('user_enter_lobby', {
-      userName: client.data.user.name,
-      message: `${client.data.user.name} is connected to lobby`,
-    });
-
-    this.roomsService.enterRoom(client, 'lobby');
 
     return { status: 'success', roomId };
   }
@@ -260,7 +256,7 @@ export class RoomsGateway {
       ready: this.roomsService.changeReadyStatus(client),
     });
 
-    if (this.roomsService.checkUsersReady(roomId)) {
+    if (this.roomsService.allUserReady(roomId)) {
       const problems =
         await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
 
@@ -276,6 +272,7 @@ export class RoomsGateway {
     }
   }
 
+  /*
   @SubscribeMessage('kick')
   kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, roomId } = data;
@@ -317,6 +314,7 @@ export class RoomsGateway {
       });
     }
   }
+*/
 
   @SubscribeMessage('item')
   item(@ConnectedSocket() client: Socket, @MessageBody() data) {
