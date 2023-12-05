@@ -1,12 +1,26 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
+import { SubmissionsService } from 'src/submissions/submissions.service';
 
 @Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly submissionsService: SubmissionsService,
+  ) {}
 
   @Get(':userName')
-  async getUserInfo(@Param('userName') userName: string) {
+  async getUserInfo(
+    @Param('userName') userName: string,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
     const user = await this.usersService.getUserByName(userName);
 
     if (!user) {
@@ -20,7 +34,14 @@ export class UsersController {
       failCount: user.failCount,
       winCount: user.winCount,
       totalCount: user.totalCount,
-      submissions: user.submissions,
+      submissions: await this.submissionsService.paginateSubmissions(
+        userName,
+        page ? parseInt(page) : 0,
+        limit ? parseInt(limit) : 5,
+      ),
+      pageEnd:
+        (await this.submissionsService.getCountOfSubmissions()) /
+        (limit ? parseInt(limit) : 5),
     };
   }
 }
