@@ -234,7 +234,10 @@ export class RoomsService {
       throw new WsException('사용자가 존재하지 않습니다.');
     }
 
-    const itemCount = Object.values(user.itemList).length;
+    const itemCount = Object.values(user.itemList).reduce(
+      (acc, cur) => acc + cur,
+      0,
+    );
 
     if (itemCount >= MAX_ITEM_CAPACITY) {
       return null;
@@ -325,6 +328,13 @@ export class RoomsService {
     const user = this.roomList[roomId].userList.find(
       (user) => user.userName === userName,
     );
+
+    if (!user) {
+      this.logger.log(
+        `[switchReady] ${userName} 사용자가 존재하지 않는 사용자임`,
+      );
+      throw new WsException('사용자가 존재하지 않습니다.');
+    }
 
     user.ready = !user.ready;
 
