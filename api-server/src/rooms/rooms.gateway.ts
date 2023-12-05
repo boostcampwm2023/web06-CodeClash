@@ -203,7 +203,7 @@ export class RoomsGateway {
     const { roomId } = data;
 
     this.logger.log('exit_room gateway roomID ' + roomId);
-    const { userName } = client.data.user;
+    const { name: userName } = client.data.user;
     const roomExists = this.roomsService.exitRoom(roomId, userName);
 
     this.logger.log('exit_room gateway roomExists ' + roomExists);
