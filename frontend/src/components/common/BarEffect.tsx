@@ -56,9 +56,10 @@ interface BarEffectProps {
   isStart: boolean;
   content: string;
   isWinner?: boolean;
+  subContent?: string;
 }
 
-const BarEffect: React.FC<BarEffectProps> = ({ isStart, content, isWinner }) => {
+const BarEffect: React.FC<BarEffectProps> = ({ isStart, content, isWinner, subContent }) => {
   return (
     <motion.nav
       initial={false}
@@ -68,10 +69,11 @@ const BarEffect: React.FC<BarEffectProps> = ({ isStart, content, isWinner }) => 
       style={{ pointerEvents: isStart ? "auto" : "none" }}
     >
       <motion.div className="relative z-10" variants={itemVariants}>
-        <div className="relative z-50 w-[200vw] h-[6rem] bg-barPattern bg-center shadow-inner -rotate-3 border-b-pink border-b-[0.5vh] flex items-center justify-center">
-          <p className="relative top-[0.2rem] text-[4rem] text-white drop-shadow-textBlack border-pink font-outline-2">
+        <div className="relative z-50 w-[200vw] h-[6rem] bg-barPattern bg-center shadow-inner -rotate-3 border-b-pink border-b-[0.5vh] flex flex-col items-center justify-center">
+          <p className="relative text-[4rem] text-white drop-shadow-textBlack border-pink font-outline-2 h-[4rem] flex items-center justify-center">
             {content}
           </p>
+          {subContent && <p className="text-[1rem] text-white drop-shadow-textBlack h-[1rem]">{subContent}</p>}
         </div>
         <div className="absolute w-[200vw] h-[6.4rem] top-[-0.2rem] bg-white shadow-inner -rotate-3 border-b-[0.25rem] z-0"></div>
       </motion.div>
