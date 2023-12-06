@@ -6,7 +6,7 @@ import LobbyUserListBox from "../components/lobby/UserListBox";
 import { useSocketStore } from "../store/useSocket";
 import SlidePage from "../components/common/SlidePage";
 import { GameRoom, useLobbyStore } from "../store/useLobby";
-import { UserInfo } from "../store/useRoom";
+import { UserInfo, useRoomStore } from "../store/useRoom";
 
 interface IUserCreateRoomResponse extends GameRoom {
   userName: string;
@@ -16,6 +16,7 @@ const LobbyPage: React.FC = () => {
   const { socket } = useSocketStore();
   const { setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby, setRoomUserCount } =
     useLobbyStore();
+  const { setRoomId } = useRoomStore();
 
   const handleLobbyConnect = ({ status }: { status: string }) => {
     if (status === "success") {
@@ -68,6 +69,10 @@ const LobbyPage: React.FC = () => {
       }
     };
   }, [socket]);
+
+  useEffect(() => {
+    setRoomId("");
+  }, []);
 
   return (
     <SlidePage className="p-4 pt-12 w-full h-full flex flex-row">
