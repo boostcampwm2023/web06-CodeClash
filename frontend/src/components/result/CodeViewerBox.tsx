@@ -11,7 +11,6 @@ interface CodeViewerBoxProps {
 
 const CodeViewerBox: React.FC<CodeViewerBoxProps> = ({ codeList }) => {
   const [tabIndex, setTabIndex] = useState(0);
-  console.log(codeList);
   const handleClickTitleButton = (index: number) => {
     setTabIndex(index);
   };

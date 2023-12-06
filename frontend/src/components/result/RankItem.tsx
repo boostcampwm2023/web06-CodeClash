@@ -7,14 +7,15 @@ interface RankItemProps {
   onClick: () => void;
 }
 
-const ResultRankItem: React.FC<RankItemProps> = ({ isSelected, username, message, score, idx }) => {
+const ResultRankItem: React.FC<RankItemProps> = ({ isSelected, username, message, score, idx, onClick }) => {
   const rankColor = ["#FEB938", "#C0C0C0", "#CD7F32", "#F90196", "#F90196", "#F90196"];
   return (
     <div
       className="relative flex justify-between items-center p-2 my-2 border-4 rounded-lg border-white text-xs cursor-pointer"
       style={{
-        backgroundColor: isSelected ? "#606060" : "#FEFEFD",
+        backgroundColor: isSelected ? "#606060" : "#0E0E0E",
       }}
+      onClick={onClick}
     >
       <div
         className="absolute top-[-20px] text-[0.5rem] px-1 rounded"

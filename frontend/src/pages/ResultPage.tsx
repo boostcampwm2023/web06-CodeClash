@@ -7,7 +7,7 @@ import { getLastSubmission } from "../api/user";
 import { useRoomStore } from "../store/useRoom";
 
 const ResultPage: React.FC = () => {
-  const { userList, problemList } = useRoomStore();
+  const { userList, problemList, setIsStart } = useRoomStore();
   /// {"faker":["1번 코드","2번 코드"],"faker2":["1번 코드","2번 코드"]}
   const [userCode, setUserCode] = useState<Record<string, { title: string; code: string }[]>>({});
   const [selectedUser, setSelectedUser] = useState<string>(userList[0].userName);
@@ -30,6 +30,10 @@ const ResultPage: React.FC = () => {
         ),
       );
     });
+  }, []);
+
+  useEffect(() => {
+    setIsStart(false);
   }, []);
 
   return (

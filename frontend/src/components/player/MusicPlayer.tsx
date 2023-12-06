@@ -4,7 +4,6 @@ import Button from "../common/Button";
 const MusicPlayer: React.FC = () => {
   const musicPlayer = useRef(new Audio("music/LobbyBGM.mp3"));
   const [isPlaying, setIsPlaying] = useState(false);
-
   useEffect(() => {
     musicPlayer.current.autoplay = true;
     musicPlayer.current.volume = 0.1;
