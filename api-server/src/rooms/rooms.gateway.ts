@@ -76,7 +76,7 @@ export class RoomsGateway {
       socket.data.user = user;
       socket.data.token = token;
       socket.data.type = payload.type;
-      this.roomsService.registerSocketId(user.name, socket.id);
+      this.roomsService.registerSocket(user.name, socket);
     } catch (e) {
       socket.emit('connection', {
         status: 'fail',
@@ -98,7 +98,7 @@ export class RoomsGateway {
     if (this.roomsService.roomExists(roomId)) {
       this.roomsService.exitRoom(roomId, userName);
     }
-    this.roomsService.deleteSocketId(userName);
+    this.roomsService.deleteSocket(userName);
 
     if (roomId === LOBBY_ID) {
       this.io.in(roomId).emit('user_exit_lobby', { userName });
@@ -229,7 +229,7 @@ export class RoomsGateway {
   @SubscribeMessage('dm')
   dm(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, message } = data;
-    const targetSocketId = this.roomsService.socketId(userName);
+    const targetSocketId = this.roomsService.socket(userName).id;
 
     this.roomsService.dm(client.data.user.name);
     this.io.to(targetSocketId).emit('user_dm', {
@@ -259,9 +259,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { userName: targetUserName } = data;
-    const targetSocket = this.socket(
-      this.roomsService.socketId(targetUserName),
-    );
+    const targetSocket = this.roomsService.socket(targetUserName);
 
     this.roomsService.kick(roomId, userName, targetUserName);
     targetSocket.leave(roomId);
@@ -333,7 +331,7 @@ export class RoomsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: RoomsInputDto,
   ) {
-    const targetSocket = this.socket(this.roomsService.socketId(data.userName));
+    const targetSocket = this.roomsService.socket(data.userName);
     const dto = plainToClass(RoomsInviteDto, {
       roomId: client.data.roomId,
       userName: client.data.user.name,
@@ -347,16 +345,11 @@ export class RoomsGateway {
     return { status: SUCCESS_STATUS };
   }
 
-  private socket(id: string): Socket {
-    return this.io.of('/rooms').sockets.get(id);
-  }
-
   private createItem(roomId: string) {
-    const socketIdList = this.roomsService.roomSocketIdList(roomId);
+    const userNameList = this.roomsService.userNameList(roomId);
 
-    socketIdList.forEach((socketId) => {
-      const socket = this.socket(socketId);
-      const { name: userName } = socket.data.user;
+    userNameList.forEach((userName) => {
+      const socket = this.roomsService.socket(userName);
       const item = this.roomsService.assignItem(roomId, userName);
 
       socket.emit('create_item', { item });
