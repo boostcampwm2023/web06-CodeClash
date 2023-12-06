@@ -158,6 +158,7 @@ export class RoomsService {
     if (roomId !== LOBBY_ID && this.room(roomId).userList.length === 0) {
       this.room(roomId).itemCreator &&
         clearInterval(this.room(roomId).itemCreator);
+
       delete this.roomList[roomId];
 
       return false;
@@ -294,6 +295,11 @@ export class RoomsService {
   }
 
   useItem(roomId: string, userName: string, item: ItemList) {
+    this.logger.log(`[useItem] roomId: ${roomId}, userName: ${userName}`);
+    this.logger.log(`[useItem] room: ${JSON.stringify(this.room(roomId))}`);
+    this.logger.log(
+      `[useItem] userList: ${JSON.stringify(this.room(roomId).userList)}`,
+    );
     const user = this.room(roomId).userList.find(
       (user) => user.userName === userName,
     );

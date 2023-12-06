@@ -175,6 +175,7 @@ export class RoomsGateway {
       socketId: client.id,
       userName: client.data.user.name,
       ready: false,
+      passed: false,
       itemList: {},
     });
 
@@ -275,10 +276,6 @@ export class RoomsGateway {
 
   @SubscribeMessage('item')
   useItem(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    this.logger.log(`[useItem] client.data: ${client.data}`);
-    this.logger.log(`[useItem] roomId: ${client.data.roomId}`);
-    this.logger.log(`[useItem] userName: ${client.data.user.name}`);
-
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { item } = data;
