@@ -348,7 +348,7 @@ export class RoomsGateway {
   }
 
   private socket(id: string): Socket {
-    return this.io.of('rooms').sockets.get(id);
+    return this.io.of('/rooms').sockets.get(id);
   }
 
   private createItem(roomId: string) {
