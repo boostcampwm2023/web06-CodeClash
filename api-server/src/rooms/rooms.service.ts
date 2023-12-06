@@ -411,6 +411,12 @@ export class RoomsService {
     return !!this.roomList[roomId];
   }
 
+  setAllSocketPlaying(roomId: string) {
+    this.room(roomId).userList.forEach((user) => {
+      this.socket(user.userName).data.playing = true;
+    });
+  }
+
   private allGameRoom(): Room[] {
     return Object.values(this.roomList).filter(
       (room) => room.roomId !== LOBBY_ID,
