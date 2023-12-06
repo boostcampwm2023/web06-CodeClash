@@ -65,7 +65,15 @@ export class RoomsService {
           userName: user.userName,
         };
       }),
-      roomList: this.getAllGameRoom(),
+      roomList: this.allGameRoom().map((room) => {
+        return {
+          roomId: room.roomId,
+          roomName: room.roomName,
+          capacity: room.capacity,
+          userCount: room.userList.length,
+          state: room.state,
+        };
+      }),
     };
   }
 
@@ -155,48 +163,8 @@ export class RoomsService {
     return true;
   }
 
-  getGameRoom(roomId: string): RoomInfo {
-    if (!this.roomList[roomId]) {
-      return undefined;
-    }
-
-    const room = this.roomList[roomId];
-
-    return {
-      roomId,
-      roomName: room.roomName,
-      capacity: room.capacity,
-      userCount: room.userList.length,
-      state: room.state,
-    };
-  }
-
-  getAllGameRoom(): RoomInfo[] {
-    return Object.values(this.roomList)
-      .map((room) => {
-        if (room.roomId !== 'lobby') {
-          return {
-            roomId: room.roomId,
-            roomName: room.roomName,
-            capacity: room.capacity,
-            userCount: room.userList.length,
-            state: room.state,
-          };
-        } else {
-          return null;
-        }
-      })
-      .filter((room) => {
-        if (room) return true;
-      });
-  }
-
   allUserReady(roomId: string) {
     return this.roomList[roomId].userList.every((user) => user.ready);
-  }
-
-  allUser(roomId: string): User[] {
-    return this.roomList[roomId].userList;
   }
 
   registerSocketId(userName: string, socketId: string) {
@@ -263,12 +231,6 @@ export class RoomsService {
     } else {
       user.itemList[item] += 1;
     }
-
-    return item;
-  }
-
-  randomItem(): ItemList {
-    const item = Math.floor(Math.random() * NUM_OF_ITEMS);
 
     return item;
   }
@@ -418,7 +380,19 @@ export class RoomsService {
     }
   }
 
+  private allGameRoom(): Room[] {
+    return Object.values(this.roomList).filter(
+      (room) => room.roomId !== LOBBY_ID,
+    );
+  }
+
   private isChief(roomId: string, userName: string) {
     return this.roomList[roomId].userList[0].userName === userName;
+  }
+
+  private randomItem(): ItemList {
+    const item = Math.floor(Math.random() * NUM_OF_ITEMS);
+
+    return item;
   }
 }
