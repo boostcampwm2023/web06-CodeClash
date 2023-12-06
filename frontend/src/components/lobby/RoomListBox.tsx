@@ -1,17 +1,9 @@
-import { useEffect } from "react";
-import { useSocketStore } from "../../store/useSocket";
 import { useNavigate } from "react-router";
 import { UserInfo, useRoomStore } from "../../store/useRoom";
 import { GameRoom, useLobbyStore } from "../../store/useLobby";
 
 interface LobbyRoomListItemProps extends GameRoom {
   onClick: () => void;
-}
-
-interface IEnterRoomResponse extends GameRoom {
-  status: "success" | "fail";
-  message: string;
-  userList: UserInfo[];
 }
 
 const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName, capacity, userCount, onClick }) => {
@@ -32,7 +24,6 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName,
 };
 
 const LobbyRoomListBox: React.FC = () => {
-  const { socket } = useSocketStore();
   const navigate = useNavigate();
   const { setRoomId } = useRoomStore();
   const { gameRoomList } = useLobbyStore();

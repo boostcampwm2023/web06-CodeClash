@@ -64,10 +64,11 @@ const LoginInputBox: React.FC = () => {
     );
   };
 
-  const handleSignup = (info: { name: string; email: string; password: string }) => {
-    postRegisterRequest(info.name, info.email, info.password)
+  const handleSignup = ({ name, email, password }: { name: string; email: string; password: string }) => {
+    postRegisterRequest(name, email, password)
       .then(res => {
-        setLogin(info.email, info.name, res.accessToken);
+        const { accessToken } = res;
+        setLogin(email, name, accessToken);
         navigate("/lobby");
       })
       .catch(err => {
@@ -75,10 +76,11 @@ const LoginInputBox: React.FC = () => {
       });
   };
 
-  const handleLogin = (info: { email: string; password: string }) => {
-    postLoginRequest(info.email, info.password)
+  const handleLogin = ({ email, password }: { email: string; password: string }) => {
+    postLoginRequest(email, password)
       .then(res => {
-        setLogin(info.email, res.data.userName, res.data.accessToken);
+        const { userName, accessToken } = res.data;
+        setLogin(email, userName, accessToken);
         navigate("/lobby");
       })
       .catch(err => {

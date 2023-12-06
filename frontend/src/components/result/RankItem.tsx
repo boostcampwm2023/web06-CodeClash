@@ -2,12 +2,29 @@ interface RankItemProps {
   username: string;
   message: string;
   score: number;
+  idx: number;
+  isSelected: boolean;
+  onClick: () => void;
 }
 
-const ResultRankItem: React.FC<RankItemProps> = ({ username, message, score }) => {
+const ResultRankItem: React.FC<RankItemProps> = ({ isSelected, username, message, score, idx, onClick }) => {
+  const rankColor = ["#FEB938", "#C0C0C0", "#CD7F32", "#F90196", "#F90196", "#F90196"];
   return (
-    <div className="relative flex justify-between items-center p-2 mb-4 border-4 bg-black rounded-lg border-white text-xs">
-      <div className="absolute top-[-20px] text-[0.5rem] bg-yellow px-1 rounded">{username}</div>
+    <div
+      className="relative flex justify-between items-center p-2 my-2 border-4 rounded-lg border-white text-xs cursor-pointer"
+      style={{
+        backgroundColor: isSelected ? "#606060" : "#0E0E0E",
+      }}
+      onClick={onClick}
+    >
+      <div
+        className="absolute top-[-20px] text-[0.5rem] px-1 rounded"
+        style={{
+          backgroundColor: rankColor[idx],
+        }}
+      >
+        {username}
+      </div>
       <div className="text-[0.5rem] w-auto flex gap-3">
         <svg width="49" height="55" viewBox="0 0 49 55" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -27,7 +44,7 @@ const ResultRankItem: React.FC<RankItemProps> = ({ username, message, score }) =
         </svg>
         {message}
       </div>
-      <div className="text-lg">{score.toLocaleString()}점</div>
+      <div className="text-lg">{score.toLocaleString()}등</div>
     </div>
   );
 };
