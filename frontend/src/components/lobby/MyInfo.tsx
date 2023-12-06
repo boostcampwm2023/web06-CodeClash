@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import { useLoginStore } from "../../store/useLogin";
 import { hashAvatarIdx } from "../../utils/avatar";
+import { getUserStat } from "../../api/user";
+import { getPercentage } from "../../utils/calc";
+
+interface IUserStat {
+  acceptCount: number;
+  failCount: number;
+  winCount: number;
+  totalCount: number;
+}
 
 const LobbyMyInfo: React.FC = () => {
-  const { userName, acceptCount, failCount, winCount, totalCount } = useLoginStore();
+  const { userName } = useLoginStore();
+  const [userStat, setUserStat] = useState<IUserStat>();
   const [avatar, setAvatar] = useState<string>("");
 
   useEffect(() => {
@@ -12,7 +22,25 @@ const LobbyMyInfo: React.FC = () => {
         setAvatar(res.default);
       });
     }
+
+    getUserStat(userName).then(res => {
+      const { acceptCount, failCount, winCount, totalCount } = res;
+      setUserStat({ acceptCount, failCount, winCount, totalCount });
+    });
   }, [userName]);
+
+  const myStat = () => {
+    if (!userStat) return;
+    const { acceptCount, failCount, winCount, totalCount } = userStat;
+    return (
+      <div className="grid grid-cols-2">
+        <p className="tracking-[1rem]">승률</p>
+        <p className="text-end">{`${getPercentage(winCount, totalCount)} %`}</p>
+        <p>정답률</p>
+        <p className="text-end">{`${getPercentage(acceptCount, acceptCount + failCount)} %`}</p>
+      </div>
+    );
+  };
 
   return (
     <div className=" min-w-max flex flex-row items-center gap-4 border-[3px] border-white text-white rounded-lg bg-skyblue p-2">
@@ -22,12 +50,7 @@ const LobbyMyInfo: React.FC = () => {
       ></img>
       <div className="flex flex-col">
         <div>{userName}</div>
-        <div className="grid grid-cols-2">
-          <p className="tracking-[1rem]">승률</p>
-          <p className="text-end">{`${Math.floor((winCount / totalCount) * 100) || 0} %`}</p>
-          <p>정답률</p>
-          <p className="text-end">{`${Math.floor((acceptCount / (acceptCount + failCount)) * 100) || 0} %`}</p>
-        </div>
+        {myStat()}
       </div>
     </div>
   );

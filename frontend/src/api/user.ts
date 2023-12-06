@@ -14,3 +14,13 @@ export const getUserInfo = async (userName: string, page: number = 0, limit: num
     return;
   }
 };
+
+export const getUserStat = async (userName: string) => {
+  try {
+    const res = await baseAxios.get(`/api/users/stats/${userName}`);
+
+    return res.data;
+  } catch (e) {
+    return;
+  }
+};

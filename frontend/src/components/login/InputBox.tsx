@@ -67,8 +67,8 @@ const LoginInputBox: React.FC = () => {
   const handleSignup = ({ name, email, password }: { name: string; email: string; password: string }) => {
     postRegisterRequest(name, email, password)
       .then(res => {
-        const { accessToken, acceptCount, failCount, winCount, totalCount } = res;
-        setLogin(email, name, accessToken, acceptCount, failCount, winCount, totalCount);
+        const { accessToken } = res;
+        setLogin(email, name, accessToken);
         navigate("/lobby");
       })
       .catch(err => {
@@ -79,8 +79,8 @@ const LoginInputBox: React.FC = () => {
   const handleLogin = ({ email, password }: { email: string; password: string }) => {
     postLoginRequest(email, password)
       .then(res => {
-        const { userName, accessToken, acceptCount, failCount, winCount, totalCount } = res.data;
-        setLogin(email, userName, accessToken, acceptCount, failCount, winCount, totalCount);
+        const { userName, accessToken } = res.data;
+        setLogin(email, userName, accessToken);
         navigate("/lobby");
       })
       .catch(err => {
