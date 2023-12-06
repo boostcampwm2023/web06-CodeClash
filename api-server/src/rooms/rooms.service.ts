@@ -154,7 +154,7 @@ export class RoomsService {
 
     if (roomId !== LOBBY_ID && this.roomList[roomId].userList.length === 0) {
       this.roomList[roomId].itemCreator &&
-        clearTimeout(this.roomList[roomId].itemCreator);
+        clearInterval(this.roomList[roomId].itemCreator);
       delete this.roomList[roomId];
 
       return false;
