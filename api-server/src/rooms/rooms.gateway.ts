@@ -56,7 +56,7 @@ export class RoomsGateway {
       const payload = this.authService.verifyToken(token);
       const user = await this.usersService.getUserByEmail(payload.email);
 
-      if (this.roomsService.isConnctedUser(user.name)) {
+      if (this.roomsService.isConnectedUser(user.name)) {
         socket.emit('connection', {
           status: 'fail',
           message: 'Already connected user',
@@ -69,8 +69,7 @@ export class RoomsGateway {
       socket.data.user = user;
       socket.data.token = token;
       socket.data.type = payload.type;
-
-      this.roomsService.registerUserSocket(socket, user.name);
+      this.roomsService.registerSocketId(user.name, socket.id);
     } catch (e) {
       socket.emit('connection', {
         status: 'fail',
@@ -87,7 +86,7 @@ export class RoomsGateway {
     }
 
     this.roomsService.exitRoom(socket.data.roomId, socket.data.user.name);
-    this.roomsService.deleteUserSocket(socket.data.user.name);
+    this.roomsService.deleteSocketId(socket.data.user.name);
     if (socket.data.roomId) {
       if (socket.data.roomId === LOBBY_ID) {
         this.server.in(socket.data.roomId).emit('user_exit_lobby', {
@@ -110,15 +109,12 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('lobby_info')
-  lobbyInfo(@ConnectedSocket() client: Socket) {
+  lobbyInfo() {
     return this.roomsService.lobbyInfo();
   }
 
   @SubscribeMessage('room_info')
-  roomInfo(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: RoomsInputDto,
-  ) {
+  roomInfo(@MessageBody() data: RoomsInputDto) {
     return this.roomsService.roomInfo(data.roomId);
   }
 
@@ -223,7 +219,8 @@ export class RoomsGateway {
 
   @SubscribeMessage('chat')
   chat(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { roomId, message } = data;
+    const { roomId } = client.data;
+    const { message } = data;
 
     this.server.in(roomId).emit('chat', {
       userName: client.data.user.name,
@@ -234,20 +231,22 @@ export class RoomsGateway {
   @SubscribeMessage('dm')
   dm(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, message } = data;
-    const targetUser = this.roomsService.getUserSocket(userName);
+    const targetUserSocket = this.socket(
+      this.roomsService.getSocketId(userName),
+    );
 
-    if (!targetUser) {
-      client.emit('dm', {
+    if (!targetUserSocket) {
+      return {
         status: 'fail',
         message: '접속하지 않은 유저입니다.',
-      });
+      };
     } else {
       client.emit('dm', {
         status: 'success',
         message: 'DM을 보냈습니다.',
       });
 
-      this.server.to(targetUser.id).emit('user_dm', {
+      this.server.to(targetUserSocket.id).emit('user_dm', {
         userName: client.data.user.name,
         message,
       });
@@ -370,7 +369,9 @@ export class RoomsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: RoomsInputDto,
   ) {
-    const targetUserSocket = this.roomsService.getUserSocket(data.userName);
+    const targetUserSocket = this.socket(
+      this.roomsService.getSocketId(data.userName),
+    );
     const dto = plainToClass(RoomsInviteDto, {
       roomId: client.data.roomId,
       targetUserRoomId: targetUserSocket.data.roomId,
@@ -383,5 +384,9 @@ export class RoomsGateway {
     targetUserSocket.emit('invite', inviteInfo);
 
     return { status: 'success' };
+  }
+
+  private socket(id: string) {
+    return this.server.sockets[id];
   }
 }
