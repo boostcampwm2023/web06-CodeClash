@@ -259,31 +259,6 @@ export class RoomsGateway {
     }
   }
 
-  private async start(roomId: string) {
-    const problems =
-      await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
-    const itemCreator = setInterval(
-      () => this.createItem(roomId),
-      CREATE_ITEM_CYCLE,
-    );
-
-    this.roomsService.changeRoomState(roomId, 'playing');
-    this.roomsService.setItemCreator(roomId, itemCreator);
-    this.server.in(roomId).emit('start', { problems });
-    this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
-  }
-
-  private createItem(roomId: string) {
-    const socketIdList = this.roomsService.roomSocketIdList(roomId);
-
-    socketIdList.forEach((socketId) => {
-      const socket = this.socket(socketId);
-      const { name: userName } = socket.data.user;
-      const item = this.roomsService.assignItem(roomId, userName);
-
-      socket.emit('create_item', { item });
-    });
-  }
   /*
   @SubscribeMessage('kick')
   kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
@@ -403,5 +378,31 @@ export class RoomsGateway {
 
   private socket(id: string): Socket {
     return this.server.sockets[id];
+  }
+
+  private createItem(roomId: string) {
+    const socketIdList = this.roomsService.roomSocketIdList(roomId);
+
+    socketIdList.forEach((socketId) => {
+      const socket = this.socket(socketId);
+      const { name: userName } = socket.data.user;
+      const item = this.roomsService.assignItem(roomId, userName);
+
+      socket.emit('create_item', { item });
+    });
+  }
+
+  private async start(roomId: string) {
+    const problems =
+      await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
+    const itemCreator = setInterval(
+      () => this.createItem(roomId),
+      CREATE_ITEM_CYCLE,
+    );
+
+    this.roomsService.changeRoomState(roomId, 'playing');
+    this.roomsService.setItemCreator(roomId, itemCreator);
+    this.server.in(roomId).emit('start', { problems });
+    this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
   }
 }
