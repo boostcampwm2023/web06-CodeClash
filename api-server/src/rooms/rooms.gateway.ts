@@ -275,6 +275,10 @@ export class RoomsGateway {
 
   @SubscribeMessage('item')
   useItem(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    this.logger.log(`[useItem] client.data: ${client.data}`);
+    this.logger.log(`[useItem] roomId: ${client.data.roomId}`);
+    this.logger.log(`[useItem] userName: ${client.data.user.name}`);
+
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { item } = data;
@@ -352,7 +356,8 @@ export class RoomsGateway {
       const socket = this.roomsService.socket(userName);
       const item = this.roomsService.assignItem(roomId, userName);
 
-      socket.emit('create_item', { item });
+      this.logger.log(`[createItem] Item created for ${userName}`);
+      this.io.to(socket.id).emit('create_item', { item });
       this.logger.log(`[createItem] Item sent to ${userName}`);
     });
   }
