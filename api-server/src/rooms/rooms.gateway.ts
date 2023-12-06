@@ -241,14 +241,14 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('ready')
-  ready(@ConnectedSocket() client: Socket) {
+  async ready(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const ready = this.roomsService.switchReady(roomId, userName);
 
     this.io.in(roomId).emit('ready', { userName, ready });
     if (this.roomsService.allUserReady(roomId)) {
-      this.start(roomId);
+      await this.start(roomId);
     }
 
     return { status: SUCCESS_STATUS };
@@ -360,10 +360,9 @@ export class RoomsGateway {
   private async start(roomId: string) {
     const problems =
       await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
-    const itemCreator = setInterval(
-      () => this.createItem(roomId),
-      CREATE_ITEM_CYCLE,
-    );
+    const itemCreator = setInterval(() => {
+      this.createItem(roomId);
+    }, CREATE_ITEM_CYCLE);
 
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
