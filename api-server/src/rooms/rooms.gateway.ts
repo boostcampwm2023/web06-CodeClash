@@ -92,25 +92,21 @@ export class RoomsGateway {
       return;
     }
 
-    this.roomsService.exitRoom(socket.data.roomId, socket.data.user.name);
-    this.roomsService.deleteSocketId(socket.data.user.name);
-    if (socket.data.roomId) {
-      if (socket.data.roomId === LOBBY_ID) {
-        this.server.in(socket.data.roomId).emit('user_exit_lobby', {
-          userName: socket.data.user.name,
-          message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
-        });
+    const { roomId } = socket.data;
+    const { name: userName } = socket.data.user;
+
+    if (this.roomsService.roomExists(roomId)) {
+      this.roomsService.exitRoom(roomId, userName);
+    }
+    this.roomsService.deleteSocketId(userName);
+
+    if (roomId === LOBBY_ID) {
+      this.server.in(roomId).emit('user_exit_lobby', { userName });
+    } else {
+      if (this.roomsService.roomExists(roomId)) {
+        this.server.in(roomId).emit('user_exit_room', { userName });
       } else {
-        if (this.roomsService.roomInfo(socket.data.roomId)) {
-          this.server.in(socket.data.roomId).emit('user_exit_room', {
-            userName: socket.data.user.name,
-            message: `${socket.data.user.name} ${socket.data.roomId} 방에서 나갔습니다.`,
-          });
-        } else {
-          this.server
-            .in('lobby')
-            .emit('delete_room', { roomId: socket.data.roomId });
-        }
+        this.server.in(LOBBY_ID).emit('delete_room', { roomId });
       }
     }
   }

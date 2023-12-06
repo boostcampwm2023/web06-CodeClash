@@ -140,7 +140,7 @@ export class RoomsService {
     if (
       !this.roomList[roomId].userList.filter(
         (user) => user.userName === userName,
-      )
+      ).length
     ) {
       this.logger.log(
         `[exitRoom] ${userName} 사용자가 방에 존재하지 않는 사용자임`,
@@ -378,6 +378,10 @@ export class RoomsService {
       this.logger.log(`[invite] ${userName} 사용자가 꽉 찬 방에 초대를 시도함`);
       throw new WsException('꽉 찬 방에는 초대할 수 없습니다.');
     }
+  }
+
+  roomExists(roomId: string) {
+    return !!this.roomList[roomId];
   }
 
   private allGameRoom(): Room[] {
