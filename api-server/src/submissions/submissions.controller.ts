@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { SubmissionsService } from './submissions.service';
-import { SearchSubmissionDto } from './dto/search-submission.dto';
 
 @Controller('api/submissions')
 export class SubmissionsController {
@@ -16,7 +15,10 @@ export class SubmissionsController {
   }
 
   @Get('getLastSubmission')
-  getLastSubmission(@Body() searchSubmissionDto: SearchSubmissionDto) {
-    return this.submissionsService.getLastSubmission(searchSubmissionDto);
+  getLastSubmission(
+    @Query('userName') userName: string,
+    @Query('problemId') problemId: number,
+  ) {
+    return this.submissionsService.getLastSubmission(userName, problemId);
   }
 }
