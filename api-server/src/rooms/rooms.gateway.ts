@@ -16,6 +16,7 @@ import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
   LOBBY_ID,
   NUM_OF_ROUNDS,
+  SUCCESS_STATUS,
   TIME_LIMIT,
 } from './rooms.constants';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
@@ -219,7 +220,7 @@ export class RoomsGateway {
       this.server.in(LOBBY_ID).emit('delete_room', { roomId });
     }
 
-    return { status: 'success', roomId };
+    return { status: SUCCESS_STATUS, roomId };
   }
 
   @SubscribeMessage('chat')
@@ -259,49 +260,26 @@ export class RoomsGateway {
     }
   }
 
-  /*
   @SubscribeMessage('kick')
   kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { userName, roomId } = data;
-    const targetUser = this.roomsService.getUserSocket(userName);
+    const { roomId } = client.data;
+    const { name: userName } = client.data.user;
+    const { userName: targetUserName } = data;
+    const status = this.roomsService.kick(roomId, userName, targetUserName);
+    const targetSocket = this.socket(
+      this.roomsService.getSocketId(targetUserName),
+    );
 
-    if (!targetUser) {
-      client.emit('kick', {
-        status: 'fail',
-        message: '접속하지 않은 유저입니다.',
-      });
-    } else {
-      client.emit('kick', {
-        status: 'success',
-        message: '유저를 강퇴했습니다.',
-      });
+    targetSocket.leave(roomId);
+    targetSocket.emit('kick', { roomId, userName });
+    this.server.in(roomId).emit('user_exit_room', { userName: targetUserName });
+    this.server.in(LOBBY_ID).emit('change_user_count', {
+      roomId,
+      userCount: this.roomsService.roomUserCount(roomId),
+    });
 
-      this.server.to(targetUser.id).emit('kick', {
-        status: 'success',
-        message: '강퇴당했습니다.',
-      });
-
-      this.roomsService.exitRoom(targetUser, roomId);
-      this.server.in(roomId).emit('user_exit_room', {
-        userName: targetUser.data.user.name,
-        message: `${targetUser.data.user.name} 님이 ${
-          this.roomsService.getGameRoom(roomId).roomName
-        } 방에서 나갔습니다.`,
-      });
-
-      this.server.in('lobby').emit('user_enter_lobby', {
-        userName: targetUser.data.user.name,
-        message: `${targetUser.data.user.name} is connected to lobby`,
-      });
-
-      this.roomsService.enterRoom(targetUser, 'lobby');
-      targetUser.emit('exit_room', {
-        status: 'success',
-        message: '방에서 강퇴되었습니다..',
-      });
-    }
+    return { status };
   }
-*/
 
   @SubscribeMessage('item')
   useItem(@ConnectedSocket() client: Socket, @MessageBody() data) {

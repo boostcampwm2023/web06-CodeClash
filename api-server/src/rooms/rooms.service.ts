@@ -382,4 +382,40 @@ export class RoomsService {
 
     return SUCCESS_STATUS;
   }
+
+  kick(roomId: string, userName: string, targetUserName: string) {
+    const targetUser = this.roomList[roomId].userList.find(
+      (user) => user.userName === targetUserName,
+    );
+
+    if (!targetUser) {
+      this.logger.log(`[kick] 존재하지 않는 사용자를 강퇴함`);
+      throw new WsException('존재하지 않는 사용자입니다.');
+    }
+
+    if (roomId === LOBBY_ID) {
+      this.logger.log(`[kick] 로비에서 강퇴를 시도함`);
+      throw new WsException('로비에서는 강퇴할 수 없습니다.');
+    }
+
+    if (targetUserName === userName) {
+      this.logger.log(`[kick] 자기 자신을 강퇴하려 함`);
+      throw new WsException('자기 자신을 강퇴할 수 없습니다.');
+    }
+
+    if (!this.isChief(roomId, userName)) {
+      this.logger.log(`[kick] 방장이 아닌 사용자가 강퇴를 시도함`);
+      throw new WsException('방장이 아닙니다.');
+    }
+
+    this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
+      (user) => user.userName !== targetUserName,
+    );
+
+    return SUCCESS_STATUS;
+  }
+
+  private isChief(roomId: string, userName: string) {
+    return this.roomList[roomId].userList[0].userName === userName;
+  }
 }
