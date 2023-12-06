@@ -12,7 +12,12 @@ import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
-import { LOBBY_ID, NUM_OF_ROUNDS, TIME_LIMIT } from './rooms.constants';
+import {
+  ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
+  LOBBY_ID,
+  NUM_OF_ROUNDS,
+  TIME_LIMIT,
+} from './rooms.constants';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import { plainToClass } from 'class-transformer';
@@ -268,10 +273,27 @@ export class RoomsGateway {
   private async start(roomId: string) {
     const problems =
       await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
+    const itemCreator = setInterval(
+      () => this.createItem(roomId),
+      CREATE_ITEM_CYCLE,
+    );
 
     this.roomsService.changeRoomState(roomId, 'playing');
+    this.roomsService.setItemCreator(roomId, itemCreator);
     this.server.in(roomId).emit('start', { problems });
     this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
+  }
+
+  private createItem(roomId: string) {
+    const socketIdList = this.roomsService.roomSocketIdList(roomId);
+
+    socketIdList.forEach((socketId) => {
+      const socket = this.socket(socketId);
+      const { name: userName } = socket.data.user;
+      const item = this.roomsService.assignItem(roomId, userName);
+
+      socket.emit('create_item', { item });
+    });
   }
   /*
   @SubscribeMessage('kick')
@@ -318,11 +340,15 @@ export class RoomsGateway {
 */
 
   @SubscribeMessage('item')
-  item(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { roomId, item } = data;
+  useItem(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { roomId } = client.data;
+    const { name: userName } = client.data.user;
+    const { item } = data;
+    const status = this.roomsService.useItem(roomId, userName, item);
 
     client.to(roomId).emit('item', {
-      userName: client.data.user.name,
+      status,
+      userName,
       item,
     });
   }
@@ -386,7 +412,7 @@ export class RoomsGateway {
     return { status: 'success' };
   }
 
-  private socket(id: string) {
+  private socket(id: string): Socket {
     return this.server.sockets[id];
   }
 }

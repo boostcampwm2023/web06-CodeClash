@@ -36,5 +36,5 @@ export class RoomsUserDto {
   passed: boolean;
 
   @IsObject()
-  itemList: Record<string, ItemList>;
+  itemList: Record<ItemList, number>;
 }
