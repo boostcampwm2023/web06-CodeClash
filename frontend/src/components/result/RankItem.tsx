@@ -6,7 +6,7 @@ interface RankItemProps {
 
 const ResultRankItem: React.FC<RankItemProps> = ({ username, message, score }) => {
   return (
-    <div className="relative flex justify-between items-center p-2 mb-4 border-4 bg-black rounded-lg border-white text-xs">
+    <div className="relative flex justify-between items-center p-2 my-2 border-4 bg-black rounded-lg border-white text-xs">
       <div className="absolute top-[-20px] text-[0.5rem] bg-yellow px-1 rounded">{username}</div>
       <div className="text-[0.5rem] w-auto flex gap-3">
         <svg width="49" height="55" viewBox="0 0 49 55" fill="none" xmlns="http://www.w3.org/2000/svg">

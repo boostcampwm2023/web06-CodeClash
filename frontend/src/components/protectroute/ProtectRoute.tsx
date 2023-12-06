@@ -14,8 +14,10 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) =
   const { roomId } = useRoomStore();
 
   useEffect(() => {
-    if (!roomId && currentLocation.pathname !== "/lobby") {
-      window.location.replace("/lobby");
+    if (process.env.NODE_ENV === "production") {
+      if (!roomId && currentLocation.pathname !== "/lobby") {
+        window.location.replace("/lobby");
+      }
     }
   }, [roomId]);
 

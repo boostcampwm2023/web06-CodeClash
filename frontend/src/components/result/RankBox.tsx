@@ -48,7 +48,7 @@ const ResultRankBox: React.FC = () => {
     <ResultRankItem username={username} message={message} score={score} key={username} />
   ));
 
-  return <div className="flex flex-col h-[500px] overflow-scroll py-2 my-2">{rankContents}</div>;
+  return <div className="flex flex-col h-full overflow-scroll py-2 my-2">{rankContents}</div>;
 };
 
 export default ResultRankBox;
