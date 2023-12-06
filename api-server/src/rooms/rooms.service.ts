@@ -10,6 +10,7 @@ import {
   MAX_LOBBY_CAPACITY,
   NUM_OF_ITEMS,
   ROOM_STATE,
+  RoomState,
   SUCCESS_STATUS,
 } from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
@@ -25,7 +26,7 @@ export class RoomsService {
       roomName: '로비',
       userList: [],
       capacity: MAX_LOBBY_CAPACITY,
-      state: 'waiting',
+      state: ROOM_STATE.WAITING,
       timer: null,
       itemCreator: null,
     },
@@ -76,7 +77,7 @@ export class RoomsService {
       roomName,
       userList: [],
       capacity,
-      state: 'waiting',
+      state: ROOM_STATE.WAITING,
       timer: null,
       itemCreator: null,
     };
@@ -101,7 +102,7 @@ export class RoomsService {
       throw new WsException('꽉 찬 방에는 입장할 수 없습니다.');
     }
 
-    if (state !== 'waiting') {
+    if (state === ROOM_STATE.PLAYING) {
       this.logger.log(
         `[enterRoom] ${user.userName} 사용자가 이미 게임이 시작된 방에 입장을 시도함`,
       );
@@ -205,7 +206,7 @@ export class RoomsService {
     return this.userNameSocketIdMapper.has(userName);
   }
 
-  changeRoomState(roomId: string, state: 'waiting' | 'playing') {
+  changeRoomState(roomId: string, state: RoomState) {
     this.roomList[roomId].state = state;
   }
 
@@ -273,7 +274,7 @@ export class RoomsService {
       user.ready = false;
       user.itemList = {};
     });
-    this.roomList[roomId].state = 'waiting';
+    this.roomList[roomId].state = ROOM_STATE.WAITING;
     this.roomList[roomId].timer = null;
     this.roomList[roomId].itemCreator = null;
   }

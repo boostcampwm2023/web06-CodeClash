@@ -379,6 +379,8 @@ export class RoomsGateway {
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
     this.server.in(roomId).emit('start', { problems });
-    this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
+    this.server
+      .in(LOBBY_ID)
+      .emit('room_start', { roomId, state: ROOM_STATE.PLAYING });
   }
 }
