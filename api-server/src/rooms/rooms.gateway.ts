@@ -95,18 +95,21 @@ export class RoomsGateway {
     const { roomId } = socket.data;
     const { name: userName } = socket.data.user;
 
-    if (this.roomsService.roomExists(roomId)) {
-      this.roomsService.exitRoom(roomId, userName);
-    }
     this.roomsService.deleteSocket(userName);
 
-    if (roomId === LOBBY_ID) {
-      this.io.in(roomId).emit('user_exit_lobby', { userName });
-    } else {
+    if (!socket.data.playing) {
       if (this.roomsService.roomExists(roomId)) {
-        this.io.in(roomId).emit('user_exit_room', { userName });
+        this.roomsService.exitRoom(roomId, userName);
+      }
+
+      if (roomId === LOBBY_ID) {
+        this.io.in(roomId).emit('user_exit_lobby', { userName });
       } else {
-        this.io.in(LOBBY_ID).emit('delete_room', { roomId });
+        if (this.roomsService.roomExists(roomId)) {
+          this.io.in(roomId).emit('user_exit_room', { userName });
+        } else {
+          this.io.in(LOBBY_ID).emit('delete_room', { roomId });
+        }
       }
     }
   }
@@ -368,6 +371,7 @@ export class RoomsGateway {
 
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
+    this.roomsService.setAllSocketPlaying(roomId);
     this.io.in(roomId).emit('start', { problems });
     this.io
       .in(LOBBY_ID)
