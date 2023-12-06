@@ -15,6 +15,26 @@ export class UsersController {
     private readonly submissionsService: SubmissionsService,
   ) {}
 
+  @Get('stats/:userName')
+  async getUserStats(@Param('userName') userName: string) {
+    if (!userName) throw new NotFoundException('userName must be provided');
+
+    const user = await this.usersService.getUserByName(userName);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      name: user.name,
+      email: user.email,
+      acceptCount: user.acceptCount,
+      failCount: user.failCount,
+      winCount: user.winCount,
+      totalCount: user.totalCount,
+    };
+  }
+
   @Get(':userName')
   async getUserInfo(
     @Param('userName') userName: string,

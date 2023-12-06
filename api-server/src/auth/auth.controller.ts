@@ -38,10 +38,6 @@ export class AuthController {
         accessToken,
         userName: user.name,
         email: user.email,
-        acceptCount: user.acceptCount,
-        failCount: user.failCount,
-        winCount: user.winCount,
-        totalCount: user.totalCount,
       });
   }
 
@@ -64,10 +60,6 @@ export class AuthController {
         accessToken,
         userName: user.name,
         email: user.email,
-        acceptCount: user.acceptCount,
-        failCount: user.failCount,
-        winCount: user.winCount,
-        totalCount: user.totalCount,
       });
   }
 
