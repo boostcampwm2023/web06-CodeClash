@@ -5,11 +5,11 @@ export interface Room {
   roomId: string;
   roomName: string;
   userList: RoomsUser[];
+  banList: Set<string>;
   capacity: number;
   state: RoomState;
   timer: NodeJS.Timeout | null;
   itemCreator: NodeJS.Timeout | null;
-  banList: Set<string>;
 }
 
 export interface RoomList {
