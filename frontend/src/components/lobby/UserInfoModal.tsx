@@ -92,7 +92,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
 
   const userCode = ({ submissions }: IUserInfo) => (
     <>
-      <div className="bg-lightskyblue flex flex-col gap-2 p-2 rounded-lg overflow-scroll">
+      <div className="bg-lightskyblue flex flex-col justify-center items-center gap-2 p-2 rounded-lg overflow-scroll">
         <div>지난 제출 코드 보기</div>
         {submissions.length > 0 ? (
           <>
@@ -104,8 +104,8 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
                 options={{ ...editorOptions }}
               />
             </div>
-            <div className="flex gap-2 justify-center">
-              {submissionPage > 0 ? <button onClick={handlePrevCodePage}>{`<`}</button> : ""}
+            <div className="grid grid-cols-7 gap-2 justify-center">
+              {submissionPage > 0 ? <button onClick={handlePrevCodePage}>{`<`}</button> : <button></button>}
               {submissions.map((submission, index) => (
                 <button
                   style={{ color: submissionIndex === index ? "black" : "white" }}
@@ -118,7 +118,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
               {userInfo?.pageEnd && submissionPage < userInfo?.pageEnd ? (
                 <button onClick={handleNextCodePage}>{`>`}</button>
               ) : (
-                ""
+                <button></button>
               )}
             </div>
           </>
