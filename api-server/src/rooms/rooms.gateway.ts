@@ -146,7 +146,7 @@ export class RoomsGateway {
   @SubscribeMessage('exit_lobby')
   exitLobby(@ConnectedSocket() client: Socket) {
     this.roomsService.exitRoom(LOBBY_ID, client.data.user.name);
-    client.rooms.clear();
+    client.leave(LOBBY_ID);
     this.server.in(LOBBY_ID).emit('user_exit_lobby', {
       userName: client.data.user.name,
     });
@@ -208,7 +208,7 @@ export class RoomsGateway {
     const { name: userName } = client.data.user;
     const roomExists = this.roomsService.exitRoom(roomId, userName);
 
-    client.rooms.clear();
+    client.leave(roomId);
     if (roomExists) {
       this.server.in(roomId).emit('user_exit_room', { userName });
       this.server.in(LOBBY_ID).emit('change_user_count', {
@@ -236,26 +236,15 @@ export class RoomsGateway {
   @SubscribeMessage('dm')
   dm(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, message } = data;
-    const targetUserSocket = this.socket(
-      this.roomsService.getSocketId(userName),
-    );
+    const targetSocketId = this.roomsService.getSocketId(userName);
+    const status = this.roomsService.dm(client.data.user.name);
 
-    if (!targetUserSocket) {
-      return {
-        status: 'fail',
-        message: '접속하지 않은 유저입니다.',
-      };
-    } else {
-      client.emit('dm', {
-        status: 'success',
-        message: 'DM을 보냈습니다.',
-      });
+    this.server.to(targetSocketId).emit('user_dm', {
+      userName: client.data.user.name,
+      message,
+    });
 
-      this.server.to(targetUserSocket.id).emit('user_dm', {
-        userName: client.data.user.name,
-        message,
-      });
-    }
+    return { status };
   }
 
   @SubscribeMessage('ready')
@@ -270,31 +259,6 @@ export class RoomsGateway {
     }
   }
 
-  private async start(roomId: string) {
-    const problems =
-      await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
-    const itemCreator = setInterval(
-      () => this.createItem(roomId),
-      CREATE_ITEM_CYCLE,
-    );
-
-    this.roomsService.changeRoomState(roomId, 'playing');
-    this.roomsService.setItemCreator(roomId, itemCreator);
-    this.server.in(roomId).emit('start', { problems });
-    this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
-  }
-
-  private createItem(roomId: string) {
-    const socketIdList = this.roomsService.roomSocketIdList(roomId);
-
-    socketIdList.forEach((socketId) => {
-      const socket = this.socket(socketId);
-      const { name: userName } = socket.data.user;
-      const item = this.roomsService.assignItem(roomId, userName);
-
-      socket.emit('create_item', { item });
-    });
-  }
   /*
   @SubscribeMessage('kick')
   kick(@ConnectedSocket() client: Socket, @MessageBody() data) {
@@ -414,5 +378,31 @@ export class RoomsGateway {
 
   private socket(id: string): Socket {
     return this.server.sockets[id];
+  }
+
+  private createItem(roomId: string) {
+    const socketIdList = this.roomsService.roomSocketIdList(roomId);
+
+    socketIdList.forEach((socketId) => {
+      const socket = this.socket(socketId);
+      const { name: userName } = socket.data.user;
+      const item = this.roomsService.assignItem(roomId, userName);
+
+      socket.emit('create_item', { item });
+    });
+  }
+
+  private async start(roomId: string) {
+    const problems =
+      await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
+    const itemCreator = setInterval(
+      () => this.createItem(roomId),
+      CREATE_ITEM_CYCLE,
+    );
+
+    this.roomsService.changeRoomState(roomId, 'playing');
+    this.roomsService.setItemCreator(roomId, itemCreator);
+    this.server.in(roomId).emit('start', { problems });
+    this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });
   }
 }
