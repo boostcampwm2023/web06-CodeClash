@@ -16,6 +16,7 @@ import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
   LOBBY_ID,
   NUM_OF_ROUNDS,
+  ROOM_STATE,
   SUCCESS_STATUS,
   TIME_LIMIT,
 } from './rooms.constants';
@@ -237,7 +238,7 @@ export class RoomsGateway {
   @SubscribeMessage('dm')
   dm(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, message } = data;
-    const targetSocketId = this.roomsService.getSocketId(userName);
+    const targetSocketId = this.roomsService.socketId(userName);
     const status = this.roomsService.dm(client.data.user.name);
 
     this.server.to(targetSocketId).emit('user_dm', {
@@ -267,7 +268,7 @@ export class RoomsGateway {
     const { userName: targetUserName } = data;
     const status = this.roomsService.kick(roomId, userName, targetUserName);
     const targetSocket = this.socket(
-      this.roomsService.getSocketId(targetUserName),
+      this.roomsService.socketId(targetUserName),
     );
 
     targetSocket.leave(roomId);
@@ -295,39 +296,39 @@ export class RoomsGateway {
     });
   }
 
-  @SubscribeMessage('pass')
-  pass(@ConnectedSocket() client: Socket) {
-    const { roomId } = client.data;
-    let timer = this.roomsService.getTimer(roomId);
+  // @SubscribeMessage('pass')
+  // pass(@ConnectedSocket() client: Socket) {
+  //   const { roomId } = client.data;
+  //   let timer = this.roomsService.getTimer(roomId);
 
-    client.data.passed = true;
+  //   client.data.passed = true;
 
-    if (this.roomsService.allUserPassed(roomId) && timer) {
-      clearTimeout(timer);
-      this.roomsService.gameOver(roomId);
-      this.server.in(roomId).emit('game_over');
-      this.server.in('lobby').emit('room_game_over', { roomId });
+  //   if (this.roomsService.allUserPassed(roomId) && timer) {
+  //     clearTimeout(timer);
+  //     this.roomsService.gameOver(roomId);
+  //     this.server.in(roomId).emit('game_over');
+  //     this.server.in('lobby').emit('room_game_over', { roomId });
 
-      return;
-    }
+  //     return;
+  //   }
 
-    if (timer) return;
+  //   if (timer) return;
 
-    timer = setTimeout(() => {
-      this.roomsService.gameOver(roomId);
-      this.server.in(roomId).emit('game_over');
-      this.server.in('lobby').emit('room_game_over', { roomId });
-    }, TIME_LIMIT);
+  //   timer = setTimeout(() => {
+  //     this.roomsService.gameOver(roomId);
+  //     this.server.in(roomId).emit('game_over');
+  //     this.server.in('lobby').emit('room_game_over', { roomId });
+  //   }, TIME_LIMIT);
 
-    this.roomsService.setTimer(roomId, timer);
-    this.server.in(roomId).emit('countdown');
-  }
+  //   this.roomsService.setTimer(roomId, timer);
+  //   this.server.in(roomId).emit('countdown');
+  // }
 
   @SubscribeMessage('exit_result')
   exitResult(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
 
-    if (this.roomsService.roomHasUser(roomId, client.data.user.id)) {
+    if (this.roomsService.roomHasUser(roomId, client.data.user.name)) {
       client.emit('exit_result');
     }
   }
@@ -337,21 +338,18 @@ export class RoomsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: RoomsInputDto,
   ) {
-    const targetUserSocket = this.socket(
-      this.roomsService.getSocketId(data.userName),
-    );
+    const targetSocket = this.socket(this.roomsService.socketId(data.userName));
     const dto = plainToClass(RoomsInviteDto, {
       roomId: client.data.roomId,
-      targetUserRoomId: targetUserSocket.data.roomId,
       userName: client.data.user.name,
+      targetUserName: data.userName,
+      targetUserRoomId: targetSocket.data.roomId,
     });
-    const inviteInfo = this.roomsService.invite(
-      plainToClass(RoomsInviteDto, dto),
-    );
+    const status = this.roomsService.invite(dto);
 
-    targetUserSocket.emit('invite', inviteInfo);
+    targetSocket.emit('invite', { roomId: dto.roomId });
 
-    return { status: 'success' };
+    return { status };
   }
 
   private socket(id: string): Socket {
@@ -378,7 +376,7 @@ export class RoomsGateway {
       CREATE_ITEM_CYCLE,
     );
 
-    this.roomsService.changeRoomState(roomId, 'playing');
+    this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
     this.server.in(roomId).emit('start', { problems });
     this.server.in(LOBBY_ID).emit('room_start', { roomId, state: 'playing' });

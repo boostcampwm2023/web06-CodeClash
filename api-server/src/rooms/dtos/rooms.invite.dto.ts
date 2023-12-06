@@ -6,9 +6,14 @@ export default class RoomsInviteDto {
   roomId: string;
 
   @IsString()
-  targetUserRoomId: string;
+  @IsNotEmpty()
+  userName: string;
 
   @IsString()
   @IsNotEmpty()
-  userName: string;
+  targetUserName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  targetUserRoomId: string;
 }
