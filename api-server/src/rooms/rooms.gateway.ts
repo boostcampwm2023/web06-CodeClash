@@ -142,7 +142,7 @@ export class RoomsGateway {
       userName: roomsUserDto.userName,
     });
 
-    return { status: 'success' };
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('exit_lobby')
@@ -153,7 +153,7 @@ export class RoomsGateway {
       userName: client.data.user.name,
     });
 
-    return { status: 'success' };
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('create_room')
@@ -167,7 +167,7 @@ export class RoomsGateway {
     });
 
     return {
-      status: 'success',
+      status: SUCCESS_STATUS,
       roomId,
     };
   }
@@ -199,7 +199,7 @@ export class RoomsGateway {
     });
 
     return {
-      status: 'success',
+      status: SUCCESS_STATUS,
       roomId,
     };
   }
@@ -239,14 +239,14 @@ export class RoomsGateway {
   dm(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { userName, message } = data;
     const targetSocketId = this.roomsService.socketId(userName);
-    const status = this.roomsService.dm(client.data.user.name);
 
+    this.roomsService.dm(client.data.user.name);
     this.server.to(targetSocketId).emit('user_dm', {
       userName: client.data.user.name,
       message,
     });
 
-    return { status };
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('ready')
@@ -266,11 +266,11 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { userName: targetUserName } = data;
-    const status = this.roomsService.kick(roomId, userName, targetUserName);
     const targetSocket = this.socket(
       this.roomsService.socketId(targetUserName),
     );
 
+    this.roomsService.kick(roomId, userName, targetUserName);
     targetSocket.leave(roomId);
     targetSocket.emit('kick', { roomId, userName });
     this.server.in(roomId).emit('user_exit_room', { userName: targetUserName });
@@ -279,7 +279,7 @@ export class RoomsGateway {
       userCount: this.roomsService.roomUserCount(roomId),
     });
 
-    return { status };
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('item')
@@ -287,10 +287,10 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { item } = data;
-    const status = this.roomsService.useItem(roomId, userName, item);
 
+    this.roomsService.useItem(roomId, userName, item);
     client.to(roomId).emit('item', {
-      status,
+      status: SUCCESS_STATUS,
       userName,
       item,
     });
@@ -345,11 +345,11 @@ export class RoomsGateway {
       targetUserName: data.userName,
       targetUserRoomId: targetSocket.data.roomId,
     });
-    const status = this.roomsService.invite(dto);
 
+    this.roomsService.invite(dto);
     targetSocket.emit('invite', { roomId: dto.roomId });
 
-    return { status };
+    return { status: SUCCESS_STATUS };
   }
 
   private socket(id: string): Socket {

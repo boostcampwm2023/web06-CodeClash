@@ -332,8 +332,6 @@ export class RoomsService {
     if (user.itemList[item] === 0) {
       delete user.itemList[item];
     }
-
-    return SUCCESS_STATUS;
   }
 
   dm(targetSocketId: string) {
@@ -341,8 +339,6 @@ export class RoomsService {
       this.logger.log(`[dm] 존재하지 않는 사용자에게 DM을 시도함`);
       throw new WsException('존재하지 않는 사용자입니다.');
     }
-
-    return SUCCESS_STATUS;
   }
 
   kick(roomId: string, userName: string, targetUserName: string) {
@@ -373,8 +369,6 @@ export class RoomsService {
     this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
       (user) => user.userName !== targetUserName,
     );
-
-    return SUCCESS_STATUS;
   }
 
   invite(dto: RoomsInviteDto) {
@@ -410,8 +404,6 @@ export class RoomsService {
       this.logger.log(`[invite] ${userName} 사용자가 꽉 찬 방에 초대를 시도함`);
       throw new WsException('꽉 찬 방에는 초대할 수 없습니다.');
     }
-
-    return SUCCESS_STATUS;
   }
 
   private isChief(roomId: string, userName: string) {
