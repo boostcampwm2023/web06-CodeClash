@@ -12,3 +12,19 @@ export const ROOM_STATE = {
   PLAYING: 'playing',
 } as const;
 export type RoomState = (typeof ROOM_STATE)[keyof typeof ROOM_STATE];
+export const EVENT = {
+  LOBBY_INFO: 'lobby_info',
+  ROOM_INFO: 'room_info',
+  ENTER_LOBBY: 'enter_lobby',
+  EXIT_LOBBY: 'exit_lobby',
+  ENTER_ROOM: 'enter_room',
+  EXIT_ROOM: 'exit_room',
+  CREATE_ROOM: 'create_room',
+  CHAT: 'chat',
+  DM: 'dm',
+  READY: 'ready',
+  KICK: 'kick',
+  ITEM: 'item',
+  EXIT_RESULT: 'exit_result',
+  INVITE: 'invite',
+};
