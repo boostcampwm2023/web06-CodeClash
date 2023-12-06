@@ -16,6 +16,7 @@ const LobbyPage: React.FC = () => {
   const { socket } = useSocketStore();
   const { setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby, setRoomUserCount } =
     useLobbyStore();
+
   const handleLobbyConnect = ({ status }: { status: string }) => {
     if (status === "success") {
       socket?.emit("lobby_info", (lobbyInfo: { userList: UserInfo[]; roomList: GameRoom[] }) => {
@@ -23,6 +24,7 @@ const LobbyPage: React.FC = () => {
       });
     }
   };
+
   const handleUserEnterLobby = ({ userName }: { userName: string }) => {
     setAddLobbyUser(userName);
   };
