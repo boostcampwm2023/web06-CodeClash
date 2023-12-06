@@ -60,16 +60,16 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
   };
 
   const handleNextCodePage = () => {
-    setSubmissionPage(prev => {
-      getUserCodeByPage(prev + 1).then(_ => setSubmissionIndex(0));
-      return prev + 1;
+    getUserCodeByPage(submissionPage + 1).then(_ => {
+      setSubmissionPage(submissionPage + 1);
+      setSubmissionIndex(0);
     });
   };
 
   const handlePrevCodePage = () => {
-    setSubmissionPage(prev => {
-      getUserCodeByPage(prev - 1).then(_ => setSubmissionIndex(CODE_COUNT_PER_PAGE - 1));
-      return prev - 1;
+    getUserCodeByPage(submissionPage - 1).then(_ => {
+      setSubmissionPage(submissionPage - 1);
+      setSubmissionIndex(CODE_COUNT_PER_PAGE - 1);
     });
   };
 
