@@ -136,7 +136,7 @@ export class RoomsService {
   exitRoom(roomId: string, userName: string) {
     if (!this.roomExists(roomId)) {
       this.logger.log(
-        `[exitRoom] ${userName} 사용자가 존재하지 않는 방에서 퇴장을 시도함`,
+        `[exitRoom] ${userName} 존재하지 않는 방에서 사용자가 퇴장을 시도함`,
       );
       throw new WsException('존재하지 않는 방입니다.');
     }
