@@ -71,9 +71,7 @@ const RoomPage: React.FC = () => {
     }
     return () => {
       if (socket) {
-        socket.emit("exit_room", { roomId }, () => {
-          setRoomId("");
-        });
+        socket.emit("exit_room", { roomId });
         socket.off("user_enter_room", handleUserEnterRoom);
         socket.off("user_exit_room", handleUserExitRoom);
         socket.off("ready", handleUserReady);
