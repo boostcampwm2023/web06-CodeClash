@@ -233,6 +233,8 @@ export class RoomsGateway {
       userName: client.data.user.name,
       message,
     });
+
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('dm')
@@ -259,6 +261,8 @@ export class RoomsGateway {
     if (this.roomsService.allUserReady(roomId)) {
       this.start(roomId);
     }
+
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('kick')
@@ -294,6 +298,8 @@ export class RoomsGateway {
       userName,
       item,
     });
+
+    return { status: SUCCESS_STATUS };
   }
 
   // @SubscribeMessage('pass')
@@ -329,7 +335,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
 
     if (this.roomsService.roomHasUser(roomId, client.data.user.name)) {
-      client.emit('exit_result');
+      return { status: SUCCESS_STATUS };
     }
   }
 
