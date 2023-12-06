@@ -2,9 +2,21 @@ import { ChangeEvent, useRef, useState } from "react";
 import Button from "../common/Button";
 import Modal from "../common/Modal";
 import { useSocketStore } from "../../store/useSocket";
+import { GameRoom } from "../../store/useLobby";
+import { UserInfo, useRoomStore } from "../../store/useRoom";
+import { useNavigate } from "react-router";
 
 interface CreateRoomModalProps {
   closeModal: () => void;
+}
+
+interface IUserCreateRoomResponse extends GameRoom {
+  userName: string;
+}
+
+export interface ICreateRoomResponse extends GameRoom {
+  status: "success" | "fail";
+  userList: UserInfo[];
 }
 
 const DEFAULT_CAPACITY = "4";
@@ -13,7 +25,10 @@ const CAPACITY_MIN_VALUE = 2;
 
 const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
   const { socket } = useSocketStore();
+  const { setRoomId } = useRoomStore();
   const [selectedRadio, setSelectedRadio] = useState(DEFAULT_CAPACITY);
+
+  const navigate = useNavigate();
   const createRoomInput = useRef({
     roomName: "",
     capacity: DEFAULT_CAPACITY,
@@ -24,9 +39,16 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
     createRoomInput.current.capacity = value;
   };
 
+  const handleRoomCreated = ({ status, roomId }: ICreateRoomResponse) => {
+    if (status === "success") {
+      setRoomId(roomId);
+      navigate("/room");
+    }
+  };
+
   const handleCreateRoom = () => {
     if (!socket) return;
-    socket.emit("create_room", createRoomInput.current);
+    socket.emit("create_room", createRoomInput.current, handleRoomCreated);
     closeModal();
   };
 
