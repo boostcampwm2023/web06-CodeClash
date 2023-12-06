@@ -43,7 +43,7 @@ export class RoomsGateway {
   ) {}
 
   @WebSocketServer()
-  server: Server;
+  io: Server;
 
   async handleConnection(socket: Socket) {
     const rawToken = socket.handshake.headers.authorization;
@@ -101,12 +101,12 @@ export class RoomsGateway {
     this.roomsService.deleteSocketId(userName);
 
     if (roomId === LOBBY_ID) {
-      this.server.in(roomId).emit('user_exit_lobby', { userName });
+      this.io.in(roomId).emit('user_exit_lobby', { userName });
     } else {
       if (this.roomsService.roomExists(roomId)) {
-        this.server.in(roomId).emit('user_exit_room', { userName });
+        this.io.in(roomId).emit('user_exit_room', { userName });
       } else {
-        this.server.in(LOBBY_ID).emit('delete_room', { roomId });
+        this.io.in(LOBBY_ID).emit('delete_room', { roomId });
       }
     }
   }
@@ -145,7 +145,7 @@ export class RoomsGateway {
   exitLobby(@ConnectedSocket() client: Socket) {
     this.roomsService.exitRoom(LOBBY_ID, client.data.user.name);
     client.leave(LOBBY_ID);
-    this.server.in(LOBBY_ID).emit('user_exit_lobby', {
+    this.io.in(LOBBY_ID).emit('user_exit_lobby', {
       userName: client.data.user.name,
     });
 
@@ -157,7 +157,7 @@ export class RoomsGateway {
     const { capacity, roomName } = data;
     const roomId = this.roomsService.createRoom(roomName, capacity);
 
-    this.server.in('lobby').emit('user_create_room', {
+    this.io.in('lobby').emit('user_create_room', {
       ...this.roomsService.roomInfo(roomId),
       userName: client.data.user.name,
     });
@@ -182,7 +182,7 @@ export class RoomsGateway {
     client.join(roomId);
     client.data.roomId = roomId;
     client.to(roomId).emit('user_enter_room', { userName: dto.userName });
-    this.server.in(LOBBY_ID).emit('change_user_count', {
+    this.io.in(LOBBY_ID).emit('change_user_count', {
       roomId,
       userCount: this.roomsService.roomUserCount(roomId),
     });
@@ -201,13 +201,13 @@ export class RoomsGateway {
 
     client.leave(roomId);
     if (roomExists) {
-      this.server.in(roomId).emit('user_exit_room', { userName });
-      this.server.in(LOBBY_ID).emit('change_user_count', {
+      this.io.in(roomId).emit('user_exit_room', { userName });
+      this.io.in(LOBBY_ID).emit('change_user_count', {
         roomId,
         userCount: this.roomsService.roomUserCount(roomId),
       });
     } else {
-      this.server.in(LOBBY_ID).emit('delete_room', { roomId });
+      this.io.in(LOBBY_ID).emit('delete_room', { roomId });
     }
 
     return { status: SUCCESS_STATUS, roomId };
@@ -218,7 +218,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const { message } = data;
 
-    this.server.in(roomId).emit('chat', {
+    this.io.in(roomId).emit('chat', {
       userName: client.data.user.name,
       message,
     });
@@ -232,7 +232,7 @@ export class RoomsGateway {
     const targetSocketId = this.roomsService.socketId(userName);
 
     this.roomsService.dm(client.data.user.name);
-    this.server.to(targetSocketId).emit('user_dm', {
+    this.io.to(targetSocketId).emit('user_dm', {
       userName: client.data.user.name,
       message,
     });
@@ -246,7 +246,7 @@ export class RoomsGateway {
     const { name: userName } = client.data.user;
     const ready = this.roomsService.switchReady(roomId, userName);
 
-    this.server.in(roomId).emit('ready', { userName, ready });
+    this.io.in(roomId).emit('ready', { userName, ready });
     if (this.roomsService.allUserReady(roomId)) {
       this.start(roomId);
     }
@@ -266,8 +266,8 @@ export class RoomsGateway {
     this.roomsService.kick(roomId, userName, targetUserName);
     targetSocket.leave(roomId);
     targetSocket.emit('kick', { roomId, userName });
-    this.server.in(roomId).emit('user_exit_room', { userName: targetUserName });
-    this.server.in(LOBBY_ID).emit('change_user_count', {
+    this.io.in(roomId).emit('user_exit_room', { userName: targetUserName });
+    this.io.in(LOBBY_ID).emit('change_user_count', {
       roomId,
       userCount: this.roomsService.roomUserCount(roomId),
     });
@@ -348,7 +348,7 @@ export class RoomsGateway {
   }
 
   private socket(id: string): Socket {
-    return this.server.sockets.sockets.get(id);
+    return this.io.of('rooms').sockets.get(id);
   }
 
   private createItem(roomId: string) {
@@ -375,8 +375,8 @@ export class RoomsGateway {
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
     this.createItem(roomId);
-    this.server.in(roomId).emit('start', { problems });
-    this.server
+    this.io.in(roomId).emit('start', { problems });
+    this.io
       .in(LOBBY_ID)
       .emit('room_start', { roomId, state: ROOM_STATE.PLAYING });
   }
