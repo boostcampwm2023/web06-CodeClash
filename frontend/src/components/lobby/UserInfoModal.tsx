@@ -54,6 +54,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
   const getUserCodeByPage = (page: number) => {
     return getUserInfo(userName, page).then(data => {
       if (data) {
+        console.log(data);
         setUserInfo(data);
       }
     });
@@ -96,7 +97,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
         <div>지난 제출 코드 보기</div>
         {submissions.length > 0 ? (
           <>
-            <div className="h-[10rem]">
+            <div className="h-[10rem] w-full">
               <Editor
                 language="javascript"
                 value={`// Problem: ${submissions[submissionIndex].problem.title}\n\n${submissions[submissionIndex].code}`}
