@@ -15,6 +15,7 @@ import {
 } from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
 import { ItemList, RoomsUserDto } from './dtos/rooms.user.dto';
+import { Socket } from 'socket.io';
 
 @Injectable()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -167,15 +168,15 @@ export class RoomsService {
     return this.roomList[roomId].userList.every((user) => user.ready);
   }
 
-  registerSocketId(userName: string, socketId: string) {
-    this.userNameSocketIdMapper.set(userName, socketId);
+  registerSocket(userName: string, socket: Socket) {
+    this.userNameSocketIdMapper.set(userName, socket);
   }
 
-  socketId(userName: string) {
+  socket(userName: string): Socket {
     return this.userNameSocketIdMapper.get(userName);
   }
 
-  deleteSocketId(userName: string) {
+  deleteSocket(userName: string) {
     this.userNameSocketIdMapper.delete(userName);
   }
 
@@ -277,8 +278,8 @@ export class RoomsService {
     return user.ready;
   }
 
-  roomSocketIdList(roomId: string) {
-    return this.roomList[roomId].userList.map((user) => user.socketId);
+  userNameList(roomId: string) {
+    return this.roomList[roomId].userList.map((user) => user.userName);
   }
 
   useItem(roomId: string, userName: string, item: ItemList) {
@@ -350,7 +351,7 @@ export class RoomsService {
     const { state, capacity, userList } = this.roomInfo(roomId);
     const userCount = userList.length;
 
-    if (!this.socketId(targetUserName)) {
+    if (!this.socket(targetUserName)) {
       this.logger.log(`[invite] 존재하지 않는 사용자를 초대함`);
       throw new WsException('존재하지 않는 사용자입니다.');
     }
