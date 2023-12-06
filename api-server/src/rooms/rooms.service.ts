@@ -297,6 +297,16 @@ export class RoomsService {
   useItem(roomId: string, userName: string, item: ItemList) {
     this.logger.log(`[useItem] roomId: ${roomId}, userName: ${userName}`);
     this.logger.log(
+      `[useItem] roomIdList: ${JSON.stringify(
+        Object.values(this.roomList).map((room) => room.roomId),
+      )})}`,
+    );
+    this.logger.log(
+      `[useItem] roomUserList : ${JSON.stringify(
+        Object.values(this.roomList).map((room) => room.userList),
+      )}`,
+    );
+    this.logger.log(
       `[useItem] userList: ${JSON.stringify(this.room(roomId).userList)}`,
     );
     const user = this.room(roomId).userList.find(
