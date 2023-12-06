@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { SubmissionsService } from './submissions.service';
 
 @Controller('api/submissions')
@@ -17,7 +24,13 @@ export class SubmissionsController {
   @Get('getLastSubmission')
   getLastSubmission(
     @Query('userName') userName: string,
-    @Query('problemId') problemId: number,
+    @Query(
+      'problemId',
+      new ParseIntPipe({
+        errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE,
+      }),
+    )
+    problemId: number,
   ) {
     return this.submissionsService.getLastSubmission(userName, problemId);
   }
