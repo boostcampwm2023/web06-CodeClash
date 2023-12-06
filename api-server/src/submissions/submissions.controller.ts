@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
