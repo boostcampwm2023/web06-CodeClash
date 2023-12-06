@@ -359,7 +359,13 @@ export class RoomsGateway {
       const { name: userName } = socket.data.user;
       const item = this.roomsService.assignItem(roomId, userName);
 
+      this.logger.log(`Item created: ${item}`);
+      this.logger.log(`Item assigned to ${userName}`);
+      this.logger.log(`socketId: ${socketId}`);
+      this.logger.log(`socket: ${socket}`);
+
       socket.emit('create_item', { item });
+      this.logger.log(`[createItem] Item sent to ${userName}`);
     });
   }
 
@@ -373,6 +379,7 @@ export class RoomsGateway {
 
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
+    this.createItem(roomId);
     this.server.in(roomId).emit('start', { problems });
     this.server
       .in(LOBBY_ID)
