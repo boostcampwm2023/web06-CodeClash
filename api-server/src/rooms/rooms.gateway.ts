@@ -185,14 +185,7 @@ export class RoomsGateway {
     this.roomsService.enterRoom(roomId, client.data.roomId, dto);
     client.join(roomId);
     client.data.roomId = roomId;
-
-    client.to(roomId).emit('user_enter_room', {
-      userName: dto.userName,
-      message: `${dto.userName} 님이 ${
-        this.roomsService.getGameRoom(roomId).roomName
-      } 방에 접속했습니다.`,
-    });
-
+    client.to(roomId).emit('user_enter_room', { userName: dto.userName });
     this.server.in(LOBBY_ID).emit('change_user_count', {
       roomId,
       userCount: this.roomsService.roomUserCount(roomId),
@@ -233,6 +226,8 @@ export class RoomsGateway {
       userName: client.data.user.name,
       message,
     });
+
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('dm')
@@ -259,6 +254,8 @@ export class RoomsGateway {
     if (this.roomsService.allUserReady(roomId)) {
       this.start(roomId);
     }
+
+    return { status: SUCCESS_STATUS };
   }
 
   @SubscribeMessage('kick')
@@ -294,6 +291,8 @@ export class RoomsGateway {
       userName,
       item,
     });
+
+    return { status: SUCCESS_STATUS };
   }
 
   // @SubscribeMessage('pass')
@@ -329,7 +328,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
 
     if (this.roomsService.roomHasUser(roomId, client.data.user.name)) {
-      client.emit('exit_result');
+      return { status: SUCCESS_STATUS };
     }
   }
 
