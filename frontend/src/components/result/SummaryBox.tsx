@@ -1,11 +1,16 @@
 import ResultButtonBox from "./ButtonBox";
 import ResultRankBox from "./RankBox";
 
-const ResultSummaryBox: React.FC = () => {
+interface ResultSummaryBoxProps {
+  selectedUser: string;
+  setSelecteduser: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const ResultSummaryBox: React.FC<ResultSummaryBoxProps> = ({ selectedUser, setSelecteduser }) => {
   return (
     <>
       <div>결과 요약</div>
-      <ResultRankBox />
+      <ResultRankBox selectedUser={selectedUser} setSelectUser={setSelecteduser} />
       <ResultButtonBox />
     </>
   );

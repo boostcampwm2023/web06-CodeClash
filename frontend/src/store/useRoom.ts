@@ -4,6 +4,7 @@ import { ProblemType } from "../components/gameplay/problemType";
 export interface UserInfo {
   userName: string;
   ready?: boolean;
+  score?: number;
 }
 
 interface RoomState {

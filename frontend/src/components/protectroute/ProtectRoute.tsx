@@ -26,8 +26,9 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) =
       e.preventDefault();
       e.returnValue = "";
     };
-
-    window.addEventListener("beforeunload", preventClose);
+    if (process.env.NODE_ENV === "production") {
+      window.addEventListener("beforeunload", preventClose);
+    }
     return () => {
       window.removeEventListener("beforeunload", preventClose);
     };

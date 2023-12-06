@@ -1,52 +1,68 @@
 import { useState } from "react";
 import ResultRankItem from "./RankItem";
+import { useRoomStore } from "../../store/useRoom";
 
 interface IUserList {
   username: string;
-  message: string;
   score: number;
+}
+
+interface ResultRankBoxProps {
+  selectedUser: string;
+  setSelectUser: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const tempUserList = [
   {
     username: "유저A",
-    message: "알고리즘 그 잡채...",
-    score: 33500,
+    score: 1,
   },
   {
     username: "유저B",
-    message: "야생의 흔한 알고리즘 고수",
-    score: 3498,
+    score: 2,
   },
   {
     username: "유저C",
-    message: "야생의 흔한 알고리즘 고수",
-    score: 3477,
+    score: 3,
   },
   {
     username: "유저D",
-    message: "좀 더 노력이 필요해요!",
-    score: 432,
+    score: 4,
   },
   {
     username: "유저E",
-    message: "좀 더 노력이 필요해요!",
-    score: 321,
+    score: 5,
   },
   {
     username: "유저F",
-    message: "1 + 1이 뭔지도 모르시는 분",
-    score: 1,
+    score: 6,
   },
 ];
 
-const ResultRankBox: React.FC = () => {
-  const [userList, setUserList] = useState<IUserList[]>(tempUserList);
-  // const [userList, setUserList] = useState<IUserList[]>([]);
+const messageList = [
+  "알고리즘 그 잡채...",
+  "야생의 흔한 알고리즘 고수",
+  "좀 더 노력이 필요해요!",
+  "좀 더 노력이 필요해요!",
+  "좀 더 노력이 필요해요!",
+  "1 + 1이 뭔지도 모르시는 분",
+];
 
-  const rankContents = userList.map(({ username, message, score }) => (
-    <ResultRankItem username={username} message={message} score={score} key={username} />
-  ));
+const ResultRankBox: React.FC<ResultRankBoxProps> = ({ selectedUser, setSelectUser }) => {
+  const { userList, capacity } = useRoomStore();
+  const rankContents = userList
+    .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
+    .map(({ userName, score }, idx) => (
+      <ResultRankItem
+        username={userName}
+        isSelected={userName === selectedUser}
+        message={messageList[Math.floor((idx * capacity) / 6)]}
+        score={score ?? 0}
+        key={userName}
+        idx={idx}
+        onClick={() => setSelectUser(userName)}
+      />
+    ));
 
   return <div className="flex flex-col h-full overflow-scroll py-2 my-2">{rankContents}</div>;
 };
