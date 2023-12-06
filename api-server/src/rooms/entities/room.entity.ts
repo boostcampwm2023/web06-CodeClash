@@ -1,12 +1,12 @@
-import { Socket } from 'socket.io';
 import { RoomsUser } from './rooms.user.entity';
+import { RoomState } from '../rooms.constants';
 
 export interface Room {
   roomId: string;
   roomName: string;
   userList: RoomsUser[];
   capacity: number;
-  state: 'waiting' | 'playing';
+  state: RoomState;
   timer: NodeJS.Timeout | null;
   itemCreator: NodeJS.Timeout | null;
 }
