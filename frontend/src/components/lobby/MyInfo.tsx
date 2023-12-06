@@ -21,12 +21,12 @@ const LobbyMyInfo: React.FC = () => {
       import(`../../assets/avatar/${hashAvatarIdx(userName)}.webp`).then(res => {
         setAvatar(res.default);
       });
-    }
 
-    getUserStat(userName).then(res => {
-      const { acceptCount, failCount, winCount, totalCount } = res;
-      setUserStat({ acceptCount, failCount, winCount, totalCount });
-    });
+      getUserStat(userName).then(res => {
+        const { acceptCount, failCount, winCount, totalCount } = res;
+        setUserStat({ acceptCount, failCount, winCount, totalCount });
+      });
+    }
   }, [userName]);
 
   const myStat = () => {
