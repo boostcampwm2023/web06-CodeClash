@@ -52,7 +52,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
   }, []);
 
   const getUserCodeByPage = (page: number) => {
-    getUserInfo(userName, page).then(data => {
+    return getUserInfo(userName, page).then(data => {
       if (data) {
         setUserInfo(data);
       }
@@ -61,16 +61,14 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
 
   const handleNextCodePage = () => {
     setSubmissionPage(prev => {
-      getUserCodeByPage(prev + 1);
-      setSubmissionIndex(0);
+      getUserCodeByPage(prev + 1).then(_ => setSubmissionIndex(0));
       return prev + 1;
     });
   };
 
   const handlePrevCodePage = () => {
     setSubmissionPage(prev => {
-      getUserCodeByPage(prev - 1);
-      setSubmissionIndex(prev * CODE_COUNT_PER_PAGE - 1);
+      getUserCodeByPage(prev - 1).then(_ => setSubmissionIndex(CODE_COUNT_PER_PAGE - 1));
       return prev - 1;
     });
   };
