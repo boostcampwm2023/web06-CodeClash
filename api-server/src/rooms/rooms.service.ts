@@ -1,12 +1,20 @@
 import { Injectable, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { Socket } from 'socket.io';
-import { CreateRoomInfo, Room, RoomInfo, User } from './entities/room.entity';
+import { Room, RoomInfo, User } from './entities/room.entity';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
-import { LOBBY_ID } from './rooms.constants';
+import {
+  DEFAULT_ROOM_NAME,
+  LOBBY_ID,
+  MAX_ITEM_CAPACITY,
+  MAX_LOBBY_CAPACITY,
+  NUM_OF_ITEMS,
+  ROOM_STATE,
+  RoomState,
+  SUCCESS_STATUS,
+} from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
-import { RoomsUserDto } from './dtos/rooms.user.dto';
+import { ItemList, RoomsUserDto } from './dtos/rooms.user.dto';
 
 @Injectable()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -17,14 +25,14 @@ export class RoomsService {
       roomId: LOBBY_ID,
       roomName: '로비',
       userList: [],
-      capacity: 1000,
-      state: 'waiting',
+      capacity: MAX_LOBBY_CAPACITY,
+      state: ROOM_STATE.WAITING,
       timer: null,
-      itemCreater: null,
+      itemCreator: null,
     },
   };
 
-  private userNameSocketMapper = new Map();
+  private userNameSocketIdMapper = new Map();
 
   constructor() {}
 
@@ -56,20 +64,22 @@ export class RoomsService {
           userName: user.userName,
         };
       }),
+      roomList: this.getAllGameRoom(),
     };
   }
 
-  createRoom(roomName: string, capacity: number): string {
+  createRoom(name: string, capacity: number): string {
     const roomId = uuid();
+    const roomName = name ? name : DEFAULT_ROOM_NAME;
 
     this.roomList[roomId] = {
       roomId,
       roomName,
       userList: [],
       capacity,
-      state: 'waiting',
+      state: ROOM_STATE.WAITING,
       timer: null,
-      itemCreater: null,
+      itemCreator: null,
     };
 
     return roomId;
@@ -92,7 +102,7 @@ export class RoomsService {
       throw new WsException('꽉 찬 방에는 입장할 수 없습니다.');
     }
 
-    if (state !== 'waiting') {
+    if (state === ROOM_STATE.PLAYING) {
       this.logger.log(
         `[enterRoom] ${user.userName} 사용자가 이미 게임이 시작된 방에 입장을 시도함`,
       );
@@ -126,6 +136,8 @@ export class RoomsService {
     );
 
     if (roomId !== LOBBY_ID && this.roomList[roomId].userList.length === 0) {
+      this.roomList[roomId].itemCreator &&
+        clearTimeout(this.roomList[roomId].itemCreator);
       delete this.roomList[roomId];
 
       return false;
@@ -170,12 +182,6 @@ export class RoomsService {
       });
   }
 
-  changeReadyStatus(client: Socket) {
-    client.data.ready = !client.data.ready;
-
-    return client.data.ready;
-  }
-
   allUserReady(roomId: string) {
     return this.roomList[roomId].userList.every((user) => user.ready);
   }
@@ -184,23 +190,23 @@ export class RoomsService {
     return this.roomList[roomId].userList;
   }
 
-  registerUserSocket(client: Socket, userName: string) {
-    this.userNameSocketMapper.set(userName, client);
+  registerSocketId(userName: string, socketId: string) {
+    this.userNameSocketIdMapper.set(userName, socketId);
   }
 
-  getUserSocket(userName: string) {
-    return this.userNameSocketMapper.get(userName);
+  socketId(userName: string) {
+    return this.userNameSocketIdMapper.get(userName);
   }
 
-  deleteUserSocket(userName: string) {
-    this.userNameSocketMapper.delete(userName);
+  deleteSocketId(userName: string) {
+    this.userNameSocketIdMapper.delete(userName);
   }
 
-  isConnctedUser(userName: string) {
-    return this.userNameSocketMapper.has(userName);
+  isConnectedUser(userName: string) {
+    return this.userNameSocketIdMapper.has(userName);
   }
 
-  changeRoomState(roomId: string, state: 'waiting' | 'playing') {
+  changeRoomState(roomId: string, state: RoomState) {
     this.roomList[roomId].state = state;
   }
 
@@ -210,6 +216,52 @@ export class RoomsService {
 
   getTimer(roomId: string): NodeJS.Timeout | null {
     return this.roomList[roomId].timer;
+  }
+
+  setItemCreator(roomId: string, itemCreater: NodeJS.Timeout) {
+    this.roomList[roomId].itemCreator = itemCreater;
+  }
+
+  getItemCreator(roomId: string): NodeJS.Timeout | null {
+    return this.roomList[roomId].itemCreator;
+  }
+
+  assignItem(roomId: string, userName: string) {
+    const user = this.roomList[roomId].userList.find(
+      (user) => user.userName === userName,
+    );
+
+    if (!user) {
+      this.logger.log(
+        `[assignItem] ${userName} 사용자가 존재하지 않는 사용자임`,
+      );
+      throw new WsException('사용자가 존재하지 않습니다.');
+    }
+
+    const itemCount = Object.values(user.itemList).reduce(
+      (acc, cur) => acc + cur,
+      0,
+    );
+
+    if (itemCount >= MAX_ITEM_CAPACITY) {
+      return null;
+    }
+
+    const item = this.randomItem();
+
+    if (user.itemList[item] === undefined) {
+      user.itemList[item] = 1;
+    } else {
+      user.itemList[item] += 1;
+    }
+
+    return item;
+  }
+
+  randomItem(): ItemList {
+    const item = Math.floor(Math.random() * NUM_OF_ITEMS);
+
+    return item;
   }
 
   allUserPassed(roomId: string) {
@@ -222,9 +274,9 @@ export class RoomsService {
       user.ready = false;
       user.itemList = {};
     });
-    this.roomList[roomId].state = 'waiting';
+    this.roomList[roomId].state = ROOM_STATE.WAITING;
     this.roomList[roomId].timer = null;
-    this.roomList[roomId].itemCreater = null;
+    this.roomList[roomId].itemCreator = null;
   }
 
   roomHasUser(roomId: string, userName: string) {
@@ -233,23 +285,115 @@ export class RoomsService {
     );
   }
 
-  invite(dto: RoomsInviteDto) {
-    const { roomId, targetUserRoomId, userName } = dto;
-    const { roomName, state, capacity, userCount } = this.getGameRoom(roomId);
+  roomUserCount(roomId: string) {
+    return this.roomList[roomId].userList.length;
+  }
 
-    if (targetUserRoomId !== 'lobby') {
+  switchReady(roomId: string, userName: string) {
+    const user = this.roomList[roomId].userList.find(
+      (user) => user.userName === userName,
+    );
+
+    if (!user) {
+      this.logger.log(
+        `[switchReady] ${userName} 사용자가 존재하지 않는 사용자임`,
+      );
+      throw new WsException('사용자가 존재하지 않습니다.');
+    }
+
+    user.ready = !user.ready;
+
+    return user.ready;
+  }
+
+  roomSocketIdList(roomId: string) {
+    return this.roomList[roomId].userList.map((user) => user.socketId);
+  }
+
+  useItem(roomId: string, userName: string, item: ItemList) {
+    const user = this.roomList[roomId].userList.find(
+      (user) => user.userName === userName,
+    );
+
+    if (!user) {
+      this.logger.log(`[item] ${userName} 사용자가 존재하지 않는 사용자임`);
+      throw new WsException('사용자가 존재하지 않습니다.');
+    }
+
+    if (!user.itemList[item]) {
+      this.logger.log(
+        `[item] ${userName} 사용자가 존재하지 않는 아이템을 사용함`,
+      );
+      throw new WsException('존재하지 않는 아이템입니다.');
+    }
+
+    user.itemList[item] -= 1;
+
+    if (user.itemList[item] === 0) {
+      delete user.itemList[item];
+    }
+  }
+
+  dm(targetSocketId: string) {
+    if (!targetSocketId) {
+      this.logger.log(`[dm] 존재하지 않는 사용자에게 DM을 시도함`);
+      throw new WsException('존재하지 않는 사용자입니다.');
+    }
+  }
+
+  kick(roomId: string, userName: string, targetUserName: string) {
+    const targetUser = this.roomList[roomId].userList.find(
+      (user) => user.userName === targetUserName,
+    );
+
+    if (!targetUser) {
+      this.logger.log(`[kick] 존재하지 않는 사용자를 강퇴함`);
+      throw new WsException('존재하지 않는 사용자입니다.');
+    }
+
+    if (roomId === LOBBY_ID) {
+      this.logger.log(`[kick] 로비에서 강퇴를 시도함`);
+      throw new WsException('로비에서는 강퇴할 수 없습니다.');
+    }
+
+    if (targetUserName === userName) {
+      this.logger.log(`[kick] 자기 자신을 강퇴하려 함`);
+      throw new WsException('자기 자신을 강퇴할 수 없습니다.');
+    }
+
+    if (!this.isChief(roomId, userName)) {
+      this.logger.log(`[kick] 방장이 아닌 사용자가 강퇴를 시도함`);
+      throw new WsException('방장이 아닙니다.');
+    }
+
+    this.roomList[roomId].userList = this.roomList[roomId].userList.filter(
+      (user) => user.userName !== targetUserName,
+    );
+  }
+
+  invite(dto: RoomsInviteDto) {
+    const { roomId, userName, targetUserName, targetUserRoomId } = dto;
+    const { state, capacity, userList } = this.roomInfo(roomId);
+    const userCount = userList.length;
+
+    if (!this.socketId(targetUserName)) {
+      this.logger.log(`[invite] 존재하지 않는 사용자를 초대함`);
+      throw new WsException('존재하지 않는 사용자입니다.');
+    }
+
+    if (targetUserRoomId !== LOBBY_ID) {
       this.logger.log(
         `[invite] ${userName} 사용자가 로비에 없는 사용자를 초대함`,
       );
       throw new WsException('초대한 유저가 로비에 없습니다.');
     }
 
-    if (roomId === 'lobby') {
+    if (roomId === LOBBY_ID) {
       this.logger.log(`[invite] ${userName} 사용자가 로비에서 초대를 시도함`);
       throw new WsException('로비에서는 초대할 수 없습니다.');
     }
 
-    if (state !== 'waiting') {
+    if (state !== ROOM_STATE.WAITING) {
       this.logger.log(
         `[invite] ${userName} 사용자가 이미 게임이 시작된 방에 초대를 시도함`,
       );
@@ -258,17 +402,11 @@ export class RoomsService {
 
     if (userCount >= capacity) {
       this.logger.log(`[invite] ${userName} 사용자가 꽉 찬 방에 초대를 시도함`);
-
       throw new WsException('꽉 찬 방에는 초대할 수 없습니다.');
     }
+  }
 
-    return {
-      status: 'success',
-      roomId,
-      roomName,
-      userCount,
-      capacity,
-      userName,
-    };
+  private isChief(roomId: string, userName: string) {
+    return this.roomList[roomId].userList[0].userName === userName;
   }
 }

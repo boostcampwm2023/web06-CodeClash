@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsString,
-  IsObject,
-  IsNotEmpty,
-  IsNotEmptyObject,
-} from 'class-validator';
+import { IsBoolean, IsString, IsObject, IsNotEmpty } from 'class-validator';
 import { ItemList } from '../dtos/rooms.user.dto';
 
 export class RoomsUser {

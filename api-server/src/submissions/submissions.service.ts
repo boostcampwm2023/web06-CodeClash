@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SubmissionTable } from './entities/submission.entity';
 import { Repository } from 'typeorm';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
-import { SearchSubmissionDto } from './dto/search-submission.dto';
 
 @Injectable()
 export class SubmissionsService {
@@ -37,13 +36,18 @@ export class SubmissionsService {
     });
   }
 
-  async paginateSubmissions(userId: number, page: number, limit: number = 5) {
+  async paginateSubmissionsByUserId(
+    userId: number,
+    page: number,
+    limit: number = 5,
+  ) {
     return await this.submissionsRepository
       .createQueryBuilder('submission')
       .leftJoinAndSelect('submission.problem', 'problem')
       .where('submission.user_id = :userId', { userId })
       .skip(page * limit)
       .take(limit)
+      .orderBy('submission.id', 'DESC')
       .select([
         'submission.id',
         'submission.language',
@@ -57,25 +61,16 @@ export class SubmissionsService {
       .getMany();
   }
 
-  async getCountOfSubmissions() {
-    return await this.submissionsRepository.count();
+  async getCountOfSubmissionsByUserId(userId: number) {
+    return await this.submissionsRepository.count({
+      where: { user: { id: userId } },
+    });
   }
 
-  async getLastSubmission(searchSubmissionDto: SearchSubmissionDto) {
-    const promises = [];
-
-    searchSubmissionDto.problemIds.forEach((problemId) => {
-      const lastSubmission = this.submissionsRepository.findOne({
-        where: {
-          problem: { id: problemId },
-          user: { name: searchSubmissionDto.userName },
-        },
-        order: { id: 'DESC' },
-      });
-
-      promises.push(lastSubmission);
+  async getLastSubmission(userName: string, problemId: number) {
+    return await this.submissionsRepository.findOne({
+      where: { user: { name: userName }, problem: { id: problemId } },
+      order: { id: 'DESC' },
     });
-
-    return await Promise.all(promises);
   }
 }
