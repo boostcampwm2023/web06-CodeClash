@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
@@ -19,11 +18,6 @@ export class SubmissionsController {
   @Get()
   getSubmissions() {
     return this.submissionsService.getSubmissions();
-  }
-
-  @Get(':userName')
-  getSubmissionByUserName(@Param('userName') userName: string) {
-    return this.submissionsService.getSubmissionByUserName(userName);
   }
 
   @Get('getLastSubmission')
