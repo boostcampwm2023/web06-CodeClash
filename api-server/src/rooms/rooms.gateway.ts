@@ -112,6 +112,10 @@ export class RoomsGateway {
         }
       }
     }
+
+    socket.emit('disconnect', {
+      message: '게임 시작하는 순간에도 소켓 연결이 끊기는가?',
+    });
   }
 
   @SubscribeMessage('lobby_info')
