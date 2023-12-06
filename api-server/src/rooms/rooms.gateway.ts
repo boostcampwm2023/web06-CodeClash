@@ -348,7 +348,7 @@ export class RoomsGateway {
   }
 
   private socket(id: string): Socket {
-    return this.server.sockets[id];
+    return this.server.sockets.sockets.get(id);
   }
 
   private createItem(roomId: string) {
@@ -358,11 +358,6 @@ export class RoomsGateway {
       const socket = this.socket(socketId);
       const { name: userName } = socket.data.user;
       const item = this.roomsService.assignItem(roomId, userName);
-
-      this.logger.log(`Item created: ${item}`);
-      this.logger.log(`Item assigned to ${userName}`);
-      this.logger.log(`socketId: ${socketId}`);
-      this.logger.log(`socket: ${socket}`);
 
       socket.emit('create_item', { item });
       this.logger.log(`[createItem] Item sent to ${userName}`);
