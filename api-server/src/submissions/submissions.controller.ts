@@ -21,11 +21,6 @@ export class SubmissionsController {
     return this.submissionsService.getSubmissions();
   }
 
-  @Get(':userName')
-  getSubmissionByUserName(@Param('userName') userName: string) {
-    return this.submissionsService.getSubmissionByUserName(userName);
-  }
-
   @Get('getLastSubmission')
   getLastSubmission(
     @Query('userName') userName: string,
