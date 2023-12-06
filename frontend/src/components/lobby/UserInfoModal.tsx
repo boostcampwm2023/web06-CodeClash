@@ -54,7 +54,6 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
   const getUserCodeByPage = (page: number) => {
     return getUserInfo(userName, page).then(data => {
       if (data) {
-        console.log(data);
         setUserInfo(data);
       }
     });
