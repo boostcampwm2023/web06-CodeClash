@@ -95,6 +95,13 @@ export class RoomsService {
   enterRoom(roomId: string, location: string, user: RoomsUserDto) {
     const { userList, capacity, state, banList } = this.roomInfo(roomId);
 
+    if (!this.roomExists(roomId)) {
+      this.logger.log(
+        `[enterRoom] ${user.userName} 사용자가 존재하지 않는 방에 입장을 시도함`,
+      );
+      throw new WsException('존재하지 않는 방입니다.');
+    }
+
     if (location !== LOBBY_ID && roomId !== LOBBY_ID) {
       this.logger.log(
         `[enterRoom] ${user.userName} 사용자가 로비가 아닌 곳에서 입장을 시도함`,
@@ -200,8 +207,8 @@ export class RoomsService {
     return this.room(roomId).timer;
   }
 
-  setItemCreator(roomId: string, itemCreater: NodeJS.Timeout) {
-    this.room(roomId).itemCreator = itemCreater;
+  setItemCreator(roomId: string, itemCreator: NodeJS.Timeout) {
+    this.room(roomId).itemCreator = itemCreator;
   }
 
   getItemCreator(roomId: string): NodeJS.Timeout | null {
