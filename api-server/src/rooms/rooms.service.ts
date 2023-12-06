@@ -10,6 +10,7 @@ import {
   MAX_ITEM_CAPACITY,
   MAX_LOBBY_CAPACITY,
   NUM_OF_ITEMS,
+  SUCCESS_STATUS,
 } from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
 import { ItemList, RoomsUserDto } from './dtos/rooms.user.dto';
@@ -370,6 +371,15 @@ export class RoomsService {
       delete user.itemList[item];
     }
 
-    return 'success';
+    return SUCCESS_STATUS;
+  }
+
+  dm(targetSocketId: string) {
+    if (!targetSocketId) {
+      this.logger.log(`[dm] 존재하지 않는 사용자에게 DM을 시도함`);
+      throw new WsException('존재하지 않는 사용자입니다.');
+    }
+
+    return SUCCESS_STATUS;
   }
 }

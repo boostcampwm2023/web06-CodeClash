@@ -6,3 +6,4 @@ export const MAX_LOBBY_CAPACITY = 1000;
 export const DEFAULT_ROOM_NAME = '신나는 싱글 스레드 파티';
 export const NUM_OF_ITEMS = 9;
 export const MAX_ITEM_CAPACITY = 2;
+export const SUCCESS_STATUS = 'success';
