@@ -25,6 +25,7 @@ const LobbyPage: React.FC = () => {
       });
     }
   };
+
   const handleUserEnterLobby = ({ userName }: { userName: string }) => {
     setAddLobbyUser(userName);
   };

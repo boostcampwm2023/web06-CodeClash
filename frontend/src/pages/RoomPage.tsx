@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import RoomUserCard from "../components/room/UserCard";
 import RoomChatBox from "../components/room/ChatBox";
 import RoomButtonBox from "../components/room/ButtonBox";
@@ -11,13 +11,15 @@ import { ProblemType } from "../components/gameplay/problemType";
 import { ICreateRoomResponse } from "../components/lobby/CreateRoomModal";
 
 const RoomPage: React.FC = () => {
-  const [isStart, setIsStart] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocketStore();
   const {
     roomId,
     userList,
     capacity,
+    isStart,
+    clearRoomInfo,
+    setIsStart,
     setAddRoomUser,
     setRemoveRoomUser,
     setChangeUserReady,
@@ -38,8 +40,8 @@ const RoomPage: React.FC = () => {
     setChangeUserReady(userName, ready);
   };
 
-  const handleStart = (problemlist: { status: string; problems: ProblemType[] }) => {
-    setProblemList(problemlist.problems);
+  const handleStart = ({ problems }: { problems: ProblemType[] }) => {
+    setProblemList(problems);
     setIsStart(true);
     setTimeout(() => {
       setIsStart(false);
@@ -56,7 +58,7 @@ const RoomPage: React.FC = () => {
     }
     if (status === "success") {
       socket?.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
-        setRoomInfo({ roomId, roomName, capacity, userList, problemList: [] });
+        setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
       });
     }
   };

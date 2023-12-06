@@ -21,6 +21,11 @@ interface IUserInfo {
   email: string;
   name: string;
   submissions: ISubmission[];
+  acceptCount: number;
+  failCount: number;
+  winCount: number;
+  totalCount: number;
+  pageEnd: number;
 }
 
 const editorOptions = {
@@ -35,18 +40,38 @@ const editorOptions = {
   readOnly: true,
   fontSize: 18,
 };
+const CODE_COUNT_PER_PAGE = 5;
 
 const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) => {
   const [userInfo, setUserInfo] = useState<IUserInfo>();
   const [submissionIndex, setSubmissionIndex] = useState(0);
+  const [submissionPage, setSubmissionPage] = useState(0);
 
   useEffect(() => {
-    getUserInfo(userName).then(data => {
+    getUserCodeByPage(0);
+  }, []);
+
+  const getUserCodeByPage = (page: number) => {
+    return getUserInfo(userName, page).then(data => {
       if (data) {
         setUserInfo(data);
       }
     });
-  }, []);
+  };
+
+  const handleNextCodePage = () => {
+    getUserCodeByPage(submissionPage + 1).then(_ => {
+      setSubmissionPage(submissionPage + 1);
+      setSubmissionIndex(0);
+    });
+  };
+
+  const handlePrevCodePage = () => {
+    getUserCodeByPage(submissionPage - 1).then(_ => {
+      setSubmissionPage(submissionPage - 1);
+      setSubmissionIndex(CODE_COUNT_PER_PAGE - 1);
+    });
+  };
 
   const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     import("../../assets/theme/EditorTheme.json").then(data => {
@@ -55,44 +80,60 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     });
   };
 
-  const userInfoHeader = ({ email, submissions }: IUserInfo) => (
-    <div className="p-2 flex justify-between">
+  const userInfoHeader = ({ email, acceptCount, failCount, winCount, totalCount, submissions }: IUserInfo) => (
+    <div className="p-2 grid grid-cols-2">
+      <div>전체 게임 수 : {totalCount.toLocaleString()}</div>
+      <div>승리한 게임 수 : {winCount.toLocaleString()}</div>
+      <div>코드 제출 횟수 : {(acceptCount + failCount).toLocaleString()}</div>
+      <div>코드 통과 횟수 : {acceptCount.toLocaleString()}</div>
       <div>EMAIL : {email}</div>
-      <div className="flex gap-2">
-        <span>문제 번호 선택 </span>
-        {submissions.map((submission, index) => (
-          <button
-            style={{ color: submissionIndex === index ? "black" : "white" }}
-            key={submission.problem.title + index}
-            onClick={() => setSubmissionIndex(index)}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
     </div>
   );
 
   const userCode = ({ submissions }: IUserInfo) => (
-    <div className="bg-lightskyblue w-full h-[85%] p-2 rounded-lg overflow-scroll">
-      {submissions.length > 0 ? (
-        <Editor
-          language="javascript"
-          value={`// Problem: ${submissions[submissionIndex].problem.title}\n\n${submissions[submissionIndex].code}`}
-          onMount={handleEditorDidMount}
-          options={{ ...editorOptions }}
-        />
-      ) : (
-        `${userName}님의 코드 제출 기록이 없습니다`
-      )}
-    </div>
+    <>
+      <div className="bg-lightskyblue flex flex-col justify-center items-center gap-2 p-2 rounded-lg overflow-scroll">
+        <div>지난 제출 코드 보기</div>
+        {submissions.length > 0 ? (
+          <>
+            <div className="h-[10rem]">
+              <Editor
+                language="javascript"
+                value={`// Problem: ${submissions[submissionIndex].problem.title}\n\n${submissions[submissionIndex].code}`}
+                onMount={handleEditorDidMount}
+                options={{ ...editorOptions }}
+              />
+            </div>
+            <div className="grid grid-cols-7 gap-2 justify-center">
+              {submissionPage > 0 ? <button onClick={handlePrevCodePage}>{`<`}</button> : <button></button>}
+              {submissions.map((submission, index) => (
+                <button
+                  style={{ color: submissionIndex === index ? "black" : "white" }}
+                  key={submission.problem.title + String(index)}
+                  onClick={() => setSubmissionIndex(index)}
+                >
+                  {submissionPage * CODE_COUNT_PER_PAGE + index + 1}
+                </button>
+              ))}
+              {userInfo?.pageEnd && submissionPage < userInfo?.pageEnd ? (
+                <button onClick={handleNextCodePage}>{`>`}</button>
+              ) : (
+                <button></button>
+              )}
+            </div>
+          </>
+        ) : (
+          `${userName}님의 코드 제출 기록이 없습니다`
+        )}
+      </div>
+    </>
   );
 
   return (
     <Modal
       title={`${userName}님의 정보`}
       closeModal={closeModal}
-      className="px-2 w-[40rem] h-[20rem] flex flex-col items-center gap-2"
+      className="px-2 w-[40rem] flex flex-col items-center gap-2"
     >
       {userInfo ? (
         <div className="w-full h-full">
