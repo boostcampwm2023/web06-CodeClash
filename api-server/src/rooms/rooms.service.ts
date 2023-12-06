@@ -34,7 +34,7 @@ export class RoomsService {
     },
   };
 
-  private userNameSocketIdMapper = new Map();
+  private userNameSocketMapper = new Map();
 
   constructor() {}
 
@@ -169,19 +169,19 @@ export class RoomsService {
   }
 
   registerSocket(userName: string, socket: Socket) {
-    this.userNameSocketIdMapper.set(userName, socket);
+    this.userNameSocketMapper.set(userName, socket);
   }
 
   socket(userName: string): Socket {
-    return this.userNameSocketIdMapper.get(userName);
+    return this.userNameSocketMapper.get(userName);
   }
 
   deleteSocket(userName: string) {
-    this.userNameSocketIdMapper.delete(userName);
+    this.userNameSocketMapper.delete(userName);
   }
 
   isConnectedUser(userName: string) {
-    return this.userNameSocketIdMapper.has(userName);
+    return this.userNameSocketMapper.has(userName);
   }
 
   changeRoomState(roomId: string, state: RoomState) {

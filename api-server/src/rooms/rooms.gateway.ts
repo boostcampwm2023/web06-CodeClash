@@ -367,7 +367,6 @@ export class RoomsGateway {
 
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
-    this.createItem(roomId);
     this.io.in(roomId).emit('start', { problems });
     this.io
       .in(LOBBY_ID)
