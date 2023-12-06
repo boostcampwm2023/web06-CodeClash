@@ -9,7 +9,7 @@ export interface Room {
   state: RoomState;
   timer: NodeJS.Timeout | null;
   itemCreator: NodeJS.Timeout | null;
-  banList: string[];
+  banList: Set<string>;
 }
 
 export interface RoomList {
