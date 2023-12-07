@@ -17,7 +17,7 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({
   return (
     <button
       className="skew-x-right rounded-sm px-2 py-1 text-white hover:bg-lightskyblue hover:text-black"
-      style={{ opacity: state === "playing" ? 0.8 : 1 }}
+      style={{ opacity: state === "playing" ? 0.5 : 1 }}
       key={roomId}
       onClick={onClick}
       disabled={state === "playing"}
