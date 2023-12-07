@@ -111,6 +111,16 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
         setIsLoading(false);
       });
   };
+
+  const handleCreateItem = (data: any) => {
+    console.log("create", data);
+    if (data.item) {
+      setGameItems(gameitems => {
+        return [...gameitems, gameItemTypes[data.item]];
+      });
+    }
+  };
+
   // 언어 뒤집기
   useEffect(() => {
     if (gameEventState.isReverseLanguage) {
@@ -121,23 +131,8 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   }, [gameEventState.isReverseLanguage]);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setGameItems(prev => {
-        if (prev.length < MAX_GAME_ITEM) {
-          const randomIdx = Math.floor(Math.random() * gameItemTypes.length);
-          return prev.concat(gameItemTypes[randomIdx]);
-        }
-        return prev;
-      });
-    }, 1000 * 1);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
-
-  useEffect(() => {
     const gameItemHandler = (data: { item: GameItemType; userName: string }) => {
+      console.log(data);
       handleGameEvent(data.item);
     };
 
@@ -168,11 +163,13 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
     socket?.on("timeover", () => {});
     socket?.on("timerstart", () => {});
     socket?.on("pass", () => {});
+    socket?.on("create_item", handleCreateItem);
 
     return () => {
       socket?.off("timeover");
       socket?.off("timerstart");
       socket?.off("pass");
+      socket?.off("item");
     };
   }, [socket]);
 
