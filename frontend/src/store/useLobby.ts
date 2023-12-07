@@ -9,9 +9,16 @@ export interface GameRoom {
   state: "playing" | "waiting";
 }
 
+export interface Invite {
+  roomId: string;
+  roomName: string;
+  userName: string;
+}
+
 export interface LobbyState {
   userList: UserInfo[];
   gameRoomList: GameRoom[];
+  inviteList: Invite[];
 }
 
 interface LobbyAction {
@@ -21,6 +28,8 @@ interface LobbyAction {
   setAddGameRoom: (gameRoom: GameRoom) => void;
   setRemoveGameRoom: (roomId: string) => void;
   setRoomUserCount: (roomId: string, userCount: number) => void;
+  setAddInvite: (invite: Invite) => void;
+  setRemoveInvite: (roomId: string) => void;
 }
 
 interface LobbyStore extends LobbyState, LobbyAction {}
@@ -28,6 +37,7 @@ interface LobbyStore extends LobbyState, LobbyAction {}
 export const useLobbyStore = create<LobbyStore>(set => ({
   userList: [],
   gameRoomList: [],
+  inviteList: [],
   setLobby: lobbyInfo => set(state => lobbyInfo),
   setAddLobbyUser: userName => set(state => ({ userList: state.userList.concat({ userName }) })),
   setRemoveLobbyUser: exitedUserName =>
@@ -40,5 +50,13 @@ export const useLobbyStore = create<LobbyStore>(set => ({
       gameRoomList: state.gameRoomList.map(gameRoom =>
         gameRoom.roomId === roomId ? { ...gameRoom, userCount } : gameRoom,
       ),
+    })),
+  setAddInvite: invite =>
+    set(state => ({
+      inviteList: state.inviteList.filter(({ roomId }) => roomId !== invite.roomId).concat(invite),
+    })),
+  setRemoveInvite: targetRoomId =>
+    set(state => ({
+      inviteList: state.inviteList.filter(({ roomId }) => roomId !== targetRoomId),
     })),
 }));

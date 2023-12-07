@@ -14,14 +14,8 @@ enum HeaderStatus {
   LOGOUT = "logout",
 }
 
-export interface Iinvite {
-  roomName: string;
-  host: string;
-}
-
 const LobbyHeader: React.FC = () => {
   const [selectedHeader, setSelectedHeader] = useState<HeaderStatus>(HeaderStatus.LOBBY);
-  const [inviteList, setInviteList] = useState<Iinvite[]>([]);
   const { userName, setLogout } = useLoginStore();
   const { socket, setSocketClear } = useSocketStore();
 
@@ -39,7 +33,7 @@ const LobbyHeader: React.FC = () => {
     <div className="absolute top-0 -translate-x-[50%] left-[50%] ">
       <div className="absolute h-full w-full bg-black rounded-b-sm skew-x-left -right-2 z-0"></div>
       <div className="absolute h-full w-full bg-black rounded-b-sm skew-x-right -left-2 z-0 "></div>
-      <div className="relative px-4 py-2 grid grid-cols-4 text-[24px] gap-1 z-10 ">
+      <div className="relative px-4 py-2 grid grid-cols-5 text-[24px] gap-1 z-10 ">
         <Button
           color={selectedHeader === HeaderStatus.LOBBY ? "pink" : "skyblue"}
           title="로비"
@@ -52,12 +46,12 @@ const LobbyHeader: React.FC = () => {
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.MYINFO)}
         />
-        {/* <Button
+        <Button
           color={selectedHeader === HeaderStatus.NOTIFICATION ? "pink" : "skyblue"}
           title="알림"
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.NOTIFICATION)}
-        /> */}
+        />
         <Button
           color={selectedHeader === HeaderStatus.ROOM ? "pink" : "skyblue"}
           title="방 생성"
@@ -71,7 +65,7 @@ const LobbyHeader: React.FC = () => {
           onClick={handleLogout}
         />
       </div>
-      {selectedHeader === HeaderStatus.NOTIFICATION && <InviteModal closeModal={closeModal} inviteList={inviteList} />}
+      {selectedHeader === HeaderStatus.NOTIFICATION && <InviteModal closeModal={closeModal} />}
       {selectedHeader === HeaderStatus.MYINFO && <UserInfoModal closeModal={closeModal} userName={userName} />}
       {selectedHeader === HeaderStatus.ROOM && <CreateRoomModal closeModal={closeModal} />}
     </div>
