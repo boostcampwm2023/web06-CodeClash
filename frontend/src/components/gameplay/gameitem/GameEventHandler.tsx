@@ -112,11 +112,11 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       });
   };
 
-  const handleCreateItem = (data: any) => {
-    console.log("create", data);
-    if (data.item) {
+  const handleCreateItem = ({ item }: { item: number }) => {
+    console.log(item);
+    if (item) {
       setGameItems(gameitems => {
-        return [...gameitems, gameItemTypes[data.item]];
+        return [...gameitems, gameItemTypes[item]];
       });
     }
   };
@@ -132,7 +132,6 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
   useEffect(() => {
     const gameItemHandler = (data: { item: GameItemType; userName: string }) => {
-      console.log(data);
       handleGameEvent(data.item);
     };
 
@@ -163,6 +162,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
     socket?.on("timeover", () => {});
     socket?.on("timerstart", () => {});
     socket?.on("pass", () => {});
+    socket?.on("item", gameItemHandler);
     socket?.on("create_item", handleCreateItem);
 
     return () => {
@@ -170,6 +170,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       socket?.off("timerstart");
       socket?.off("pass");
       socket?.off("item");
+      socket?.off("create_item");
     };
   }, [socket]);
 

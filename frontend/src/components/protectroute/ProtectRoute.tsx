@@ -15,10 +15,8 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) =
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
-      if (!roomId && currentLocation.pathname !== "/lobby") {
-        navigate("/lobby");
-      }
+    if (!roomId && currentLocation.pathname !== "/lobby") {
+      navigate("/lobby");
     }
   }, [roomId]);
 
@@ -27,9 +25,8 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) =
       e.preventDefault();
       e.returnValue = "";
     };
-    if (process.env.NODE_ENV === "production") {
-      window.addEventListener("beforeunload", preventClose);
-    }
+    window.addEventListener("beforeunload", preventClose);
+
     return () => {
       window.removeEventListener("beforeunload", preventClose);
     };
