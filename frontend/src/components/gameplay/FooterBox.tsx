@@ -17,7 +17,7 @@ const GameFooterBox: React.FC<GameFooterBoxProps> = ({ items, handleGradeSubmit,
           <GameItemButton item={items[0]?.icon} className="mr-1" />
           <GameItemButton item={items[1]?.icon} />
           <div className="ml-1 text-[10px] text-[#AAAAAA] flex flex-col items-start justify-end">
-            <p>아이콘을 눌러</p>
+            <p>Alt 키를 눌러</p>
             <p>아이템을 사용해보세요!</p>
           </div>
         </div>
