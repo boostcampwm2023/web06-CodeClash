@@ -7,7 +7,6 @@ import {
   SubmissionLanguage,
   SubmissionStatus,
 } from 'src/submissions/entities/submission.entity';
-import { SHA256, enc } from 'crypto-js';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -35,18 +34,6 @@ export class ScoresService {
 
     if (!problem) {
       throw new BadRequestException('Problem does not exist');
-    }
-
-    const hashedCode = SHA256(code + problemId.toString() + user.name).toString(
-      enc.Hex,
-    );
-    const submissionExist = await this.submissionsService.isExist(hashedCode);
-
-    if (submissionExist && !isExample) {
-      return {
-        message: '이미 제출된 코드입니다.',
-        submission: submissionExist,
-      };
     }
 
     const promises = [];
@@ -91,7 +78,6 @@ export class ScoresService {
         status,
         problemId,
         userId: user.id,
-        codeHash: hashedCode,
       });
     }
 
