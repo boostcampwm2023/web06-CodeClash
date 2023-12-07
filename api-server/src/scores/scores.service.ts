@@ -42,7 +42,7 @@ export class ScoresService {
     );
     const submissionExist = await this.submissionsService.isExist(hashedCode);
 
-    if (submissionExist) {
+    if (submissionExist && !isExample) {
       return {
         message: '이미 제출된 코드입니다.',
         submission: submissionExist,
