@@ -325,8 +325,12 @@ export class RoomsGateway {
     passed = results.every((result) => result.status === 'pass');
 
     if (passed) {
-      user.passed = true;
       user.ranking = this.roomsService.roomPassedUserCount(roomId) + 1;
+      user.passed = true;
+
+      this.logger.log(
+        `[submission] ${client.data.user.name} passed, ranking: ${user.ranking}`,
+      );
 
       if (this.roomsService.allUserPassed(roomId)) {
         this.roomsService.gameover(roomId);
