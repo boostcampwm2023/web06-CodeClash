@@ -346,7 +346,7 @@ export class RoomsGateway {
       }
     }
 
-    return { ...results, passed };
+    return { results, passed };
   }
 
   @SubscribeMessage('result_info')
