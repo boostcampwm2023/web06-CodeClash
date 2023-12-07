@@ -315,13 +315,15 @@ export class RoomsGateway {
       client.data.user,
       isExample,
     );
+    let passed = false;
 
     if (Array.isArray(results)) {
       const { roomId } = client.data;
       const user = this.roomsService.roomUser(roomId, client.data.user.name);
       let timer = this.roomsService.getTimer(roomId);
+      passed = results.every((result) => result.status === 'pass');
 
-      if (results.every((result) => result.status === 'pass')) {
+      if (passed) {
         user.passed = true;
         user.ranking = this.roomsService.roomPassedUserCount(roomId) + 1;
 
@@ -344,7 +346,7 @@ export class RoomsGateway {
       }
     }
 
-    return results;
+    return { ...results, passed };
   }
 
   @SubscribeMessage('result_info')
