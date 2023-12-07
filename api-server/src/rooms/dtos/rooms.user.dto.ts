@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsNotEmptyObject,
+  IsNumber,
   IsObject,
   IsString,
 } from 'class-validator';
@@ -34,6 +35,10 @@ export class RoomsUserDto {
   @IsBoolean()
   @IsNotEmpty()
   passed: boolean;
+
+  @IsNumber()
+  @IsNotEmpty()
+  ranking: number;
 
   @IsObject()
   itemList: Record<ItemList, number>;

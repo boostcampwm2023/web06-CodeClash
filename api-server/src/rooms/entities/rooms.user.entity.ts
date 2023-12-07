@@ -1,4 +1,10 @@
-import { IsBoolean, IsString, IsObject, IsNotEmpty } from 'class-validator';
+import {
+  IsBoolean,
+  IsString,
+  IsObject,
+  IsNotEmpty,
+  IsNumber,
+} from 'class-validator';
 import { ItemList } from '../dtos/rooms.user.dto';
 
 export class RoomsUser {
@@ -17,6 +23,10 @@ export class RoomsUser {
   @IsBoolean()
   @IsNotEmpty()
   passed: boolean;
+
+  @IsNumber()
+  @IsNotEmpty()
+  ranking: number;
 
   @IsObject()
   itemList: Record<string, ItemList>;

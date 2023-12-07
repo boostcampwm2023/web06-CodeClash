@@ -14,6 +14,7 @@ import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
 import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
+  DEFAULT_RANKING,
   EVENT,
   ITEM_DELAY,
   LOBBY_ID,
@@ -26,6 +27,9 @@ import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import { plainToClass } from 'class-transformer';
 import { RoomsUserDto } from './dtos/rooms.user.dto';
+import { ScoresService } from 'src/scores/scores.service';
+import { ScoreSubmissionDto } from 'src/scores/dto/score-submission.dto';
+import { SubmissionLanguage } from 'src/submissions/entities/submission.entity';
 
 @WebSocketGateway({
   namespace: 'rooms',
@@ -42,6 +46,7 @@ export class RoomsGateway {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly problemsService: ProblemsService,
+    private readonly scoresService: ScoresService,
   ) {}
 
   @WebSocketServer()
@@ -133,6 +138,7 @@ export class RoomsGateway {
       userName: client.data.user.name,
       ready: false,
       passed: false,
+      ranking: DEFAULT_RANKING,
       itemList: {},
     });
 
@@ -181,6 +187,7 @@ export class RoomsGateway {
       userName: client.data.user.name,
       ready: false,
       passed: false,
+      ranking: DEFAULT_RANKING,
       itemList: {},
     });
 
@@ -295,33 +302,58 @@ export class RoomsGateway {
     return { status: SUCCESS_STATUS };
   }
 
-  // @SubscribeMessage('pass')
-  // pass(@ConnectedSocket() client: Socket) {
-  //   const { roomId } = client.data;
-  //   let timer = this.roomsService.getTimer(roomId);
+  @SubscribeMessage('submission')
+  async submission(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { id, code, isExample } = data;
+    const dto: ScoreSubmissionDto = {
+      code,
+      language: SubmissionLanguage.JAVASCRIPT,
+      problemId: id,
+    };
+    const results = await this.scoresService.grade(
+      dto,
+      client.data.user,
+      isExample,
+    );
 
-  //   client.data.passed = true;
+    if (Array.isArray(results)) {
+      const { roomId } = client.data;
+      const user = this.roomsService.roomUser(roomId, client.data.user.name);
+      let timer = this.roomsService.getTimer(roomId);
 
-  //   if (this.roomsService.allUserPassed(roomId) && timer) {
-  //     clearTimeout(timer);
-  //     this.roomsService.gameOver(roomId);
-  //     this.server.in(roomId).emit('game_over');
-  //     this.server.in('lobby').emit('room_game_over', { roomId });
+      if (results.every((result) => result.status === 'pass')) {
+        user.passed = true;
+        user.ranking = this.roomsService.roomPassedUserCount(roomId) + 1;
 
-  //     return;
-  //   }
+        if (this.roomsService.allUserPassed(roomId)) {
+          this.roomsService.gameover(roomId);
+          this.io.in(roomId).emit('game_over');
+          this.io.in('lobby').emit('room_game_over', { roomId });
+        }
 
-  //   if (timer) return;
+        if (!timer) {
+          timer = setTimeout(() => {
+            this.roomsService.gameover(roomId);
+            this.io.in(roomId).emit('game_over');
+            this.io.in('lobby').emit('room_game_over', { roomId });
+          }, TIME_LIMIT);
 
-  //   timer = setTimeout(() => {
-  //     this.roomsService.gameOver(roomId);
-  //     this.server.in(roomId).emit('game_over');
-  //     this.server.in('lobby').emit('room_game_over', { roomId });
-  //   }, TIME_LIMIT);
+          this.roomsService.setTimer(roomId, timer);
+          this.io.in(roomId).emit('countdown');
+        }
+      }
+    }
 
-  //   this.roomsService.setTimer(roomId, timer);
-  //   this.server.in(roomId).emit('countdown');
-  // }
+    return results;
+  }
+
+  @SubscribeMessage('result_info')
+  result_info(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+    const resultInfo = this.roomsService.roomRanking(roomId);
+
+    return { status: SUCCESS_STATUS, resultInfo };
+  }
 
   @SubscribeMessage('exit_result')
   exitResult(@ConnectedSocket() client: Socket) {
@@ -368,7 +400,7 @@ export class RoomsGateway {
     const problems =
       await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
 
-    this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
+    this.roomsService.gameInit(roomId);
     this.io.in(roomId).emit('start', { problems });
     setTimeout(() => {
       this.createItem(roomId);

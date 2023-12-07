@@ -4,6 +4,7 @@ import { Room, RoomInfo, User } from './entities/room.entity';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import {
+  DEFAULT_RANKING,
   DEFAULT_ROOM_NAME,
   LOBBY_ID,
   MAX_ITEM_CAPACITY,
@@ -156,8 +157,11 @@ export class RoomsService {
     );
 
     if (roomId !== LOBBY_ID && this.room(roomId).userList.length === 0) {
-      this.room(roomId).itemCreator &&
-        clearInterval(this.room(roomId).itemCreator);
+      const timer = this.getTimer(roomId);
+      const itemCreator = this.getItemCreator(roomId);
+
+      timer && clearTimeout(timer);
+      itemCreator && clearInterval(itemCreator);
 
       delete this.roomList[roomId];
 
@@ -252,15 +256,25 @@ export class RoomsService {
     return this.room(roomId).userList.every((user) => user.passed);
   }
 
-  gameOver(roomId: string) {
+  gameover(roomId: string) {
+    const timer = this.getTimer(roomId);
+    const itemCreator = this.getItemCreator(roomId);
+
+    timer && clearTimeout(timer);
+    itemCreator && clearInterval(itemCreator);
+    this.changeRoomState(roomId, ROOM_STATE.WAITING);
+  }
+
+  gameInit(roomId: string) {
     this.room(roomId).userList.forEach((user) => {
       user.passed = false;
       user.ready = false;
       user.itemList = {};
+      user.ranking = DEFAULT_RANKING;
     });
-    this.room(roomId).state = ROOM_STATE.WAITING;
     this.room(roomId).timer = null;
     this.room(roomId).itemCreator = null;
+    this.changeRoomState(roomId, ROOM_STATE.PLAYING);
   }
 
   roomHasUser(roomId: string, userName: string) {
@@ -409,6 +423,31 @@ export class RoomsService {
 
   roomExists(roomId: string) {
     return !!this.roomList[roomId];
+  }
+
+  roomUser(roomId: string, userName: string) {
+    return this.room(roomId).userList.find(
+      (user) => user.userName === userName,
+    );
+  }
+
+  roomPassedUserCount(roomId: string) {
+    return this.room(roomId).userList.filter((user) => user.passed).length;
+  }
+
+  roomRanking(roomId: string) {
+    if (roomId === LOBBY_ID) {
+      this.logger.log(`[roomRanking] 로비에서 랭킹을 요청함`);
+      throw new WsException('로비에서는 랭킹을 요청할 수 없습니다.');
+    }
+
+    const room = this.room(roomId);
+    const rankingInfo = room.userList.map((user) => ({
+      userName: user.userName,
+      ranking: user.ranking,
+    }));
+
+    return rankingInfo;
   }
 
   private allGameRoom(): Room[] {
