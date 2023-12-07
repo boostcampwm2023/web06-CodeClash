@@ -5,9 +5,16 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { ProblemsModule } from 'src/problems/problems.module';
 import { ScoresModule } from 'src/scores/scores.module';
+import { SubmissionsModule } from 'src/submissions/submissions.module';
 
 @Module({
   providers: [RoomsGateway, RoomsService],
-  imports: [AuthModule, UsersModule, ProblemsModule, ScoresModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    ProblemsModule,
+    ScoresModule,
+    SubmissionsModule,
+  ],
 })
 export class RoomsModule {}
