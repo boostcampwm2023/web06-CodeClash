@@ -315,34 +315,34 @@ export class RoomsGateway {
       client.data.user,
       isExample,
     );
+
+    if (isExample) return { results };
+
     let passed = false;
+    const { roomId } = client.data;
+    const user = this.roomsService.roomUser(roomId, client.data.user.name);
+    let timer = this.roomsService.getTimer(roomId);
+    passed = results.every((result) => result.status === 'pass');
 
-    if (Array.isArray(results)) {
-      const { roomId } = client.data;
-      const user = this.roomsService.roomUser(roomId, client.data.user.name);
-      let timer = this.roomsService.getTimer(roomId);
-      passed = results.every((result) => result.status === 'pass');
+    if (passed) {
+      user.passed = true;
+      user.ranking = this.roomsService.roomPassedUserCount(roomId) + 1;
 
-      if (passed) {
-        user.passed = true;
-        user.ranking = this.roomsService.roomPassedUserCount(roomId) + 1;
+      if (this.roomsService.allUserPassed(roomId)) {
+        this.roomsService.gameover(roomId);
+        this.io.in(roomId).emit('game_over');
+        this.io.in('lobby').emit('room_game_over', { roomId });
+      }
 
-        if (this.roomsService.allUserPassed(roomId)) {
+      if (!timer) {
+        timer = setTimeout(() => {
           this.roomsService.gameover(roomId);
           this.io.in(roomId).emit('game_over');
           this.io.in('lobby').emit('room_game_over', { roomId });
-        }
+        }, TIME_LIMIT);
 
-        if (!timer) {
-          timer = setTimeout(() => {
-            this.roomsService.gameover(roomId);
-            this.io.in(roomId).emit('game_over');
-            this.io.in('lobby').emit('room_game_over', { roomId });
-          }, TIME_LIMIT);
-
-          this.roomsService.setTimer(roomId, timer);
-          this.io.in(roomId).emit('countdown');
-        }
+        this.roomsService.setTimer(roomId, timer);
+        this.io.in(roomId).emit('countdown');
       }
     }
 
