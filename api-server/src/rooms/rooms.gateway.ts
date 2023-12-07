@@ -14,6 +14,7 @@ import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
 import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
+  EVENT,
   LOBBY_ID,
   NUM_OF_ROUNDS,
   ROOM_STATE,
@@ -95,24 +96,19 @@ export class RoomsGateway {
     const { roomId } = socket.data;
     const { name: userName } = socket.data.user;
 
-    this.logger.log(
-      `[handleDisconnect] socket.data.playing: ${socket.data.playing}`,
-    );
     this.roomsService.deleteSocket(userName);
 
-    if (!socket.data.playing) {
-      if (this.roomsService.roomExists(roomId)) {
-        this.roomsService.exitRoom(roomId, userName);
-      }
+    if (this.roomsService.roomExists(roomId)) {
+      this.roomsService.exitRoom(roomId, userName);
+    }
 
-      if (roomId === LOBBY_ID) {
-        this.io.in(roomId).emit('user_exit_lobby', { userName });
+    if (roomId === LOBBY_ID) {
+      this.io.in(roomId).emit('user_exit_lobby', { userName });
+    } else {
+      if (this.roomsService.roomExists(roomId)) {
+        this.io.in(roomId).emit('user_exit_room', { userName });
       } else {
-        if (this.roomsService.roomExists(roomId)) {
-          this.io.in(roomId).emit('user_exit_room', { userName });
-        } else {
-          this.io.in(LOBBY_ID).emit('delete_room', { roomId });
-        }
+        this.io.in(LOBBY_ID).emit('delete_room', { roomId });
       }
     }
 
@@ -121,12 +117,20 @@ export class RoomsGateway {
 
   @SubscribeMessage('lobby_info')
   lobbyInfo() {
-    return this.roomsService.lobbyInfo();
+    return {
+      status: SUCCESS_STATUS,
+      event: EVENT.LOBBY_INFO,
+      ...this.roomsService.lobbyInfo(),
+    };
   }
 
   @SubscribeMessage('room_info')
   roomInfo(@MessageBody() data: RoomsInputDto) {
-    return this.roomsService.roomInfo(data.roomId);
+    return {
+      status: SUCCESS_STATUS,
+      event: EVENT.ROOM_INFO,
+      ...this.roomsService.roomInfo(data.roomId),
+    };
   }
 
   @SubscribeMessage('enter_lobby')
@@ -146,7 +150,7 @@ export class RoomsGateway {
       userName: roomsUserDto.userName,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, event: EVENT.ENTER_LOBBY };
   }
 
   @SubscribeMessage('exit_lobby')
@@ -157,7 +161,7 @@ export class RoomsGateway {
       userName: client.data.user.name,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, event: EVENT.EXIT_LOBBY };
   }
 
   @SubscribeMessage('create_room')
@@ -172,6 +176,7 @@ export class RoomsGateway {
 
     return {
       status: SUCCESS_STATUS,
+      event: EVENT.CREATE_ROOM,
       roomId,
     };
   }
@@ -198,6 +203,7 @@ export class RoomsGateway {
 
     return {
       status: SUCCESS_STATUS,
+      event: EVENT.ENTER_ROOM,
       roomId,
     };
   }
@@ -219,7 +225,7 @@ export class RoomsGateway {
       this.io.in(LOBBY_ID).emit('delete_room', { roomId });
     }
 
-    return { status: SUCCESS_STATUS, roomId };
+    return { status: SUCCESS_STATUS, event: EVENT.EXIT_ROOM, roomId };
   }
 
   @SubscribeMessage('chat')
@@ -232,7 +238,7 @@ export class RoomsGateway {
       message,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, event: EVENT.CHAT };
   }
 
   @SubscribeMessage('dm')
@@ -246,7 +252,7 @@ export class RoomsGateway {
       message,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, event: EVENT.DM };
   }
 
   @SubscribeMessage('ready')
@@ -260,7 +266,7 @@ export class RoomsGateway {
       await this.start(roomId);
     }
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, EVENT: EVENT.READY };
   }
 
   @SubscribeMessage('kick')
@@ -279,7 +285,7 @@ export class RoomsGateway {
       userCount: this.roomsService.roomUserCount(roomId),
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, EVENT: EVENT.KICK };
   }
 
   @SubscribeMessage('item')
@@ -295,7 +301,7 @@ export class RoomsGateway {
       item,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, EVENT: EVENT.ITEM };
   }
 
   // @SubscribeMessage('pass')
@@ -331,7 +337,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
 
     if (this.roomsService.roomHasUser(roomId, client.data.user.name)) {
-      return { status: SUCCESS_STATUS };
+      return { status: SUCCESS_STATUS, event: EVENT.EXIT_RESULT };
     }
   }
 
@@ -351,7 +357,7 @@ export class RoomsGateway {
     this.roomsService.invite(dto);
     targetSocket.emit('invite', { roomId: dto.roomId });
 
-    return { status: SUCCESS_STATUS };
+    return { status: SUCCESS_STATUS, event: EVENT.INVITE };
   }
 
   private createItem(roomId: string) {
@@ -376,7 +382,6 @@ export class RoomsGateway {
 
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
     this.roomsService.setItemCreator(roomId, itemCreator);
-    this.roomsService.setAllSocketPlaying(roomId);
     this.io.in(roomId).emit('start', { problems });
     this.io
       .in(LOBBY_ID)
