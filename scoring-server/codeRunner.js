@@ -16,7 +16,8 @@ app.post("/v2/scoring", (req, res) => {
 
   const input = testcase.input;
 
-  userCode += "\nprocess.send(solution(" + input.slice(1, input.length - 1) + "))";
+  userCode +=
+    "\nprocess.send(solution(" + input.slice(1, input.length - 1) + "))";
   userCode += "\nprocess.send(process.memoryUsage());";
 
   const startTime = Date.now();
@@ -88,12 +89,8 @@ app.post("/v2/scoring", (req, res) => {
 
     if (childMessages.length == 2) {
       memoryUsage = childMessages[1].rss / 1000000;
-      if (!childMessages[0]) {
-        status = "fail";
-        error += "Error: return value is undefined";
-      } else {
-        status = childMessages[0].toString().trim() == testcase.output ? "pass" : "fail";
-      }
+      status =
+        String(childMessages[0]).trim() == testcase.output ? "pass" : "fail";
     } else {
       memoryUsage = 0;
       status = "fail";
