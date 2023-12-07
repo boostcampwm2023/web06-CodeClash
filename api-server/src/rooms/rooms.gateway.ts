@@ -15,6 +15,7 @@ import { ProblemsService } from 'src/problems/problems.service';
 import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
   EVENT,
+  ITEM_DELAY,
   LOBBY_ID,
   NUM_OF_ROUNDS,
   ROOM_STATE,
@@ -366,14 +367,18 @@ export class RoomsGateway {
   private async start(roomId: string) {
     const problems =
       await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
-    const itemCreator = setInterval(() => {
-      this.createItem(roomId);
-    }, CREATE_ITEM_CYCLE);
 
     this.roomsService.changeRoomState(roomId, ROOM_STATE.PLAYING);
-    this.roomsService.setItemCreator(roomId, itemCreator);
     this.io.in(roomId).emit('start', { problems });
-    this.createItem(roomId);
+    setTimeout(() => {
+      this.createItem(roomId);
+
+      const itemCreator = setInterval(() => {
+        this.createItem(roomId);
+      }, CREATE_ITEM_CYCLE);
+
+      this.roomsService.setItemCreator(roomId, itemCreator);
+    }, ITEM_DELAY);
     this.io
       .in(LOBBY_ID)
       .emit('room_start', { roomId, state: ROOM_STATE.PLAYING });
