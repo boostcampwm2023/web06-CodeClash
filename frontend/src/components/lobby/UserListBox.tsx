@@ -20,7 +20,7 @@ const LobbyUserListBox: React.FC = () => {
       <div className="skew-x-right bg-black rounded-sm text-white px-2 py-1">
         <div className="skew-x-left">유저 리스트</div>
       </div>
-      <div className=" bg-lightskyblue rounded-md flex flex-col gap-1 p-2 w-full h-full overflow-scroll">
+      <div className="bg-lightskyblue rounded-md flex flex-col gap-1 p-2 w-full h-full overflow-scroll">
         {userListItems}
       </div>
       {targetUser !== null ? <UserInfoModal closeModal={() => setTargetUser(null)} userName={targetUser} /> : null}
