@@ -369,16 +369,23 @@ export class RoomsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: RoomsInputDto,
   ) {
+    const { roomId } = client.data;
+    const { name: userName } = client.data.user;
+    const { roomName } = this.roomsService.roomInfo(roomId);
     const targetSocket = this.roomsService.socket(data.userName);
     const dto = plainToClass(RoomsInviteDto, {
-      roomId: client.data.roomId,
-      userName: client.data.user.name,
+      roomId,
+      userName,
       targetUserName: data.userName,
       targetUserRoomId: targetSocket.data.roomId,
     });
 
     this.roomsService.invite(dto);
-    targetSocket.emit('invite', { roomId: dto.roomId });
+    targetSocket.emit('invite', {
+      roomId: dto.roomId,
+      roomName,
+      userName,
+    });
 
     return { status: SUCCESS_STATUS };
   }
