@@ -117,20 +117,12 @@ export class RoomsGateway {
 
   @SubscribeMessage('lobby_info')
   lobbyInfo() {
-    return {
-      status: SUCCESS_STATUS,
-      event: EVENT.LOBBY_INFO,
-      ...this.roomsService.lobbyInfo(),
-    };
+    return this.roomsService.lobbyInfo();
   }
 
   @SubscribeMessage('room_info')
   roomInfo(@MessageBody() data: RoomsInputDto) {
-    return {
-      status: SUCCESS_STATUS,
-      event: EVENT.ROOM_INFO,
-      ...this.roomsService.roomInfo(data.roomId),
-    };
+    return this.roomsService.roomInfo(data.roomId);
   }
 
   @SubscribeMessage('enter_lobby')
