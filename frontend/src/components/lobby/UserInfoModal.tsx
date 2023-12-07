@@ -118,7 +118,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
             {submissionPage * CODE_COUNT_PER_PAGE + index + 1}
           </button>
         ))}
-        {userInfo?.pageEnd && submissionPage < userInfo?.pageEnd ? (
+        {userInfo?.pageEnd && submissionPage < userInfo?.pageEnd - 1 ? (
           <button onClick={handleNextCodePage}>{`>`}</button>
         ) : (
           <button></button>
