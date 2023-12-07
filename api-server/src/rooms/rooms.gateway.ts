@@ -142,7 +142,7 @@ export class RoomsGateway {
       userName: roomsUserDto.userName,
     });
 
-    return { status: SUCCESS_STATUS, event: EVENT.ENTER_LOBBY };
+    return { status: SUCCESS_STATUS, eventName: EVENT.ENTER_LOBBY };
   }
 
   @SubscribeMessage('exit_lobby')
@@ -153,7 +153,7 @@ export class RoomsGateway {
       userName: client.data.user.name,
     });
 
-    return { status: SUCCESS_STATUS, event: EVENT.EXIT_LOBBY };
+    return { status: SUCCESS_STATUS, eventName: EVENT.EXIT_LOBBY };
   }
 
   @SubscribeMessage('create_room')
@@ -168,7 +168,7 @@ export class RoomsGateway {
 
     return {
       status: SUCCESS_STATUS,
-      event: EVENT.CREATE_ROOM,
+      eventName: EVENT.CREATE_ROOM,
       roomId,
     };
   }
@@ -195,7 +195,7 @@ export class RoomsGateway {
 
     return {
       status: SUCCESS_STATUS,
-      event: EVENT.ENTER_ROOM,
+      eventName: EVENT.ENTER_ROOM,
       roomId,
     };
   }
@@ -217,7 +217,7 @@ export class RoomsGateway {
       this.io.in(LOBBY_ID).emit('delete_room', { roomId });
     }
 
-    return { status: SUCCESS_STATUS, event: EVENT.EXIT_ROOM, roomId };
+    return { status: SUCCESS_STATUS, eventName: EVENT.EXIT_ROOM, roomId };
   }
 
   @SubscribeMessage('chat')
@@ -230,7 +230,7 @@ export class RoomsGateway {
       message,
     });
 
-    return { status: SUCCESS_STATUS, event: EVENT.CHAT };
+    return { status: SUCCESS_STATUS, eventName: EVENT.CHAT };
   }
 
   @SubscribeMessage('dm')
@@ -244,7 +244,7 @@ export class RoomsGateway {
       message,
     });
 
-    return { status: SUCCESS_STATUS, event: EVENT.DM };
+    return { status: SUCCESS_STATUS, eventName: EVENT.DM };
   }
 
   @SubscribeMessage('ready')
@@ -258,7 +258,7 @@ export class RoomsGateway {
       await this.start(roomId);
     }
 
-    return { status: SUCCESS_STATUS, EVENT: EVENT.READY };
+    return { status: SUCCESS_STATUS, eventName: EVENT.READY };
   }
 
   @SubscribeMessage('kick')
@@ -277,7 +277,7 @@ export class RoomsGateway {
       userCount: this.roomsService.roomUserCount(roomId),
     });
 
-    return { status: SUCCESS_STATUS, EVENT: EVENT.KICK };
+    return { status: SUCCESS_STATUS, eventName: EVENT.KICK };
   }
 
   @SubscribeMessage('item')
@@ -293,7 +293,7 @@ export class RoomsGateway {
       item,
     });
 
-    return { status: SUCCESS_STATUS, EVENT: EVENT.ITEM };
+    return { status: SUCCESS_STATUS, eventName: EVENT.ITEM };
   }
 
   // @SubscribeMessage('pass')
@@ -329,7 +329,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
 
     if (this.roomsService.roomHasUser(roomId, client.data.user.name)) {
-      return { status: SUCCESS_STATUS, event: EVENT.EXIT_RESULT };
+      return { status: SUCCESS_STATUS, eventName: EVENT.EXIT_RESULT };
     }
   }
 
@@ -349,7 +349,7 @@ export class RoomsGateway {
     this.roomsService.invite(dto);
     targetSocket.emit('invite', { roomId: dto.roomId });
 
-    return { status: SUCCESS_STATUS, event: EVENT.INVITE };
+    return { status: SUCCESS_STATUS, eventName: EVENT.INVITE };
   }
 
   private createItem(roomId: string) {
