@@ -37,8 +37,15 @@ const attatchChildProcessEvents = (
     let status = "fail";
     if (childMessages.length == 2) {
       memoryUsage = childMessages[1].rss / 1000000;
-      status =
-        childMessages[0].toString().trim() == testcase.output ? "pass" : "fail";
+      if (!childMessages[0]) {
+        status = "fail";
+        error += "Error: return value is undefined";
+      } else {
+        status =
+          childMessages[0].toString().trim() == testcase.output
+            ? "pass"
+            : "fail";
+      }
     } else {
       memoryUsage = 0;
       status = "fail";
