@@ -46,7 +46,6 @@ export class SubmissionsService {
         'submission.id',
         'submission.language',
         'submission.code',
-        'submission.codeHash',
         'submission.status',
         'submission.createdAt',
         'problem.id',
