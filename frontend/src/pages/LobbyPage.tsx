@@ -16,7 +16,7 @@ const LobbyPage: React.FC = () => {
   const { socket } = useSocketStore();
   const { setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby, setRoomUserCount } =
     useLobbyStore();
-  const { setRoomId } = useRoomStore();
+  const { clearRoomInfo } = useRoomStore();
 
   const handleLobbyConnect = ({ status }: { status: string }) => {
     if (status === "success") {
@@ -71,7 +71,7 @@ const LobbyPage: React.FC = () => {
   }, [socket]);
 
   useEffect(() => {
-    setRoomId("");
+    clearRoomInfo();
   }, []);
 
   return (

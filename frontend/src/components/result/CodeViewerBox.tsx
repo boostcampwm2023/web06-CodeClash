@@ -28,7 +28,7 @@ const CodeViewerBox: React.FC<CodeViewerBoxProps> = ({ codeList }) => {
   return (
     <div className="flex flex-col w-full h-full">
       <div className="flex">{titles}</div>
-      <GameDefaultBox className="w-full rounded-tl-none text-[0.5rem]">
+      <GameDefaultBox className="w-full rounded-tl-none text-[0.5rem] whitespace-pre-wrap">
         {codeList?.length > tabIndex ? codeList[tabIndex].code : ""}
       </GameDefaultBox>
     </div>

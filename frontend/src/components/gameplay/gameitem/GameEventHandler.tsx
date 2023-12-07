@@ -8,14 +8,13 @@ import { gameItemReducer, initialGameItemState } from "./gameItemReducer";
 import { gameItemHandler } from "./gameItemHandler";
 import { engToKor, korToEng } from "korsearch";
 import EyeStolen from "./gameScreenEffect/EyeStolen";
-import { postProblemExampleGrade, postProblemGrade } from "../../../api/problem";
 import { ProblemType } from "../problemType";
 import { useRoomStore } from "../../../store/useRoom";
 import BarEffect from "../../common/BarEffect";
 import { useLoginStore } from "../../../store/useLogin";
 import Modal from "../../common/Modal";
-
-const MAX_GAME_ITEM = 2;
+import GameTimer from "../ProblemIdx";
+import { useNavigate } from "react-router-dom";
 
 interface GameEventHandlerProps {
   problemInfo: ProblemType;
@@ -28,6 +27,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const [gameItems, setGameItems] = useState<IGameItem[]>([]);
   const [gameEventState, disPatchEventState] = useReducer(gameItemReducer, initialGameItemState);
   const [isSolved, setIsSolved] = useState(false);
+  const [isCountdown, setIsCountdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { userName } = useLoginStore();
   const { socket } = useSocketStore();
@@ -38,9 +38,18 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
     content: "",
   });
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
+  const navigate = useNavigate();
 
-  const handleGradeSubmit = () => {
-    if (isLoading) return;
+  const handleSubmit = (isExample: boolean) => {
+    if (isLoading) {
+      setModalState({
+        isShow: true,
+        title: "잠시만 기다려주세요.",
+        content: "채점 중입니다.",
+      });
+      return;
+    }
+
     if (isSolved) {
       setModalState({
         isShow: true,
@@ -49,76 +58,48 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       });
       return;
     }
-    setIsLoading(true);
-    postProblemGrade(problemInfo.id, code)
-      .then(res => {
-        if (res?.data.message) {
-          alert(res?.data.message);
-          return;
-        }
-        setResult(
-          res?.data.map((data: any, idx: number) => {
-            return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${
-              data.memory
-            }mb 실행시간:${data.runTime}ms\n`;
-          }),
-        );
 
-        if (res?.data.every((data: any) => data.status === "pass")) {
-          setIsSolved(true);
-          socket?.emit("pass", { userName });
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+    socket?.emit("submission", { id: problemInfo.id, code, isExample }, (res: any) => {
+      if (res?.message) {
+        alert(res?.message);
+        return;
+      }
 
-  const handleExampleSubmit = () => {
-    if (isLoading) return;
-    if (isSolved) {
-      setModalState({
-        isShow: true,
-        title: "이미 통과한 문제입니다.",
-        content: "다른 유저가 완료할때까지 기다려주세요.",
-      });
-      return;
-    }
-    setIsLoading(true);
-    postProblemExampleGrade(problemInfo.id, code)
-      .then(res => {
-        if (res?.data.message) {
-          alert(res?.data.message);
-          return;
-        }
-        setResult(
-          res?.data.map((data: any, idx: number) => {
-            return `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${
-              data.memory
-            }mb 실행시간:${data.runTime}ms\n${data.output ? "출력 : " + data.output : ""}${
-              data.error ? "에러 : " + data.error : ""
-            }`;
-          }),
-        );
-      })
-      .catch(err => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      if (!isExample && res?.passed) {
+        setIsSolved(true);
+      }
+
+      setIsLoading(true);
+      setResult(
+        res?.results.map((data: any, idx: number) => {
+          return isExample
+            ? `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${data.memory}mb 실행시간:${
+                data.runTime
+              }ms\n${data.output ? "출력 : " + data.output : ""}${data.error ? "에러 : " + data.error : ""}`
+            : `${idx + 1}번째 문제 : ${data.status === "pass" ? "통과" : "실패"} memory:${data.memory}mb 실행시간:${
+                data.runTime
+              }ms\n`;
+        }),
+      );
+
+      setIsLoading(false);
+    });
   };
 
   const handleCreateItem = ({ item }: { item: number }) => {
-    console.log(item);
     if (item) {
       setGameItems(gameitems => {
         return [...gameitems, gameItemTypes[item]];
       });
     }
+  };
+
+  const handleCountdown = () => {
+    setIsCountdown(true);
+  };
+
+  const handleGameover = () => {
+    navigate("/result");
   };
 
   // 언어 뒤집기
@@ -144,7 +125,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
   useEffect(() => {
     const keyDownHandler = ({ key }: KeyboardEvent) => {
-      if (key === "Control") {
+      if (key === "Alt") {
         setGameItems(gameitems => {
           if (gameitems.length === 0 || !socket) return gameitems;
           socket.emit("item", { roomId, item: gameitems[0].type });
@@ -159,16 +140,14 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   }, [socket]);
 
   useEffect(() => {
-    socket?.on("timeover", () => {});
-    socket?.on("timerstart", () => {});
-    socket?.on("pass", () => {});
+    socket?.on("game_over", handleGameover);
+    socket?.on("countdown", handleCountdown);
     socket?.on("item", gameItemHandler);
     socket?.on("create_item", handleCreateItem);
 
     return () => {
-      socket?.off("timeover");
-      socket?.off("timerstart");
-      socket?.off("pass");
+      socket?.off("game_over");
+      socket?.off("countdown");
       socket?.off("item");
       socket?.off("create_item");
     };
@@ -176,6 +155,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
   return (
     <>
+      <GameTimer isTimerStart={isCountdown} />
       {modalState.isShow && (
         <Modal title={modalState.title} closeModal={() => setModalState(state => ({ ...state, isShow: false }))}>
           <div>{modalState.content}</div>
@@ -193,8 +173,8 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       />
       <BarEffect isStart={isSolved} content="통과!" subContent="다른 유저가 완료할때까지 기다려주세요." />
       <GameFooterBox
-        handleGradeSubmit={handleGradeSubmit}
-        handleExampleSubmit={handleExampleSubmit}
+        handleGradeSubmit={() => handleSubmit(false)}
+        handleExampleSubmit={() => handleSubmit(true)}
         items={gameItems}
       />
       {gameEventState.isScreenBlock && <ScreenBlock />}

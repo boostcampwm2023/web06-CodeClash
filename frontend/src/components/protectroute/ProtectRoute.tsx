@@ -18,7 +18,7 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) =
     if (!roomId && currentLocation.pathname !== "/lobby") {
       navigate("/lobby");
     }
-  }, [roomId]);
+  }, []);
 
   useEffect(() => {
     const preventClose = (e: BeforeUnloadEvent) => {

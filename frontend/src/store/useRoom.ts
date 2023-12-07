@@ -4,7 +4,6 @@ import { ProblemType } from "../components/gameplay/problemType";
 export interface UserInfo {
   userName: string;
   ready?: boolean;
-  score?: number;
 }
 
 interface RoomState {
@@ -26,6 +25,7 @@ interface RoomAction {
   setRemoveRoomUser: (userName: string) => void;
   setChangeUserReady: (userName: string, ready: boolean) => void;
   setProblemList: (problemList: ProblemType[]) => void;
+  setAllUserReady: (readyStatus: boolean) => void;
 }
 
 interface RoomStore extends RoomState, RoomAction {}
@@ -58,4 +58,6 @@ export const useRoomStore = create<RoomStore>(set => ({
       userList: state.userList.map(user => (user.userName === userName ? { ...user, ready } : user)),
     })),
   setProblemList: problemList => set(state => ({ problemList })),
+  setAllUserReady: readyStatus =>
+    set(state => ({ userList: state.userList.map(user => ({ ...user, ready: readyStatus })) })),
 }));
