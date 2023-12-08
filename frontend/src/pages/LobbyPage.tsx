@@ -14,14 +14,22 @@ interface IUserCreateRoomResponse extends GameRoom {
 
 const LobbyPage: React.FC = () => {
   const { socket } = useSocketStore();
-  const { setAddLobbyUser, setRemoveLobbyUser, setAddGameRoom, setRemoveGameRoom, setLobby, setRoomUserCount } =
-    useLobbyStore();
+  const {
+    setAddLobbyUser,
+    setRemoveLobbyUser,
+    setAddGameRoom,
+    setRemoveGameRoom,
+    setLobby,
+    setRoomState,
+    setRoomUserCount,
+    setAddInvite,
+  } = useLobbyStore();
   const { clearRoomInfo } = useRoomStore();
 
   const handleLobbyConnect = ({ status }: { status: string }) => {
     if (status === "success") {
-      socket?.emit("lobby_info", (lobbyInfo: { userList: UserInfo[]; roomList: GameRoom[] }) => {
-        setLobby({ userList: lobbyInfo.userList, gameRoomList: lobbyInfo.roomList });
+      socket?.emit("lobby_info", ({ userList, roomList }: { userList: UserInfo[]; roomList: GameRoom[] }) => {
+        setLobby({ userList: userList, gameRoomList: roomList, inviteList: [] });
       });
     }
   };
@@ -43,8 +51,16 @@ const LobbyPage: React.FC = () => {
     setRemoveGameRoom(roomId);
   };
 
+  const handleRoomStart = ({ roomId }: { roomId: string }) => {
+    setRoomState(roomId, "playing");
+  };
+
   const handleRoomUserChange = ({ roomId, userCount }: { roomId: string; userCount: number }) => {
     setRoomUserCount(roomId, userCount);
+  };
+
+  const handleInvite = (invite: any) => {
+    setAddInvite(invite);
   };
 
   useEffect(() => {
@@ -54,8 +70,9 @@ const LobbyPage: React.FC = () => {
       socket.on("user_exit_lobby", handleUserExitLobby);
       socket.on("user_create_room", handleUserCreateRoom);
       socket.on("delete_room", handleDeleteRoom);
-      socket.on("room_start", handleDeleteRoom);
+      socket.on("room_start", handleRoomStart);
       socket.on("change_user_count", handleRoomUserChange);
+      socket.on("invite", handleInvite);
     }
     return () => {
       if (socket) {
@@ -64,8 +81,9 @@ const LobbyPage: React.FC = () => {
         socket.off("user_exit_lobby", handleUserExitLobby);
         socket.off("user_create_room", handleUserCreateRoom);
         socket.off("delete_room", handleDeleteRoom);
-        socket.off("room_start", handleDeleteRoom);
+        socket.off("room_start", handleRoomStart);
         socket.off("change_user_count", handleRoomUserChange);
+        socket.off("invite", handleInvite);
       }
     };
   }, [socket]);

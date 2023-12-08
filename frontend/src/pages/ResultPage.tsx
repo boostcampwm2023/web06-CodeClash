@@ -26,7 +26,6 @@ const ResultPage: React.FC = () => {
   }) => {
     if (res.status === "success") {
       const { resultInfo } = res;
-      console.log(res);
       setUserScore(
         resultInfo.reduce(
           (acc, cur) => {
