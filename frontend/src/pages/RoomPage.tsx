@@ -18,14 +18,12 @@ const RoomPage: React.FC = () => {
     userList,
     capacity,
     isStart,
-    clearRoomInfo,
     setIsStart,
     setAddRoomUser,
     setRemoveRoomUser,
     setChangeUserReady,
     setProblemList,
     setRoomInfo,
-    setRoomId,
   } = useRoomStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
@@ -63,6 +61,11 @@ const RoomPage: React.FC = () => {
     }
   };
 
+  const handleKick = ({ userName }: { userName: string }) => {
+    alert(userName + "으로부터 강퇴당했습니다");
+    navigate("/lobby");
+  };
+
   useEffect(() => {
     if (socket) {
       socket.emit("enter_room", { roomId }, handleEnterRoom);
@@ -70,6 +73,7 @@ const RoomPage: React.FC = () => {
       socket.on("user_exit_room", handleUserExitRoom);
       socket.on("ready", handleUserReady);
       socket.on("start", handleStart);
+      socket.on("kick", handleKick);
     }
     return () => {
       if (socket) {
@@ -78,6 +82,7 @@ const RoomPage: React.FC = () => {
         socket.off("user_exit_room", handleUserExitRoom);
         socket.off("ready", handleUserReady);
         socket.off("start", handleStart);
+        socket.off("kick", handleKick);
       }
     };
   }, [socket, roomId]);
