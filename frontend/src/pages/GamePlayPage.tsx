@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useSocketStore } from "../store/useSocket";
 
 const GamePlayPage: React.FC = () => {
-  const { problemList, setAllUserReady, isStart, setIsStart } = useRoomStore();
+  const { problemList, setAllUserReady, isStart, setIsStart, setRemoveRoomUser } = useRoomStore();
   const { socket } = useSocketStore();
   const [currentProblemIdx, setCurrentProblemIdx] = useState<number>(0);
   const navigate = useNavigate();
@@ -25,6 +25,15 @@ const GamePlayPage: React.FC = () => {
       setIsStart(false);
     };
   }, []);
+  const handleUserExitRoom = ({ userName }: { userName: string }) => {
+    setRemoveRoomUser(userName);
+  };
+  useEffect(() => {
+    socket?.on("user_exit_room", handleUserExitRoom);
+    return () => {
+      socket?.off("user_exit_room", handleUserExitRoom);
+    };
+  }, [socket]);
 
   return (
     <SlidePage className="pt-12 px-4 pb-14 w-full h-full flex flex-col items-center">
