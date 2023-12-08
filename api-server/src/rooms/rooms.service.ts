@@ -96,6 +96,13 @@ export class RoomsService {
   enterRoom(roomId: string, location: string, user: RoomsUserDto) {
     const { userList, capacity, state, banList } = this.roomInfo(roomId);
 
+    if (this.roomHasUser(roomId, user.userName)) {
+      this.logger.log(
+        `[enterRoom] ${user.userName} 사용자가 이미 방에 입장한 사용자임`,
+      );
+      throw new WsException('이미 방에 입장한 사용자입니다.');
+    }
+
     if (!this.roomExists(roomId)) {
       this.logger.log(
         `[enterRoom] ${user.userName} 사용자가 존재하지 않는 방에 입장을 시도함`,

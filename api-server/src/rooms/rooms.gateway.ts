@@ -194,6 +194,7 @@ export class RoomsGateway {
     this.roomsService.enterRoom(roomId, client.data.roomId, dto);
     client.join(roomId);
     client.data.roomId = roomId;
+    this.logger.log(`[enterRoom] ${client.data.user.name} entered ${roomId}`);
     client.to(roomId).emit('user_enter_room', { userName: dto.userName });
     this.io.in(LOBBY_ID).emit('change_user_count', {
       roomId,
