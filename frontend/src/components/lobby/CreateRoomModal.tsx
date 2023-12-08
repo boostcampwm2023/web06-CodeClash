@@ -15,7 +15,7 @@ interface IUserCreateRoomResponse extends GameRoom {
 }
 
 export interface ICreateRoomResponse extends GameRoom {
-  status: "success" | "fail";
+  status: "success" | "error";
   userList: UserInfo[];
 }
 

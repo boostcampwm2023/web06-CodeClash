@@ -53,16 +53,13 @@ const RoomPage: React.FC = () => {
     }, 3000);
   };
 
-  const handleEnterRoom = ({ status, message }: { status: string; message: string }) => {
-    if (status === "fail") {
-      alert(message);
-      navigate("/lobby");
-    }
-  };
-
   useEffect(() => {
     if (socket) {
       socket.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
+        if (status === "error") {
+          alert("방 정보를 불러오는데 실패했습니다.");
+          navigate("/lobby");
+        }
         setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
       });
       socket.on("user_enter_room", handleUserEnterRoom);
