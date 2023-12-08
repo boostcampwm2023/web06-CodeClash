@@ -39,9 +39,17 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
     createRoomInput.current.capacity = value;
   };
 
+  const handleErrorWrong = ({ status, message }: { status: string; message: string }) => {
+    if (status === "fail") {
+      alert(message);
+      navigate("/lobby");
+    }
+  };
+
   const handleRoomCreated = ({ status, roomId }: ICreateRoomResponse) => {
     if (status === "success") {
       setRoomId(roomId);
+      socket?.emit("enter_room", { roomId }, handleErrorWrong);
       navigate("/room");
     }
   };
