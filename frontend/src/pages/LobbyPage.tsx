@@ -20,10 +20,11 @@ const LobbyPage: React.FC = () => {
     setAddGameRoom,
     setRemoveGameRoom,
     setLobby,
+    setRoomState,
     setRoomUserCount,
     setAddInvite,
   } = useLobbyStore();
-  const { setRoomId } = useRoomStore();
+  const { clearRoomInfo } = useRoomStore();
 
   const handleLobbyConnect = ({ status }: { status: string }) => {
     if (status === "success") {
@@ -50,6 +51,10 @@ const LobbyPage: React.FC = () => {
     setRemoveGameRoom(roomId);
   };
 
+  const handleRoomStart = ({ roomId }: { roomId: string }) => {
+    setRoomState(roomId, "playing");
+  };
+
   const handleRoomUserChange = ({ roomId, userCount }: { roomId: string; userCount: number }) => {
     setRoomUserCount(roomId, userCount);
   };
@@ -65,7 +70,7 @@ const LobbyPage: React.FC = () => {
       socket.on("user_exit_lobby", handleUserExitLobby);
       socket.on("user_create_room", handleUserCreateRoom);
       socket.on("delete_room", handleDeleteRoom);
-      socket.on("room_start", handleDeleteRoom);
+      socket.on("room_start", handleRoomStart);
       socket.on("change_user_count", handleRoomUserChange);
       socket.on("invite", handleInvite);
     }
@@ -76,7 +81,7 @@ const LobbyPage: React.FC = () => {
         socket.off("user_exit_lobby", handleUserExitLobby);
         socket.off("user_create_room", handleUserCreateRoom);
         socket.off("delete_room", handleDeleteRoom);
-        socket.off("room_start", handleDeleteRoom);
+        socket.off("room_start", handleRoomStart);
         socket.off("change_user_count", handleRoomUserChange);
         socket.off("invite", handleInvite);
       }
@@ -84,7 +89,7 @@ const LobbyPage: React.FC = () => {
   }, [socket]);
 
   useEffect(() => {
-    setRoomId("");
+    clearRoomInfo();
   }, []);
 
   return (

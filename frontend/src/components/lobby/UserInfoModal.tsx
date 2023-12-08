@@ -80,7 +80,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     });
   };
 
-  const userInfoHeader = ({ email, acceptCount, failCount, winCount, totalCount, submissions }: IUserInfo) => (
+  const userInfoHeader = ({ email, acceptCount, failCount, winCount, totalCount }: IUserInfo) => (
     <div className="p-2 grid grid-cols-2">
       <div>전체 게임 수 : {totalCount.toLocaleString()}</div>
       <div>승리한 게임 수 : {winCount.toLocaleString()}</div>
@@ -90,37 +90,51 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ closeModal, userName }) =
     </div>
   );
 
+  const codeViewer = (submission: ISubmission) => {
+    return (
+      <div className="h-[10rem] w-full">
+        <Editor
+          language="javascript"
+          value={`// ${submission.problem.title} - ${submission.status === "Accepted" ? "정답" : "오답"}\n\n${
+            submission.code
+          }`}
+          onMount={handleEditorDidMount}
+          options={{ ...editorOptions }}
+        />
+      </div>
+    );
+  };
+
+  const codePagination = (submissions: ISubmission[]) => {
+    return (
+      <div className="grid grid-cols-7 gap-2 justify-center">
+        {submissionPage > 0 ? <button onClick={handlePrevCodePage}>{`<`}</button> : <button></button>}
+        {submissions.map((submission, index) => (
+          <button
+            style={{ color: submissionIndex === index ? "black" : "white" }}
+            key={submission.problem.title + String(index)}
+            onClick={() => setSubmissionIndex(index)}
+          >
+            {submissionPage * CODE_COUNT_PER_PAGE + index + 1}
+          </button>
+        ))}
+        {userInfo?.pageEnd && submissionPage < userInfo?.pageEnd - 1 ? (
+          <button onClick={handleNextCodePage}>{`>`}</button>
+        ) : (
+          <button></button>
+        )}
+      </div>
+    );
+  };
+
   const userCode = ({ submissions }: IUserInfo) => (
     <>
       <div className="bg-lightskyblue flex flex-col justify-center items-center gap-2 p-2 rounded-lg overflow-scroll">
         <div>지난 제출 코드 보기</div>
         {submissions.length > 0 ? (
           <>
-            <div className="h-[10rem]">
-              <Editor
-                language="javascript"
-                value={`// Problem: ${submissions[submissionIndex].problem.title}\n\n${submissions[submissionIndex].code}`}
-                onMount={handleEditorDidMount}
-                options={{ ...editorOptions }}
-              />
-            </div>
-            <div className="grid grid-cols-7 gap-2 justify-center">
-              {submissionPage > 0 ? <button onClick={handlePrevCodePage}>{`<`}</button> : <button></button>}
-              {submissions.map((submission, index) => (
-                <button
-                  style={{ color: submissionIndex === index ? "black" : "white" }}
-                  key={submission.problem.title + String(index)}
-                  onClick={() => setSubmissionIndex(index)}
-                >
-                  {submissionPage * CODE_COUNT_PER_PAGE + index + 1}
-                </button>
-              ))}
-              {userInfo?.pageEnd && submissionPage < userInfo?.pageEnd ? (
-                <button onClick={handleNextCodePage}>{`>`}</button>
-              ) : (
-                <button></button>
-              )}
-            </div>
+            {codeViewer(submissions[submissionIndex])}
+            {codePagination(submissions)}
           </>
         ) : (
           `${userName}님의 코드 제출 기록이 없습니다`

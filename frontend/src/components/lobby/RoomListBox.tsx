@@ -1,25 +1,35 @@
 import { useNavigate } from "react-router";
-import { UserInfo, useRoomStore } from "../../store/useRoom";
+import { useRoomStore } from "../../store/useRoom";
 import { GameRoom, useLobbyStore } from "../../store/useLobby";
+import { useSocketStore } from "../../store/useSocket";
 
 interface LobbyRoomListItemProps extends GameRoom {
   onClick: () => void;
 }
 
-const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({ roomId, roomName, capacity, userCount, onClick }) => {
+const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({
+  roomId,
+  roomName,
+  capacity,
+  userCount,
+  state,
+  onClick,
+}) => {
   return (
-    <div
-      className="skew-x-right rounded-sm px-2 py-1 cursor-pointer text-white hover:bg-lightskyblue hover:text-black"
+    <button
+      className="skew-x-right rounded-sm px-2 py-1 text-white hover:bg-lightskyblue hover:text-black"
+      style={{ opacity: state === "playing" ? 0.5 : 1 }}
       key={roomId}
       onClick={onClick}
+      disabled={state === "playing"}
     >
       <div className="skew-x-left flex flex-row items-center justify-between">
         <div className="text-[0.75rem]">{roomName}</div>
         <div className="text-[0.75rem]">
-          {userCount}/{capacity}
+          {userCount} / {capacity}
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 
@@ -27,10 +37,25 @@ const LobbyRoomListBox: React.FC = () => {
   const navigate = useNavigate();
   const { setRoomId } = useRoomStore();
   const { gameRoomList } = useLobbyStore();
+  const { socket } = useSocketStore();
+
+  const handleErrorWrong = ({ status, message }: { status: string; message: string }) => {
+    if (status === "fail") {
+      alert(message);
+      navigate("/lobby");
+    }
+  };
 
   const handleEnterRoom = (roomId: string) => {
     setRoomId(roomId);
+    socket?.emit("enter_room", { roomId }, handleErrorWrong);
     navigate("/room");
+  };
+
+  const compareState = (a: GameRoom, b: GameRoom) => {
+    if (a.state === "waiting") return -1;
+    if (b.state === "waiting") return 1;
+    return 0;
   };
 
   return (
@@ -38,9 +63,9 @@ const LobbyRoomListBox: React.FC = () => {
       <div className="skew-x-right bg-black rounded-sm text-white px-2 py-1">
         <div className="skew-x-left">방 리스트</div>
       </div>
-      <div className=" overflow-scroll p-1">
+      <div className="flex flex-col overflow-scroll p-1">
         {gameRoomList
-          ?.filter(({ state }) => state === "waiting")
+          ?.sort(compareState)
           .map(({ roomId, roomName, capacity, userCount, state }) => (
             <LobbyRoomListItem
               key={roomId}

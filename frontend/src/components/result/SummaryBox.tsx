@@ -4,13 +4,14 @@ import ResultRankBox from "./RankBox";
 interface ResultSummaryBoxProps {
   selectedUser: string;
   setSelecteduser: React.Dispatch<React.SetStateAction<string>>;
+  userScore: Record<string, number>;
 }
 
-const ResultSummaryBox: React.FC<ResultSummaryBoxProps> = ({ selectedUser, setSelecteduser }) => {
+const ResultSummaryBox: React.FC<ResultSummaryBoxProps> = ({ userScore, selectedUser, setSelecteduser }) => {
   return (
     <>
       <div>결과 요약</div>
-      <ResultRankBox selectedUser={selectedUser} setSelectUser={setSelecteduser} />
+      <ResultRankBox userScore={userScore} selectedUser={selectedUser} setSelectUser={setSelecteduser} />
       <ResultButtonBox />
     </>
   );

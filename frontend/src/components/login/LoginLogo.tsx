@@ -17,7 +17,7 @@ const LoginLogo: React.FC = () => {
       }}
     >
       <Logo className="relative z-10 w-[35vh]" />
-      <div className="absolute z-0 top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%] rotate-[30deg] scale-75">
+      <div className="absolute z-0 top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%] rotate-[30deg] scale-75 pointer-events-none">
         <div className="flex flex-row items-center">
           <div className="w-[9vh] h-[21vh] rounded-full bg-yellow"></div>
           <div className="w-[9vh] h-[36vh] rounded-full bg-[#449DC6]"></div>

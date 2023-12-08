@@ -27,6 +27,7 @@ interface LobbyAction {
   setRemoveLobbyUser: (userName: string) => void;
   setAddGameRoom: (gameRoom: GameRoom) => void;
   setRemoveGameRoom: (roomId: string) => void;
+  setRoomState: (roomId: string, state: "playing" | "waiting") => void;
   setRoomUserCount: (roomId: string, userCount: number) => void;
   setAddInvite: (invite: Invite) => void;
   setRemoveInvite: (roomId: string) => void;
@@ -45,6 +46,16 @@ export const useLobbyStore = create<LobbyStore>(set => ({
   setAddGameRoom: gameRoom => set(state => ({ gameRoomList: state.gameRoomList.concat(gameRoom) })),
   setRemoveGameRoom: targetRoomId =>
     set(state => ({ gameRoomList: state.gameRoomList.filter(({ roomId }) => roomId !== targetRoomId) })),
+  setRoomState: (targetRoomId, targetState) => {
+    set(state => ({
+      gameRoomList: state.gameRoomList.map(gameRoom => {
+        if (gameRoom.roomId === targetRoomId) {
+          return { ...gameRoom, state: targetState };
+        }
+        return gameRoom;
+      }),
+    }));
+  },
   setRoomUserCount: (roomId, userCount) =>
     set(state => ({
       gameRoomList: state.gameRoomList.map(gameRoom =>
