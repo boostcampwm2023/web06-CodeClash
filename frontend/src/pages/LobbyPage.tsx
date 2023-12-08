@@ -22,13 +22,14 @@ const LobbyPage: React.FC = () => {
     setLobby,
     setRoomState,
     setRoomUserCount,
+    setAddInvite,
   } = useLobbyStore();
   const { clearRoomInfo } = useRoomStore();
 
   const handleLobbyConnect = ({ status }: { status: string }) => {
     if (status === "success") {
-      socket?.emit("lobby_info", (lobbyInfo: { userList: UserInfo[]; roomList: GameRoom[] }) => {
-        setLobby({ userList: lobbyInfo.userList, gameRoomList: lobbyInfo.roomList });
+      socket?.emit("lobby_info", ({ userList, roomList }: { userList: UserInfo[]; roomList: GameRoom[] }) => {
+        setLobby({ userList: userList, gameRoomList: roomList, inviteList: [] });
       });
     }
   };
@@ -58,6 +59,10 @@ const LobbyPage: React.FC = () => {
     setRoomUserCount(roomId, userCount);
   };
 
+  const handleInvite = (invite: any) => {
+    setAddInvite(invite);
+  };
+
   useEffect(() => {
     if (socket) {
       socket.emit("enter_lobby", handleLobbyConnect);
@@ -67,6 +72,7 @@ const LobbyPage: React.FC = () => {
       socket.on("delete_room", handleDeleteRoom);
       socket.on("room_start", handleRoomStart);
       socket.on("change_user_count", handleRoomUserChange);
+      socket.on("invite", handleInvite);
     }
     return () => {
       if (socket) {
@@ -77,6 +83,7 @@ const LobbyPage: React.FC = () => {
         socket.off("delete_room", handleDeleteRoom);
         socket.off("room_start", handleRoomStart);
         socket.off("change_user_count", handleRoomUserChange);
+        socket.off("invite", handleInvite);
       }
     };
   }, [socket]);
