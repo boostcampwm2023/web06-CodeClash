@@ -58,16 +58,13 @@ const RoomPage: React.FC = () => {
       alert(message);
       navigate("/lobby");
     }
-    if (status === "success") {
-      socket?.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
-        setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
-      });
-    }
   };
 
   useEffect(() => {
     if (socket) {
-      socket.emit("enter_room", { roomId }, handleEnterRoom);
+      socket.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
+        setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
+      });
       socket.on("user_enter_room", handleUserEnterRoom);
       socket.on("user_exit_room", handleUserExitRoom);
       socket.on("ready", handleUserReady);

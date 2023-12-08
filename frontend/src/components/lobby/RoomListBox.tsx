@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { UserInfo, useRoomStore } from "../../store/useRoom";
 import { GameRoom, useLobbyStore } from "../../store/useLobby";
+import { useSocketStore } from "../../store/useSocket";
 
 interface LobbyRoomListItemProps extends GameRoom {
   onClick: () => void;
@@ -27,9 +28,18 @@ const LobbyRoomListBox: React.FC = () => {
   const navigate = useNavigate();
   const { setRoomId } = useRoomStore();
   const { gameRoomList } = useLobbyStore();
+  const { socket } = useSocketStore();
+
+  const handleErrorWrong = ({ status, message }: { status: string; message: string }) => {
+    if (status === "fail") {
+      alert(message);
+      navigate("/lobby");
+    }
+  };
 
   const handleEnterRoom = (roomId: string) => {
     setRoomId(roomId);
+    socket?.emit("enter_room", { roomId }, handleErrorWrong);
     navigate("/room");
   };
 
