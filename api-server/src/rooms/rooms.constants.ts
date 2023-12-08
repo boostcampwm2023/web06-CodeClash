@@ -30,3 +30,7 @@ export const EVENT = {
   EXIT_RESULT: 'exit_result',
   INVITE: 'invite',
 };
+export const WS_STATUS = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+};

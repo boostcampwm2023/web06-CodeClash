@@ -8,7 +8,7 @@ import {
 import { RoomsService } from './rooms.service';
 import { Server, Socket } from 'socket.io';
 import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import { HttpToSocketExceptionFilter } from 'src/common/exception-filter/http-to-ws.exception';
+import { WsExceptionFilter } from 'src/common/exception-filter/ws.exception.filter';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { ProblemsService } from 'src/problems/problems.service';
@@ -20,7 +20,7 @@ import {
   LOBBY_ID,
   NUM_OF_ROUNDS,
   ROOM_STATE,
-  SUCCESS_STATUS,
+  WS_STATUS,
   TIME_LIMIT,
 } from './rooms.constants';
 import { RoomsInputDto } from './dtos/rooms.input.dto';
@@ -36,7 +36,7 @@ import { SubmissionLanguage } from 'src/submissions/entities/submission.entity';
   path: '/api/rooms',
   cors: true,
 })
-@UseFilters(HttpToSocketExceptionFilter)
+@UseFilters(WsExceptionFilter)
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class RoomsGateway {
   private readonly logger = new Logger(RoomsGateway.name);
@@ -149,7 +149,7 @@ export class RoomsGateway {
       userName: roomsUserDto.userName,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('exit_lobby')
@@ -160,7 +160,7 @@ export class RoomsGateway {
       userName: client.data.user.name,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('create_room')
@@ -174,7 +174,7 @@ export class RoomsGateway {
     });
 
     return {
-      status: SUCCESS_STATUS,
+      status: WS_STATUS.SUCCESS,
       roomId,
     };
   }
@@ -202,7 +202,7 @@ export class RoomsGateway {
     });
 
     return {
-      status: SUCCESS_STATUS,
+      status: WS_STATUS.SUCCESS,
       roomId,
     };
   }
@@ -224,7 +224,7 @@ export class RoomsGateway {
       this.io.in(LOBBY_ID).emit('delete_room', { roomId });
     }
 
-    return { status: SUCCESS_STATUS, roomId };
+    return { status: WS_STATUS.SUCCESS, roomId };
   }
 
   @SubscribeMessage('chat')
@@ -237,7 +237,7 @@ export class RoomsGateway {
       message,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('dm')
@@ -251,7 +251,7 @@ export class RoomsGateway {
       message,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('ready')
@@ -265,7 +265,7 @@ export class RoomsGateway {
       await this.start(roomId);
     }
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('kick')
@@ -284,7 +284,7 @@ export class RoomsGateway {
       userCount: this.roomsService.roomUserCount(roomId),
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('item')
@@ -295,12 +295,12 @@ export class RoomsGateway {
 
     this.roomsService.useItem(roomId, userName, item);
     client.to(roomId).emit('item', {
-      status: SUCCESS_STATUS,
+      status: WS_STATUS.SUCCESS,
       userName,
       item,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   @SubscribeMessage('submission')
@@ -359,7 +359,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const resultInfo = this.roomsService.roomRanking(roomId);
 
-    return { status: SUCCESS_STATUS, resultInfo };
+    return { status: WS_STATUS.SUCCESS, resultInfo };
   }
 
   @SubscribeMessage('exit_result')
@@ -367,7 +367,7 @@ export class RoomsGateway {
     const { roomId } = client.data;
 
     if (this.roomsService.roomHasUser(roomId, client.data.user.name)) {
-      return { status: SUCCESS_STATUS };
+      return { status: WS_STATUS.SUCCESS };
     }
   }
 
@@ -394,7 +394,7 @@ export class RoomsGateway {
       userName,
     });
 
-    return { status: SUCCESS_STATUS };
+    return { status: WS_STATUS.SUCCESS };
   }
 
   private createItem(roomId: string) {
