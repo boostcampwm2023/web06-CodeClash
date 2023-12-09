@@ -398,9 +398,12 @@ export class RoomsGateway {
   }
 
   private createItem(roomId: string) {
-    const userNameList = this.roomsService.userNameList(roomId);
+    const activeUserList = this.roomsService
+      .room(roomId)
+      .userList.filter((user) => !user.passed)
+      .map((user) => user.userName);
 
-    userNameList.forEach((userName) => {
+    activeUserList.forEach((userName) => {
       const socket = this.roomsService.socket(userName);
       const item = this.roomsService.assignItem(roomId, userName);
 

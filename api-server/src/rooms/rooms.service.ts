@@ -311,10 +311,6 @@ export class RoomsService {
     return user.ready;
   }
 
-  userNameList(roomId: string) {
-    return this.room(roomId).userList.map((user) => user.userName);
-  }
-
   useItem(roomId: string, userName: string, item: ItemList) {
     const user = this.room(roomId).userList.find(
       (user) => user.userName === userName,
