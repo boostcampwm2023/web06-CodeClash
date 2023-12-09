@@ -17,9 +17,9 @@ app.post("/v2/scoring", (req, res) => {
   const input = testcase.input;
 
   userCode +=
-    "\nprocess.send(solution(" +
+    "\nprocess.send(String(solution(" +
     input.slice(1, input.length - 1) +
-    ") || 'null')";
+    ")))";
   userCode += "\nprocess.send(process.memoryUsage());";
 
   const startTime = Date.now();
@@ -90,6 +90,8 @@ app.post("/v2/scoring", (req, res) => {
     let status = "fail";
 
     if (childMessages.length == 2) {
+      console.log(childMessages[0], testcase.output);
+
       memoryUsage = childMessages[1].rss / 1000000;
       status =
         String(childMessages[0]).trim() == String(testcase.output).trim()
