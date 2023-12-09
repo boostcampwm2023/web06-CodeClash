@@ -92,7 +92,9 @@ app.post("/v2/scoring", (req, res) => {
     if (childMessages.length == 2) {
       memoryUsage = childMessages[1].rss / 1000000;
       status =
-        String(childMessages[0]).trim() == testcase.output ? "pass" : "fail";
+        String(childMessages[0]).trim() == String(testcase.output).trim()
+          ? "pass"
+          : "fail";
     } else {
       memoryUsage = 0;
       status = "fail";
