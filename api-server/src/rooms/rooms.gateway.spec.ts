@@ -10,6 +10,10 @@ import { AuthService } from 'src/auth/auth.service';
 import { ProblemsService } from 'src/problems/problems.service';
 import { ProblemTable } from 'src/problems/entities/problem.entity';
 import { ProblemsMockRepository } from 'src/problems/mocks/repository.mock';
+import { ScoresService } from 'src/scores/scores.service';
+import { SubmissionsService } from 'src/submissions/submissions.service';
+import { SubmissionTable } from 'src/submissions/entities/submission.entity';
+import { SubmissionsMockRepository } from 'src/submissions/mocks/repository.mock';
 
 describe('RoomsGateway', () => {
   let gateway: RoomsGateway;
@@ -23,6 +27,8 @@ describe('RoomsGateway', () => {
         AuthService,
         JwtService,
         ProblemsService,
+        ScoresService,
+        SubmissionsService,
         {
           provide: getRepositoryToken(UserTable),
           useClass: UsersMockRepository,
@@ -30,6 +36,10 @@ describe('RoomsGateway', () => {
         {
           provide: getRepositoryToken(ProblemTable),
           useClass: ProblemsMockRepository,
+        },
+        {
+          provide: getRepositoryToken(SubmissionTable),
+          useClass: SubmissionsMockRepository,
         },
       ],
     }).compile();

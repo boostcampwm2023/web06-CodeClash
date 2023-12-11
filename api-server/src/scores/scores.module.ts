@@ -10,5 +10,6 @@ import { SubmissionsModule } from 'src/submissions/submissions.module';
   controllers: [ScoresController],
   providers: [ScoresService],
   imports: [AuthModule, UsersModule, ProblemsModule, SubmissionsModule],
+  exports: [ScoresService],
 })
 export class ScoresModule {}

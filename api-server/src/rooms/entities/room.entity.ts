@@ -5,6 +5,7 @@ export interface Room {
   roomId: string;
   roomName: string;
   userList: RoomsUser[];
+  banList: Set<string>;
   capacity: number;
   state: RoomState;
   timer: NodeJS.Timeout | null;

@@ -30,12 +30,6 @@ export class SubmissionsService {
     });
   }
 
-  async isExist(hashedCode: string) {
-    return await this.submissionsRepository.findOne({
-      where: { codeHash: hashedCode },
-    });
-  }
-
   async paginateSubmissionsByUserId(
     userId: number,
     page: number,
@@ -52,7 +46,6 @@ export class SubmissionsService {
         'submission.id',
         'submission.language',
         'submission.code',
-        'submission.codeHash',
         'submission.status',
         'submission.createdAt',
         'problem.id',
