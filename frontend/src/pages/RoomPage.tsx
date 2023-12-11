@@ -19,14 +19,12 @@ const RoomPage: React.FC = () => {
     userList,
     capacity,
     isStart,
-    clearRoomInfo,
     setIsStart,
     setAddRoomUser,
     setRemoveRoomUser,
     setChangeUserReady,
     setProblemList,
     setRoomInfo,
-    setRoomId,
   } = useRoomStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
@@ -53,6 +51,23 @@ const RoomPage: React.FC = () => {
     }, 3000);
   };
 
+  const handleEnterRoom = ({ status, message }: { status: string; message: string }) => {
+    if (status === "fail") {
+      alert(message);
+      navigate("/lobby");
+    }
+    if (status === "success") {
+      socket?.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
+        setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
+      });
+    }
+  };
+
+  const handleKick = ({ userName }: { userName: string }) => {
+    alert(userName + "으로부터 강퇴당했습니다");
+    navigate("/lobby");
+  };
+
   useEffect(() => {
     if (socket) {
       socket.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
@@ -66,6 +81,7 @@ const RoomPage: React.FC = () => {
       socket.on("user_exit_room", handleUserExitRoom);
       socket.on("ready", handleUserReady);
       socket.on("start", handleStart);
+      socket.on("kick", handleKick);
     }
     return () => {
       if (socket) {
@@ -73,6 +89,7 @@ const RoomPage: React.FC = () => {
         socket.off("user_exit_room", handleUserExitRoom);
         socket.off("ready", handleUserReady);
         socket.off("start", handleStart);
+        socket.off("kick", handleKick);
       }
     };
   }, [socket, roomId]);
