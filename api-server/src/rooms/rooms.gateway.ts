@@ -264,9 +264,10 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const ready = this.roomsService.switchReady(roomId, userName);
+    const userCount = this.roomsService.roomUserCount(roomId);
 
     this.io.in(roomId).emit('ready', { userName, ready });
-    if (this.roomsService.allUserReady(roomId)) {
+    if (userCount > 1 && this.roomsService.allUserReady(roomId)) {
       await this.start(roomId);
     }
 
