@@ -38,11 +38,14 @@ export class RoomsService {
   constructor() {}
 
   roomInfo(roomId: string) {
-    const room = this.room(roomId);
+    const { roomName, userList, capacity, state } = this.room(roomId);
 
     return {
-      ...room,
-      userList: room.userList.map((user) => {
+      roomId,
+      roomName,
+      capacity,
+      state,
+      userList: userList.map((user) => {
         return {
           userName: user.userName,
           ready: user.ready,
@@ -92,7 +95,7 @@ export class RoomsService {
   }
 
   enterRoom(roomId: string, location: string, user: RoomsUserDto) {
-    const { userList, capacity, state, banList } = this.roomInfo(roomId);
+    const { userList, capacity, state, banList } = this.room(roomId);
 
     if (this.roomHasUser(roomId, user.userName)) {
       this.logger.log(

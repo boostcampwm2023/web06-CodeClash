@@ -131,7 +131,10 @@ export class RoomsGateway {
 
   @SubscribeMessage('room_info')
   roomInfo(@MessageBody() data) {
-    return this.roomsService.roomInfo(data.roomId);
+    const roomInfo = this.roomsService.roomInfo(data.roomId);
+
+    this.logger.log(`[roomInfo] ${data.userName} requested room info`);
+    return roomInfo;
   }
 
   @SubscribeMessage('enter_lobby')
