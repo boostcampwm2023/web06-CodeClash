@@ -19,36 +19,34 @@
 
 ## 로그인 및 회원가입
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/9916298a-59cb-4fcf-8baa-17e63af53a79)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/cf3e1ed9-9ccf-429e-a2c9-ab8b1aa9de4d)
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/6c3993f2-9024-4e85-a66e-c75a7385a7c4)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/6eb134fe-bdd5-4812-8874-1b5473c9ef30)
+
 
 ## 메인 화면
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ea2a3e23-dd86-47ac-8e16-7d7dbcf3a3bf)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ded329a8-dfa6-47f1-8715-3e586ed20ea3)
+
 
 ## 사용자 정보
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/527909c9-3abc-4463-9fa1-808357d8badd)
-
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/d8e7e610-8fe1-4bba-83bb-dd4bd62c10d8)
-
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/17cc7ade-7b50-4731-a1ef-8795c0b50809)
 
 ## 방 생성 및 방 화면
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/5807e133-15b3-4e55-ba17-59f1ef8caadf)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ef40fd3a-2913-46ae-890c-b6bc0f334cf7)
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/2d9f7e83-daa3-4282-a40b-1ab39214c16b)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/edd8a30f-a9b1-4b54-a669-c88033755815)
 
-## 게임 화면 및 채점 실행/제출 기능
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/f1ba504d-15ee-47bd-b82b-53cce6654b4d)
+## 게임 화면
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/dc562cf4-7ae8-4afa-b0c1-3d9518eb898d)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/bfeb98d9-62df-42a6-884f-63e4bb842ba0)
 
 ## 게임 마무리 화면 및 결과
 
-![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/1da79679-f6fb-43f5-b98f-f360d1451575)
+![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/e085cfd0-edf0-47fd-972a-4673f62c7789)
 
 # 기술 스택
 
