@@ -15,7 +15,6 @@ import { ProblemsService } from 'src/problems/problems.service';
 import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
   DEFAULT_RANKING,
-  EVENT,
   ITEM_DELAY,
   LOBBY_ID,
   NUM_OF_ROUNDS,
@@ -23,7 +22,6 @@ import {
   WS_STATUS,
   TIME_LIMIT,
 } from './rooms.constants';
-import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import { plainToClass } from 'class-transformer';
 import { RoomsUserDto } from './dtos/rooms.user.dto';
@@ -132,7 +130,7 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('room_info')
-  roomInfo(@MessageBody() data: RoomsInputDto) {
+  roomInfo(@MessageBody() data) {
     return this.roomsService.roomInfo(data.roomId);
   }
 
@@ -378,10 +376,7 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('invite')
-  invite(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: RoomsInputDto,
-  ) {
+  invite(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { roomName } = this.roomsService.roomInfo(roomId);
