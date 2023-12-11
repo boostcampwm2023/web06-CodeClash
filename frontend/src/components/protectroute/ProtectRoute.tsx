@@ -12,7 +12,7 @@ interface ProtectRouteProps {
 const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) => {
   const { isLogin } = useLoginStore();
   const currentLocation = useLocation();
-  const { roomId } = useRoomStore();
+  const { roomId, userList } = useRoomStore();
   const navigate = useNavigate();
   preventBack();
 
@@ -20,7 +20,7 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) =
     if (!roomId && currentLocation.pathname !== "/lobby") {
       navigate("/lobby");
     }
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     const preventClose = (e: BeforeUnloadEvent) => {
