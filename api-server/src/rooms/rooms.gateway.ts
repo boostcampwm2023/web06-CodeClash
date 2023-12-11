@@ -346,6 +346,7 @@ export class RoomsGateway {
           this.io.in('lobby').emit('room_game_over', { roomId });
         }, TIME_LIMIT);
 
+        await this.usersService.increaseWinCount(user.userName);
         this.roomsService.setTimer(roomId, timer);
         this.io.in(roomId).emit('countdown');
       }
@@ -416,7 +417,11 @@ export class RoomsGateway {
   private async start(roomId: string) {
     const problems =
       await this.problemsService.findProblemsWithTestcases(NUM_OF_ROUNDS);
+    const promises = this.roomsService.room(roomId).userList.map((user) => {
+      return this.usersService.increaseTotalCount(user.userName);
+    });
 
+    await Promise.all(promises);
     this.roomsService.gameInit(roomId);
     this.io.in(roomId).emit('start', { problems });
     setTimeout(() => {
