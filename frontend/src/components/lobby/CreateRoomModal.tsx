@@ -39,17 +39,20 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
     createRoomInput.current.capacity = value;
   };
 
-  const handleErrorWrong = ({ status, message }: { status: string; message: string }) => {
-    if (status === "fail") {
+  const handleEnterRoomEvent = ({ status, message }: { status: string; message: string }) => {
+    if (status === "error") {
       alert(message);
       navigate("/lobby");
+    }
+    if (status === "success") {
+      navigate("/room");
     }
   };
 
   const handleRoomCreated = ({ status, roomId }: ICreateRoomResponse) => {
     if (status === "success") {
       setRoomId(roomId);
-      socket?.emit("enter_room", { roomId }, handleErrorWrong);
+      socket?.emit("enter_room", { roomId }, handleEnterRoomEvent);
       navigate("/room");
     }
   };
@@ -87,6 +90,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
         className="rounded py-1 px-2 text-black text-sm"
         placeholder="방 이름"
         onChange={(e: ChangeEvent<HTMLInputElement>) => (createRoomInput.current.roomName = e.target.value)}
+        maxLength={20}
       />
       <div className="flex">
         제한 인원
