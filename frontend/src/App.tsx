@@ -8,8 +8,6 @@ import ProtectRoute from "./components/protectroute/ProtectRoute";
 import SocketProvider from "./components/SocketProvider";
 import MusicPlayer from "./components/player/MusicPlayer";
 import { AnimatePresence } from "framer-motion";
-import { createBrowserHistory } from "history";
-import { useEffect } from "react";
 
 const App: React.FC = () => {
   const location = useLocation();
