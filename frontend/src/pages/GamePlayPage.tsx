@@ -25,9 +25,11 @@ const GamePlayPage: React.FC = () => {
       setIsStart(false);
     };
   }, []);
+
   const handleUserExitRoom = ({ userName }: { userName: string }) => {
     setRemoveRoomUser(userName);
   };
+
   useEffect(() => {
     socket?.on("user_exit_room", handleUserExitRoom);
     return () => {

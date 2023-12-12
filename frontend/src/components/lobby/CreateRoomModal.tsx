@@ -53,7 +53,6 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
     if (status === "success") {
       setRoomId(roomId);
       socket?.emit("enter_room", { roomId }, handleEnterRoomEvent);
-      navigate("/room");
     }
   };
 

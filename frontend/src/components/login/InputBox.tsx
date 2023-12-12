@@ -72,7 +72,7 @@ const LoginInputBox: React.FC = () => {
         navigate("/lobby");
       })
       .catch(err => {
-        alert(err);
+        alert(err?.response?.data?.message ?? "회원가입에 실패했습니다.");
       });
   };
 
@@ -84,7 +84,7 @@ const LoginInputBox: React.FC = () => {
         navigate("/lobby");
       })
       .catch(err => {
-        alert(err || "로그인에 실패했습니다.");
+        alert("아이디/비밀번호를 확인해주세요.");
       });
   };
 

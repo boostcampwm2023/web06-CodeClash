@@ -1,16 +1,33 @@
+import { createBrowserHistory } from "history";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const preventBack = () => {
+export const preventBack = () => {
   useEffect(() => {
     const preventGoBack = () => {
-      history.pushState(null, "", location.href);
+      alert("뒤로가기는 금지되어있습니다.");
+      window.history.pushState(null, "", location.href);
     };
 
-    history.pushState(null, "", location.href);
+    window.history.pushState(null, "", location.href);
     window.addEventListener("popstate", preventGoBack);
 
-    return () => window.removeEventListener("popstate", preventGoBack);
+    return () => {
+      window.removeEventListener("popstate", preventGoBack);
+    };
   }, []);
 };
 
-export default preventBack;
+const history = createBrowserHistory();
+
+export const useBlock = () => {
+  const location = useLocation();
+  useEffect(() => {
+    const unlisten = history.listen(his => {
+      if (his.action === "POP") {
+        history.push(location);
+      }
+    });
+    return unlisten;
+  }, [location]);
+};
