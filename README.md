@@ -23,7 +23,7 @@
 4. [sudo Docker가 고작 환경 변수 파일도 읽지 못한다고?](https://github.com/boostcampwm2023/web06-CodeClash/wiki/%ED%99%98%EA%B2%BD-%EB%B3%80%EC%88%98-%ED%8C%8C%EC%9D%BC%EC%9D%84-%EB%8F%84%EC%BB%A4%EA%B0%80-%EC%9D%BD%EC%A7%80-%EB%AA%BB%ED%95%98%EB%8A%94-%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85-%EA%B8%B0%EB%A1%9D)
 5. [어떤 DB가 좋을까요 알아맞춰 주세요 딩동댕동댕](https://github.com/boostcampwm2023/web06-CodeClash/wiki/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-%EC%84%A0%ED%83%9D%EA%B3%BC-%EC%9D%B4%EC%9C%A0)
 6. [프록시..? 리버스 프록시..? 그리고 Nginx.. 왜써야돼?](https://github.com/boostcampwm2023/web06-CodeClash/wiki/Nginx%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B4%EA%B3%A0,-%EC%9A%B0%EB%A6%AC%EC%9D%98-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%84%B1%EC%97%90-%EC%9E%88%EC%96%B4%EC%84%9C-%EC%84%A0%ED%83%9D%EC%9D%BC%EA%B9%8C-%ED%95%84%EC%88%98%EC%9D%BC%EA%B9%8C%3F)
-7. [동하 작성 문서]
+7. [Nginx로 HTTPS와 리버스 프록싱을 둘 다 해결해버렸다...](https://github.com/boostcampwm2023/web06-CodeClash/wiki/nginx%EC%97%90-https-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0)
 
 ### [FE]
 1. [라우팅을 막아라!](https://github.com/boostcampwm2023/web06-CodeClash/wiki/%EC%9D%B4%EC%83%81%ED%95%9C-%EB%9D%BC%EC%9A%B0%ED%8C%85%EC%9D%84-%EB%A7%89%EC%95%84%EB%9D%BC)
@@ -68,7 +68,9 @@
 - 채점 서버는 클라이언트가 제출한 코드를 실행해야만 합니다. 어떻게 제출한 코드의 악의적인 시스템콜을 막을 수 있을지 굉장히 많이 고민하였습니다.
 - 어떻게하면 한정된 자원으로 빠르게 채점하여 결과를 응답할 수 있을지 고민하였습니다.
 
-### ⏺ [동하 기술적 도전]
+### ⏺ 웹소켓 통신
+- 웹 게임의 특성상 사용자가 브라우저를 갑자기 꺼 버리거나, 새로고침을 하는 등 돌발 상황이 많습니다. 그런 예외 상황들을 잘 처리하는 것을 고민하였습니다.
+- FE의 React 페이지 구현 방식을 읽고 이해하여 재사용성 있는 코드를 작성할 수 있도록 했습니다.
 
 
 ## [FE]
