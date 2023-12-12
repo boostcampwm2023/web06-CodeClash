@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router";
 import { useLoginStore } from "../../store/useLogin";
 import { useEffect } from "react";
 import { useRoomStore } from "../../store/useRoom";
-import preventBack from "./preventBack";
+import { useBlock } from "./preventBack";
 
 interface ProtectRouteProps {
   isNeedLogin?: boolean;
@@ -12,9 +12,10 @@ interface ProtectRouteProps {
 const ProtectRoute: React.FC<ProtectRouteProps> = ({ isNeedLogin = true, to }) => {
   const { isLogin } = useLoginStore();
   const currentLocation = useLocation();
-  const { roomId, userList } = useRoomStore();
+  const { roomId } = useRoomStore();
   const navigate = useNavigate();
-  preventBack();
+
+  useBlock();
 
   useEffect(() => {
     if (!roomId && currentLocation.pathname !== "/lobby") {

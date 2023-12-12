@@ -52,8 +52,20 @@ const RoomPage: React.FC = () => {
     }, 3000);
   };
 
+  const handleEnterRoom = ({ status, message }: { status: string; message: string }) => {
+    if (status === "fail") {
+      alert(message);
+      navigate("/lobby");
+    }
+    if (status === "success") {
+      socket?.emit("room_info", { roomId }, ({ status, roomId, userList, roomName, capacity }: ICreateRoomResponse) => {
+        setRoomInfo({ roomId, roomName, capacity, isStart: false, userList, problemList: [] });
+      });
+    }
+  };
+
   const handleKick = ({ userName }: { userName: string }) => {
-    alert(userName + "으로부터 강퇴당했습니다.");
+    alert(userName + "으로부터 강퇴당했습니다");
     navigate("/lobby");
   };
 
@@ -91,6 +103,10 @@ const RoomPage: React.FC = () => {
       }
     };
   }, []);
+
+  if (!userList) {
+    return <div>로딩중...</div>;
+  }
 
   const emptyList = new Array(capacity - userList.length < 0 ? 0 : capacity - userList.length).fill({
     isHost: false,
