@@ -25,6 +25,7 @@ const RoomPage: React.FC = () => {
     setChangeUserReady,
     setProblemList,
     setRoomInfo,
+    clearRoomInfo,
   } = useRoomStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
