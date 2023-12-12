@@ -5,24 +5,28 @@ import Button from "../common/Button";
 import { useState } from "react";
 import InviteModal from "./InviteModal";
 
-const RoomButtonBox: React.FC = () => {
+interface RoomButtonBox {
+  isGameStart: boolean;
+}
+
+const RoomButtonBox: React.FC<RoomButtonBox> = ({ isGameStart }) => {
   const [isModalOpened, setModalOpened] = useState(false);
   const { socket } = useSocketStore();
-  const { roomId, isStart } = useRoomStore();
+  const { roomId } = useRoomStore();
   const navigate = useNavigate();
 
   const handleClickReady = () => {
-    if (isStart) return;
+    if (isGameStart) return;
     socket?.emit("ready", { roomId });
   };
 
   const handleClickInvite = () => {
-    if (isStart) return;
+    if (isGameStart) return;
     setModalOpened(true);
   };
 
   const handleExit = () => {
-    if (isStart) return;
+    if (isGameStart) return;
     navigate("/lobby");
   };
 
