@@ -1,7 +1,6 @@
 import { Injectable, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { Room, RoomInfo, User } from './entities/room.entity';
-import { RoomsInputDto } from './dtos/rooms.input.dto';
+import { Room } from './entities/room.entity';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import {
   DEFAULT_RANKING,
@@ -12,7 +11,6 @@ import {
   NUM_OF_ITEMS,
   ROOM_STATE,
   RoomState,
-  SUCCESS_STATUS,
 } from './rooms.constants';
 import { WsException } from '@nestjs/websockets';
 import { ItemList, RoomsUserDto } from './dtos/rooms.user.dto';
@@ -40,11 +38,14 @@ export class RoomsService {
   constructor() {}
 
   roomInfo(roomId: string) {
-    const room = this.room(roomId);
+    const { roomName, userList, capacity, state } = this.room(roomId);
 
     return {
-      ...room,
-      userList: room.userList.map((user) => {
+      roomId,
+      roomName,
+      capacity,
+      state,
+      userList: userList.map((user) => {
         return {
           userName: user.userName,
           ready: user.ready,
@@ -94,7 +95,7 @@ export class RoomsService {
   }
 
   enterRoom(roomId: string, location: string, user: RoomsUserDto) {
-    const { userList, capacity, state, banList } = this.roomInfo(roomId);
+    const { userList, capacity, state, banList } = this.room(roomId);
 
     if (this.roomHasUser(roomId, user.userName)) {
       this.logger.log(
@@ -227,6 +228,17 @@ export class RoomsService {
     return this.room(roomId).itemCreator;
   }
 
+  canRecieveUserList = (roomId: string) => {
+    return this.room(roomId)
+      .userList.filter(
+        (user) =>
+          !user.passed &&
+          Object.values(user.itemList).reduce((acc, cur) => acc + cur, 0) <
+            MAX_ITEM_CAPACITY,
+      )
+      .map((user) => user.userName);
+  };
+
   assignItem(roomId: string, userName: string) {
     const user = this.room(roomId).userList.find(
       (user) => user.userName === userName,
@@ -237,15 +249,6 @@ export class RoomsService {
         `[assignItem] ${userName} 사용자가 존재하지 않는 사용자임`,
       );
       throw new WsException('사용자가 존재하지 않습니다.');
-    }
-
-    const itemCount = Object.values(user.itemList).reduce(
-      (acc, cur) => acc + cur,
-      0,
-    );
-
-    if (itemCount >= MAX_ITEM_CAPACITY) {
-      return null;
     }
 
     const item = this.randomItem();
@@ -272,7 +275,7 @@ export class RoomsService {
     this.changeRoomState(roomId, ROOM_STATE.WAITING);
   }
 
-  gameInit(roomId: string) {
+  async gameInit(roomId: string) {
     this.room(roomId).userList.forEach((user) => {
       user.passed = false;
       user.ready = false;

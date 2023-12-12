@@ -15,7 +15,6 @@ import { ProblemsService } from 'src/problems/problems.service';
 import {
   ITEM_CREATE_CYCLE as CREATE_ITEM_CYCLE,
   DEFAULT_RANKING,
-  EVENT,
   ITEM_DELAY,
   LOBBY_ID,
   NUM_OF_ROUNDS,
@@ -23,7 +22,6 @@ import {
   WS_STATUS,
   TIME_LIMIT,
 } from './rooms.constants';
-import { RoomsInputDto } from './dtos/rooms.input.dto';
 import RoomsInviteDto from './dtos/rooms.invite.dto';
 import { plainToClass } from 'class-transformer';
 import { RoomsUserDto } from './dtos/rooms.user.dto';
@@ -99,26 +97,31 @@ export class RoomsGateway {
       return;
     }
 
-    const { roomId } = socket.data;
-    const { name: userName } = socket.data.user;
+    try {
+      const { roomId } = socket.data;
+      const { name: userName } = socket.data.user;
 
-    this.roomsService.deleteSocket(userName);
+      this.roomsService.deleteSocket(userName);
 
-    if (this.roomsService.roomExists(roomId)) {
-      this.roomsService.exitRoom(roomId, userName);
-    }
-
-    if (roomId === LOBBY_ID) {
-      this.io.in(roomId).emit('user_exit_lobby', { userName });
-    } else {
       if (this.roomsService.roomExists(roomId)) {
-        this.io.in(roomId).emit('user_exit_room', { userName });
-      } else {
-        this.io.in(LOBBY_ID).emit('delete_room', { roomId });
+        this.roomsService.exitRoom(roomId, userName);
       }
-    }
 
-    this.logger.log(`[handleDisconnect] ${userName} disconnected`);
+      if (roomId === LOBBY_ID) {
+        this.io.in(roomId).emit('user_exit_lobby', { userName });
+      } else {
+        if (this.roomsService.roomExists(roomId)) {
+          this.io.in(roomId).emit('user_exit_room', { userName });
+        } else {
+          this.io.in(LOBBY_ID).emit('delete_room', { roomId });
+        }
+      }
+
+      this.logger.log(`[handleDisconnect] ${userName} disconnected`);
+    } catch (e) {
+      this.logger.error(e);
+      socket.emit('error', e.message);
+    }
   }
 
   @SubscribeMessage('lobby_info')
@@ -127,8 +130,11 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('room_info')
-  roomInfo(@MessageBody() data: RoomsInputDto) {
-    return this.roomsService.roomInfo(data.roomId);
+  roomInfo(@MessageBody() data) {
+    const roomInfo = this.roomsService.roomInfo(data.roomId);
+
+    this.logger.log(`[roomInfo] ${data.userName} requested room info`);
+    return roomInfo;
   }
 
   @SubscribeMessage('enter_lobby')
@@ -259,9 +265,10 @@ export class RoomsGateway {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const ready = this.roomsService.switchReady(roomId, userName);
+    const userCount = this.roomsService.roomUserCount(roomId);
 
     this.io.in(roomId).emit('ready', { userName, ready });
-    if (this.roomsService.allUserReady(roomId)) {
+    if (userCount > 1 && this.roomsService.allUserReady(roomId)) {
       await this.start(roomId);
     }
 
@@ -373,10 +380,7 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage('invite')
-  invite(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: RoomsInputDto,
-  ) {
+  invite(@ConnectedSocket() client: Socket, @MessageBody() data) {
     const { roomId } = client.data;
     const { name: userName } = client.data.user;
     const { roomName } = this.roomsService.roomInfo(roomId);
@@ -398,20 +402,19 @@ export class RoomsGateway {
     return { status: WS_STATUS.SUCCESS };
   }
 
-  private createItem(roomId: string) {
-    const activeUserList = this.roomsService
-      .room(roomId)
-      .userList.filter((user) => !user.passed)
-      .map((user) => user.userName);
+  private async createItem(roomId: string) {
+    const activeUserList = this.roomsService.canRecieveUserList(roomId);
 
-    activeUserList.forEach((userName) => {
-      const socket = this.roomsService.socket(userName);
-      const item = this.roomsService.assignItem(roomId, userName);
+    await Promise.all(
+      activeUserList.map(async (userName) => {
+        const socket = this.roomsService.socket(userName);
+        const item = this.roomsService.assignItem(roomId, userName);
 
-      this.logger.log(`[createItem] Item created for ${userName}`);
-      this.io.to(socket.id).emit('create_item', { item });
-      this.logger.log(`[createItem] Item sent to ${userName}`);
-    });
+        this.logger.log(`[createItem] Item created for ${userName}`);
+        this.io.to(socket.id).emit('create_item', { item });
+        this.logger.log(`[createItem] Item sent to ${userName}`);
+      }),
+    );
   }
 
   private async start(roomId: string) {
@@ -422,13 +425,13 @@ export class RoomsGateway {
     });
 
     await Promise.all(promises);
-    this.roomsService.gameInit(roomId);
+    await this.roomsService.gameInit(roomId);
     this.io.in(roomId).emit('start', { problems });
-    setTimeout(() => {
-      this.createItem(roomId);
+    setTimeout(async () => {
+      await this.createItem(roomId);
 
-      const itemCreator = setInterval(() => {
-        this.createItem(roomId);
+      const itemCreator = setInterval(async () => {
+        await this.createItem(roomId);
       }, CREATE_ITEM_CYCLE);
 
       this.roomsService.setItemCreator(roomId, itemCreator);
