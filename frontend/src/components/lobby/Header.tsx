@@ -5,6 +5,7 @@ import CreateRoomModal from "./CreateRoomModal";
 import { useLoginStore } from "../../store/useLogin";
 import { useSocketStore } from "../../store/useSocket";
 import UserInfoModal from "./UserInfoModal";
+import { useLobbyStore } from "../../store/useLobby";
 
 enum HeaderStatus {
   LOBBY = "lobby",
@@ -18,6 +19,7 @@ const LobbyHeader: React.FC = () => {
   const [selectedHeader, setSelectedHeader] = useState<HeaderStatus>(HeaderStatus.LOBBY);
   const { userName, setLogout } = useLoginStore();
   const { socket, setSocketClear } = useSocketStore();
+  const { inviteList } = useLobbyStore();
 
   const closeModal = () => {
     setSelectedHeader(HeaderStatus.LOBBY);
@@ -47,7 +49,7 @@ const LobbyHeader: React.FC = () => {
           onClick={() => setSelectedHeader(HeaderStatus.MYINFO)}
         />
         <Button
-          color={selectedHeader === HeaderStatus.NOTIFICATION ? "pink" : "skyblue"}
+          color={inviteList.length > 0 ? "yellow" : selectedHeader === HeaderStatus.NOTIFICATION ? "pink" : "skyblue"}
           title="알림"
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.NOTIFICATION)}

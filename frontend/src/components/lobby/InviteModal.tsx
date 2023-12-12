@@ -15,17 +15,21 @@ const InviteModal: React.FC<InviteModalProps> = ({ closeModal }) => {
   const { setRoomId } = useRoomStore();
   const { socket } = useSocketStore();
 
-  const handleErrorWrong = ({ status, message }: { status: string; message: string }) => {
+  const handleEnterRoomEvent = ({ status, message }: { status: string; message: string }) => {
     if (status === "error") {
       alert(message);
       navigate("/lobby");
+    }
+    if (status === "success") {
+      navigate("/room");
     }
   };
 
   const handleAccept = (roomId: string) => {
     setRoomId(roomId);
     setRemoveInvite(roomId);
-    socket?.emit("enter_room", { roomId }, handleErrorWrong);
+    closeModal();
+    socket?.emit("enter_room", { roomId }, handleEnterRoomEvent);
     navigate("/room");
   };
 

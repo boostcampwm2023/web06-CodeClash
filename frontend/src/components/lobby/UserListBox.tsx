@@ -5,12 +5,8 @@ import UserInfoModal from "./UserInfoModal";
 const LobbyUserListBox: React.FC = () => {
   const { userList } = useLobbyStore();
   const [targetUser, setTargetUser] = useState<string | null>(null);
-  const userListItems = userList.map(({ userName }, idx) => (
-    <button
-      onClick={() => setTargetUser(userName)}
-      className="text-[0.75rem] cursor-pointer text-start"
-      key={userName + String(idx)}
-    >
+  const userListItems = userList.map(({ userName }) => (
+    <button onClick={() => setTargetUser(userName)} className="text-[0.75rem] cursor-pointer text-start" key={userName}>
       {userName}
     </button>
   ));
