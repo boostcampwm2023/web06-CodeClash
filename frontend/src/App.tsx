@@ -10,21 +10,10 @@ import MusicPlayer from "./components/player/MusicPlayer";
 import { AnimatePresence } from "framer-motion";
 import { createBrowserHistory } from "history";
 import { useEffect } from "react";
-const history = createBrowserHistory();
+
 const App: React.FC = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    console.log("useEffect");
-    const unlisten = history.listen(his => {
-      console.log(his);
-      console.log(location);
-      if (his.action === "POP") {
-        history.push(location);
-      }
-    });
-    return unlisten;
-  }, [location]);
   return (
     <div className="bg-defaultPattern bg-cover w-screen h-screen">
       <MusicPlayer />
