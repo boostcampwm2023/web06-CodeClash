@@ -3,6 +3,7 @@ import { useLobbyStore } from "../../store/useLobby";
 import { useRoomStore } from "../../store/useRoom";
 import Button from "../common/Button";
 import Modal from "../common/Modal";
+import { useSocketStore } from "../../store/useSocket";
 
 interface InviteModalProps {
   closeModal: () => void;
@@ -12,9 +13,19 @@ const InviteModal: React.FC<InviteModalProps> = ({ closeModal }) => {
   const navigate = useNavigate();
   const { inviteList, setRemoveInvite } = useLobbyStore();
   const { setRoomId } = useRoomStore();
+  const { socket } = useSocketStore();
+
+  const handleErrorWrong = ({ status, message }: { status: string; message: string }) => {
+    if (status === "error") {
+      alert(message);
+      navigate("/lobby");
+    }
+  };
 
   const handleAccept = (roomId: string) => {
     setRoomId(roomId);
+    setRemoveInvite(roomId);
+    socket?.emit("enter_room", { roomId }, handleErrorWrong);
     navigate("/room");
   };
 

@@ -24,7 +24,7 @@ const LobbyRoomListItem: React.FC<LobbyRoomListItemProps> = ({
       disabled={state === "playing"}
     >
       <div className="skew-x-left flex flex-row items-center justify-between">
-        <div className="text-[0.75rem]">{roomName}</div>
+        <div className="text-[0.75rem]">{roomName.slice(0, 20)}</div>
         <div className="text-[0.75rem]">
           {userCount} / {capacity}
         </div>
@@ -53,6 +53,7 @@ const LobbyRoomListBox: React.FC = () => {
   };
 
   const compareState = (a: GameRoom, b: GameRoom) => {
+    if (a.state === b.state) return 0;
     if (a.state === "waiting") return -1;
     if (b.state === "waiting") return 1;
     return 0;
