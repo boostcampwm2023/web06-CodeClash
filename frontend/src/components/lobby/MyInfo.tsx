@@ -22,10 +22,12 @@ const LobbyMyInfo: React.FC = () => {
         setAvatar(res.default);
       });
 
-      getUserStat(userName).then(res => {
-        const { acceptCount, failCount, winCount, totalCount } = res;
-        setUserStat({ acceptCount, failCount, winCount, totalCount });
-      });
+      getUserStat(userName)
+        .then(res => {
+          const { acceptCount, failCount, winCount, totalCount } = res;
+          setUserStat({ acceptCount, failCount, winCount, totalCount });
+        })
+        .catch(e => console.error(e));
     }
   }, [userName]);
 

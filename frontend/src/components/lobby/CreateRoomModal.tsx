@@ -89,6 +89,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
         className="rounded py-1 px-2 text-black text-sm"
         placeholder="방 이름"
         onChange={(e: ChangeEvent<HTMLInputElement>) => (createRoomInput.current.roomName = e.target.value)}
+        maxLength={20}
       />
       <div className="flex">
         제한 인원
