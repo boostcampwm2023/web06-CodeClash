@@ -14,14 +14,14 @@ interface SocketAction {
 interface SocketStore extends SocketState, SocketAction {}
 
 const createSocket = (token: string) => {
-  return io(baseURL + "/rooms", {
+  return io("ws://codeclash.site/" + "/rooms", {
     path: "/api/rooms/",
     autoConnect: false,
     extraHeaders: {
       Authorization: `Bearer ${token}`,
     },
     reconnection: true,
-    transports: ["polling"],
+    transports: ["websocket", "polling"],
   });
 };
 
