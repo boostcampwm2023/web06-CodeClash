@@ -17,14 +17,20 @@ const RoomButtonBox: React.FC = () => {
   };
 
   const handleClickInvite = () => {
+    if (isStart) return;
     setModalOpened(true);
+  };
+
+  const handleExit = () => {
+    if (isStart) return;
+    navigate("/lobby");
   };
 
   return (
     <div className="grid grid-cols-3 gap-2 w-full">
       <Button onClick={handleClickReady} color="pink" title="READY!" subTitle="난투 시작" />
       <Button onClick={handleClickInvite} color="yellow" title="INVITE" subTitle="초대하기" />
-      <Button onClick={() => navigate("/lobby")} color="skyblue" title="EXIT" subTitle="나가기" />
+      <Button onClick={handleExit} color="skyblue" title="EXIT" subTitle="나가기" />
       {isModalOpened ? <InviteModal closeModal={() => setModalOpened(false)} /> : null}
     </div>
   );

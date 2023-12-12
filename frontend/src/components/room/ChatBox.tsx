@@ -97,6 +97,7 @@ const RoomChatBox: React.FC = () => {
             className="bg-gray-500 m-2 px-3 p-1 mb-2 rounded-md box-content"
             placeholder="내용을 입력하세요"
             value={chatMessage}
+            maxLength={200}
             onChange={e => setChatMessage(e.target.value)}
             onKeyUp={e => e.key === "Enter" && handleSendChat()}
           ></input>
