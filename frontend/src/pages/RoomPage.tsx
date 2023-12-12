@@ -25,6 +25,7 @@ const RoomPage: React.FC = () => {
     setChangeUserReady,
     setProblemList,
     setRoomInfo,
+    clearRoomInfo,
   } = useRoomStore();
 
   const handleUserEnterRoom = ({ userName }: { userName: string }) => {
@@ -102,6 +103,10 @@ const RoomPage: React.FC = () => {
       }
     };
   }, []);
+
+  if (!userList) {
+    return <div>로딩중...</div>;
+  }
 
   const emptyList = new Array(capacity - userList.length < 0 ? 0 : capacity - userList.length).fill({
     isHost: false,
