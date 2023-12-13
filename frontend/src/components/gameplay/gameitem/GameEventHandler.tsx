@@ -126,22 +126,6 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   }, [socket]);
 
   useEffect(() => {
-    const keyDownHandler = ({ key }: KeyboardEvent) => {
-      if (key === "Alt") {
-        setGameItems(gameitems => {
-          if (gameitems.length === 0 || !socket) return gameitems;
-          socket.emit("item", { roomId, item: gameitems[0].type });
-          return gameitems.slice(1);
-        });
-      }
-    };
-    document.addEventListener("keydown", keyDownHandler);
-    return () => {
-      document.removeEventListener("keydown", keyDownHandler);
-    };
-  }, [socket]);
-
-  useEffect(() => {
     socket?.on("game_over", handleGameover);
     socket?.on("countdown", handleCountdown);
     socket?.on("create_item", handleCreateItem);
@@ -176,6 +160,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
         handleGradeSubmit={() => handleSubmit(false)}
         handleExampleSubmit={() => handleSubmit(true)}
         items={gameItems}
+        setGameItems={setGameItems}
       />
       {gameEventState.isScreenBlock && <ScreenBlock />}
       {gameEventState.isEyeStolen && <EyeStolen />}
