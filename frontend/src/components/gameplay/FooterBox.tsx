@@ -31,8 +31,8 @@ const GameFooterBox: React.FC<GameFooterBoxProps> = ({
     <footer className="absolute right-0 bottom-0">
       <div className="absolute h-full w-full bg-black rounded-tl-md skew-x-left -left-2 z-0"></div>
       <div className="relative bg-black px-2 py-1 flex flex-row text-[24px] gap-12 z-10">
-        <div className="flex flex-row " id="gameItemBox">
-          <GameItemButton item={items[0]} className="mr-1" onClick={handleGameItemUse(0)} />
+        <div className="flex flex-row gap-1" id="gameItemBox">
+          <GameItemButton item={items[0]} onClick={handleGameItemUse(0)} />
           <GameItemButton item={items[1]} onClick={handleGameItemUse(1)} />
           <div className="ml-1 text-[10px] text-[#AAAAAA] flex flex-col items-start justify-end">
             <p>아이콘을 눌러</p>
