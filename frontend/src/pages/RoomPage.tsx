@@ -126,7 +126,7 @@ const RoomPage: React.FC = () => {
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 grid-rows-2">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox />
-        <RoomButtonBox />
+        <RoomButtonBox isGameStart={animation} />
       </div>
     </SlidePage>
   );
