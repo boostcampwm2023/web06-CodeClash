@@ -7,7 +7,7 @@ interface IGameItemState {
   isCrazyMusic: boolean;
   isReverseLanguage: boolean;
   isEyeStolen: boolean;
-  undo: boolean;
+  undo: number;
   isInputDelay: boolean;
   fontSize: number;
 }
@@ -19,7 +19,7 @@ export const initialGameItemState: IGameItemState = {
   isCrazyMusic: false,
   isReverseLanguage: false,
   isEyeStolen: false,
-  undo: false,
+  undo: 0,
   isInputDelay: false,
   fontSize: 16,
 };
@@ -66,7 +66,7 @@ export const gameItemReducer = (
     case GameItemType.UNDO:
       return {
         ...state,
-        undo: action.act === "on",
+        undo: action.act === "on" ? state.undo + 1 : state.undo,
       };
     case GameItemType.DELAYINPUT:
       return {

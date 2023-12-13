@@ -1,5 +1,6 @@
 import { engToKor, korToEng } from "korsearch";
 import { GameItemType } from "./gameItemType";
+import { useMonaco } from "@monaco-editor/react";
 
 export const gameItemHandler = (
   setCode: React.Dispatch<React.SetStateAction<string>>,
@@ -205,7 +206,6 @@ const undo = (
   }>,
 ) => {
   dispatch({ type: GameItemType.UNDO, act: "on" });
-  dispatch({ type: GameItemType.UNDO, act: "off" });
 };
 
 const delayInput = (

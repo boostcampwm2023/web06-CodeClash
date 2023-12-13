@@ -33,7 +33,7 @@ interface CodeEditorProps {
     fontSize?: number;
     isReverseLanguage?: boolean;
     isTypeRandom?: boolean;
-    undo?: boolean;
+    undo?: number;
     isInputDelay?: boolean;
   };
   initialCode: string;
@@ -77,11 +77,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
 
   useEffect(() => {
     const handleInputDelay = (e: IKeyboardEvent) => {
-      console.log(e);
       if (isInputValue(e.browserEvent.keyCode) && options?.isInputDelay && e.browserEvent.key !== "Process") {
         e.preventDefault();
         e.stopPropagation();
-        console.log(e.browserEvent.key);
         setTimeout(() => {
           editorRef.current?.trigger("keyboard", "type", { text: e.browserEvent.key });
         }, 1000);
@@ -94,13 +92,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
   }, [options?.isInputDelay]);
 
   useEffect(() => {
-    if (options?.undo) {
-      Array(5)
-        .fill(0)
-        .forEach(() => {
-          editorRef.current?.trigger("keyboard", "undo", null);
-        });
-    }
+    Array(6)
+      .fill(0)
+      .forEach(() => {
+        editorRef.current?.trigger("keyboard", "undo", null);
+      });
   }, [options?.undo]);
 
   useEffect(() => {
