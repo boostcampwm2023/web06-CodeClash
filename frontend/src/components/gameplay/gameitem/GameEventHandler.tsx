@@ -15,7 +15,7 @@ import { useLoginStore } from "../../../store/useLogin";
 import Modal from "../../common/Modal";
 import GameTimer from "../ProblemIdx";
 import { useNavigate } from "react-router-dom";
-import { useToastStore } from "../../../store/useToast";
+import { toast } from "../../common/Toast";
 
 interface GameEventHandlerProps {
   problemInfo: ProblemType;
@@ -40,8 +40,6 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
   const navigate = useNavigate();
 
-  const { toast } = useToastStore();
-
   const handleSubmit = (isExample: boolean) => {
     if (isLoading) {
       setModalState({
@@ -63,7 +61,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
 
     socket?.emit("submission", { id: problemInfo.id, code, isExample }, (res: any) => {
       if (res?.message) {
-        alert(res?.message);
+        toast(res?.message);
         return;
       }
 

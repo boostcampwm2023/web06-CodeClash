@@ -10,10 +10,6 @@ interface CreateRoomModalProps {
   closeModal: () => void;
 }
 
-interface IUserCreateRoomResponse extends GameRoom {
-  userName: string;
-}
-
 export interface ICreateRoomResponse extends GameRoom {
   status: "success" | "error";
   userList: UserInfo[];
@@ -27,7 +23,6 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ closeModal }) => {
   const { socket } = useSocketStore();
   const { setRoomId } = useRoomStore();
   const [selectedRadio, setSelectedRadio] = useState(DEFAULT_CAPACITY);
-
   const navigate = useNavigate();
   const createRoomInput = useRef({
     roomName: "",
