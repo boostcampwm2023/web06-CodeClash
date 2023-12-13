@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useRoomStore } from "../../store/useRoom";
 import { GameRoom, useLobbyStore } from "../../store/useLobby";
 import { useSocketStore } from "../../store/useSocket";
+import { toast } from "../common/Toast/Toast";
 
 interface LobbyRoomListItemProps extends GameRoom {
   onClick: () => void;
