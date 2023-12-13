@@ -30,6 +30,7 @@ const GamePlayBox: React.FC<GamePlayBoxProps> = ({ problemInfo }) => {
         style={{
           width: `${problemBoxWidth}%`,
         }}
+        id="gameProblemBox"
       >
         <GameDefaultBox>
           <MarkdownPreview source={problemInfo?.description} className=" rounded-sm w-full h-full" />
@@ -47,6 +48,7 @@ const GamePlayBox: React.FC<GamePlayBoxProps> = ({ problemInfo }) => {
           style={{
             height: `${codeBoxHeight}%`,
           }}
+          id="gameCodeBox"
         >
           <GameDefaultBox>
             <GameEventHandler problemInfo={problemInfo} code={code} setCode={setCode} setResult={setResult} />
@@ -57,6 +59,7 @@ const GamePlayBox: React.FC<GamePlayBoxProps> = ({ problemInfo }) => {
           style={{
             height: `${100 - codeBoxHeight}%`,
           }}
+          id="gameResultBox"
         >
           <GameDefaultBox className="whitespace-pre-line">{result}</GameDefaultBox>
         </div>
