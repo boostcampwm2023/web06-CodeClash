@@ -21,7 +21,7 @@ const useToastStore = create<ToastStore>((set, get) => ({
       const newMessageList = state.messageList.concat(node);
       setTimeout(() => {
         get().removeToast(node);
-      }, 3000);
+      }, 4000);
       return { messageList: newMessageList };
     }),
 }));

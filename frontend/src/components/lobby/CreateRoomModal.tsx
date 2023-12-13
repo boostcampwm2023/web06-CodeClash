@@ -5,6 +5,7 @@ import { useSocketStore } from "../../store/useSocket";
 import { GameRoom } from "../../store/useLobby";
 import { UserInfo, useRoomStore } from "../../store/useRoom";
 import { useNavigate } from "react-router";
+import { toast } from "../common/Toast";
 
 interface CreateRoomModalProps {
   closeModal: () => void;
