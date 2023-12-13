@@ -8,7 +8,7 @@ import ProtectRoute from "./components/protectroute/ProtectRoute";
 import SocketProvider from "./components/SocketProvider";
 import MusicPlayer from "./components/player/MusicPlayer";
 import { AnimatePresence } from "framer-motion";
-import Toast from "./components/common/Toast";
+import Toast from "./components/common/Toast/Toast";
 
 const App: React.FC = () => {
   const location = useLocation();

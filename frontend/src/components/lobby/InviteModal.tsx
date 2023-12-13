@@ -4,7 +4,7 @@ import { useRoomStore } from "../../store/useRoom";
 import Button from "../common/Button";
 import Modal from "../common/Modal";
 import { useSocketStore } from "../../store/useSocket";
-import { toast } from "../common/Toast";
+import { toast } from "../common/Toast/Toast";
 
 interface InviteModalProps {
   closeModal: () => void;

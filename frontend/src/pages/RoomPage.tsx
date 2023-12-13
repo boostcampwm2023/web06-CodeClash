@@ -9,7 +9,7 @@ import SlidePage from "../components/common/SlidePage";
 import { useRoomStore } from "../store/useRoom";
 import { ProblemType } from "../components/gameplay/problemType";
 import { ICreateRoomResponse } from "../components/lobby/CreateRoomModal";
-import { toast } from "../components/common/Toast";
+import { toast } from "../components/common/Toast/Toast";
 
 const RoomPage: React.FC = () => {
   const navigate = useNavigate();

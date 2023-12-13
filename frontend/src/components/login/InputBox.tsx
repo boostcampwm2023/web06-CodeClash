@@ -4,7 +4,7 @@ import { useLoginStore } from "../../store/useLogin";
 import Modal from "../common/Modal";
 import Button from "../common/Button";
 import { useNavigate } from "react-router-dom";
-import { toast } from "../common/Toast";
+import { toast } from "../common/Toast/Toast";
 
 const LoginInputBox: React.FC = () => {
   const { isLogin, setLoginInitial: setLogin } = useLoginStore();

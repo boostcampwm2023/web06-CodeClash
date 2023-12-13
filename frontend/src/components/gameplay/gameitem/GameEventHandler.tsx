@@ -15,7 +15,7 @@ import { useLoginStore } from "../../../store/useLogin";
 import Modal from "../../common/Modal";
 import GameTimer from "../ProblemIdx";
 import { useNavigate } from "react-router-dom";
-import { toast } from "../../common/Toast";
+import { toast } from "../../common/Toast/Toast";
 
 interface GameEventHandlerProps {
   problemInfo: ProblemType;
