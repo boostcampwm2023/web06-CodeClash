@@ -110,6 +110,8 @@
 
 # ⚙️ 기술 스택
 
+> 기술 스택 선정에 관한 자세한 내용은 프로젝트 위키에 상세히 쓰여져 있습니다.
+
 ## FE
 
 ![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/8690cd01-24cf-48cb-a5df-22a3d00d6c71)
@@ -117,8 +119,6 @@
 ## BE
 
 ![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/c3f9cf7a-4b00-4eaa-8827-1d3d5d054576)
-
-> 기술 스택 선정에 관한 자세한 내용은 프로젝트 위키에 상세히 쓰여져 있습니다.
 
 # ⚒️ 아키텍쳐 구조
 
