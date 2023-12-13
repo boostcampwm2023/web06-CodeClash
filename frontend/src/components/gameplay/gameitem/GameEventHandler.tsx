@@ -148,11 +148,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
       <CodeEditor
         editorCode={code}
         setEditorCode={setCode}
-        options={{
-          isReverse: gameEventState.isReverseLanguage,
-          fontSize: gameEventState.fontSize,
-          isTypeRandom: gameEventState.isTypeRandom,
-        }}
+        options={gameEventState}
         initialCode={problemInfo?.sampleCode ?? ""}
       />
       <BarEffect isStart={isSolved} content="통과!" subContent="다른 유저가 완료할때까지 기다려주세요." />

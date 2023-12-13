@@ -31,8 +31,10 @@ interface CodeEditorProps {
   setEditorCode: React.Dispatch<React.SetStateAction<string>>;
   options?: {
     fontSize?: number;
-    isReverse?: boolean;
+    isReverseLanguage?: boolean;
     isTypeRandom?: boolean;
+    undo?: boolean;
+    isInputDelay?: boolean;
   };
   initialCode: string;
 }
@@ -74,9 +76,37 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
   const currentPosRef = useRef<monaco.Position | null>();
 
   useEffect(() => {
+    const handleInputDelay = (e: IKeyboardEvent) => {
+      console.log(e);
+      if (isInputValue(e.browserEvent.keyCode) && options?.isInputDelay && e.browserEvent.key !== "Process") {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(e.browserEvent.key);
+        setTimeout(() => {
+          editorRef.current?.trigger("keyboard", "type", { text: e.browserEvent.key });
+        }, 1000);
+      }
+    };
+    const disposable = editorRef.current?.onKeyDown(handleInputDelay);
+    return () => {
+      disposable?.dispose();
+    };
+  }, [options?.isInputDelay]);
+
+  useEffect(() => {
+    if (options?.undo) {
+      Array(5)
+        .fill(0)
+        .forEach(() => {
+          editorRef.current?.trigger("keyboard", "undo", null);
+        });
+    }
+  }, [options?.undo]);
+
+  useEffect(() => {
     const randomKeydownHandler = (e: IKeyboardEvent) => {
-      if (isInputValue(e.browserEvent.keyCode) && options?.isTypeRandom) {
-        const randomCode = Math.floor(Math.random() * 2);
+      if (isInputValue(e.browserEvent.keyCode) && options?.isTypeRandom && e.browserEvent.key !== "Process") {
+        const randomCode = Math.floor(Math.random() * 4);
         if (!randomCode) {
           e.preventDefault();
           e.stopPropagation();
@@ -93,7 +123,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ editorCode, setEditorCode, opti
   }, [options?.isTypeRandom]);
 
   const editorChangeHandler = (value?: string) => {
-    if (!options?.isReverse) {
+    if (!options?.isReverseLanguage) {
       setEditorCode(value ?? "");
     } else {
       currentPosRef.current = editorRef.current?.getPosition();
