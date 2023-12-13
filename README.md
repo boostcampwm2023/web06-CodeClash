@@ -9,6 +9,13 @@
 >
 > 지금 바로 [@code clash](https://codeclash.site)에 접속하시고 게임을 즐기세요!
 
+# 👨‍👩‍👧‍👦 팀원 소개
+
+| J091\_이근성                                                 | J096\_이동하                                                  | J152\_지현배                                                 | J167\_현찬우                                                 |
+| ------------------------------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![img](https://avatars.githubusercontent.com/u/79559361?v=4) | ![img](https://avatars.githubusercontent.com/u/111179843?v=4) | ![img](https://avatars.githubusercontent.com/u/43944581?v=4) | ![img](https://avatars.githubusercontent.com/u/77053595?v=4) |
+| [@Geun Seong Lee](https://github.com/LEEGURTS)               | [@movingsummer](https://github.com/movingsummer)              | [@ruok](https://github.com/ruokic)                           | [@ChanWoo Hyun](https://github.com/h9661)                    |
+
 # 링크
 
 ## 📺 Demo
@@ -41,25 +48,25 @@
 # ⚒️ 주요 기능
 
 > 로그인과 로비 접속
-> ![bandicam 2023-12-12 20-20-01-282 (1)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/c5b430d1-a375-4760-a38f-8f10586003d5)
+![bandicam 2023-12-12 20-20-01-282 (1)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/c5b430d1-a375-4760-a38f-8f10586003d5)
 
 > 방 입장
-> ![bandicam 2023-12-12 20-20-01-282 (2)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/4e3145a6-c656-4fd6-be80-82c201c348cd)
+![bandicam 2023-12-12 20-20-01-282 (2)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/4e3145a6-c656-4fd6-be80-82c201c348cd)
 
 > 채팅
-> ![bandicam 2023-12-12 20-20-01-282 (3)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ce30dc2c-2f23-4238-b61e-039fb8cc1c18)
+![bandicam 2023-12-12 20-20-01-282 (3)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ce30dc2c-2f23-4238-b61e-039fb8cc1c18)
 
 > 게임 시작
-> ![bandicam 2023-12-12 20-20-01-282 (4)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/8a6db8fc-5733-447b-b9c6-44bcd87a102e)
+![bandicam 2023-12-12 20-20-01-282 (4)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/8a6db8fc-5733-447b-b9c6-44bcd87a102e)
 
 > 코드 작성
-> ![bandicam 2023-12-12 20-20-01-282 (5)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/dd791286-964c-4647-84a2-79e39f57f2eb)
+![bandicam 2023-12-12 20-20-01-282 (5)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/dd791286-964c-4647-84a2-79e39f57f2eb)
 
 > 제출 및 실행
-> ![bandicam 2023-12-12 20-20-01-282 (6)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/bf5b1d33-32a6-4a08-b3ba-2f4ca1ecc68a)
+![bandicam 2023-12-12 20-20-01-282 (6)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/bf5b1d33-32a6-4a08-b3ba-2f4ca1ecc68a)
 
 > 게임 마무리 및 결과
-> ![bandicam 2023-12-12 20-20-01-282 (7)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/abccb269-8b4f-4d9f-bfab-c0dfcf14653c)
+![bandicam 2023-12-12 20-20-01-282 (7)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/abccb269-8b4f-4d9f-bfab-c0dfcf14653c)
 
 # 🔥 기술적 도전
 
@@ -111,13 +118,8 @@
 
 ![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/c3f9cf7a-4b00-4eaa-8827-1d3d5d054576)
 
+> 기술 스택 선정에 관한 자세한 내용은 프로젝트 위키에 상세히 쓰여져 있습니다.
+
 # ⚒️ 아키텍쳐 구조
 
 ![image](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/349024e7-af56-4741-a015-03a441bbe8f5)
-
-# 👨‍👩‍👧‍👦 팀원 소개
-
-| J091\_이근성                                                 | J096\_이동하                                                  | J152\_지현배                                                 | J167\_현찬우                                                 |
-| ------------------------------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![img](https://avatars.githubusercontent.com/u/79559361?v=4) | ![img](https://avatars.githubusercontent.com/u/111179843?v=4) | ![img](https://avatars.githubusercontent.com/u/43944581?v=4) | ![img](https://avatars.githubusercontent.com/u/77053595?v=4) |
-| [@Geun Seong Lee](https://github.com/LEEGURTS)               | [@movingsummer](https://github.com/movingsummer)              | [@ruok](https://github.com/ruokic)                           | [@ChanWoo Hyun](https://github.com/h9661)                    |
