@@ -15,6 +15,7 @@ import { useLoginStore } from "../../../store/useLogin";
 import Modal from "../../common/Modal";
 import GameTimer from "../ProblemIdx";
 import { useNavigate } from "react-router-dom";
+import { useToastStore } from "../../../store/useToast";
 
 interface GameEventHandlerProps {
   problemInfo: ProblemType;
@@ -29,7 +30,6 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   const [isSolved, setIsSolved] = useState(false);
   const [isCountdown, setIsCountdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { userName } = useLoginStore();
   const { socket } = useSocketStore();
   const { roomId, userList } = useRoomStore();
   const [modalState, setModalState] = useState({
@@ -39,6 +39,8 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   });
   const handleGameEvent = gameItemHandler(setCode, disPatchEventState, userList.length);
   const navigate = useNavigate();
+
+  const { toast } = useToastStore();
 
   const handleSubmit = (isExample: boolean) => {
     if (isLoading) {
@@ -95,6 +97,7 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   };
 
   const handleCountdown = () => {
+    toast("카운트다운이 시작되었습니다!");
     setIsCountdown(true);
   };
 
@@ -112,11 +115,12 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   }, [gameEventState.isReverseLanguage]);
 
   useEffect(() => {
-    const gameItemHandler = (data: { item: GameItemType; userName: string }) => {
+    const handleGameItem = (data: { item: GameItemType; userName: string }) => {
+      toast(`${data.userName}님이 ${gameItemTypes[data.item].name}을(를) 사용했습니다.`);
       handleGameEvent(data.item);
     };
 
-    socket?.on("item", gameItemHandler);
+    socket?.on("item", handleGameItem);
 
     return () => {
       socket?.off("item");
@@ -142,13 +146,11 @@ const GameEventHandler: React.FC<GameEventHandlerProps> = ({ problemInfo, code, 
   useEffect(() => {
     socket?.on("game_over", handleGameover);
     socket?.on("countdown", handleCountdown);
-    socket?.on("item", gameItemHandler);
     socket?.on("create_item", handleCreateItem);
 
     return () => {
       socket?.off("game_over");
       socket?.off("countdown");
-      socket?.off("item");
       socket?.off("create_item");
     };
   }, [socket]);

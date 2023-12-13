@@ -1,24 +1,25 @@
+import { ReactNode } from "react";
 import { create } from "zustand";
 
 interface ToastState {
-  messageList: string[];
+  messageList: ReactNode[];
 }
 
 interface ToastAction {
-  removeToast: (message: string) => void;
-  toast: (message: string) => void;
+  removeToast: (node: ReactNode) => void;
+  toast: (node: ReactNode) => void;
 }
 
 interface ToastStore extends ToastState, ToastAction {}
 
 export const useToastStore = create<ToastStore>((set, get) => ({
   messageList: [],
-  removeToast: message => set(state => ({ messageList: state.messageList.filter(msg => msg !== message) })),
-  toast: message =>
+  removeToast: node => set(state => ({ messageList: state.messageList.filter(msg => msg !== node) })),
+  toast: node =>
     set(state => {
-      const newMessageList = state.messageList.concat(message);
+      const newMessageList = state.messageList.concat(node);
       setTimeout(() => {
-        get().removeToast(message);
+        get().removeToast(node);
       }, 3000);
       return { messageList: newMessageList };
     }),

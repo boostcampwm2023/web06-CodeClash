@@ -6,6 +6,7 @@ import { useLoginStore } from "../../store/useLogin";
 import { useSocketStore } from "../../store/useSocket";
 import UserInfoModal from "./UserInfoModal";
 import { useLobbyStore } from "../../store/useLobby";
+import { motion } from "framer-motion";
 
 enum HeaderStatus {
   LOBBY = "lobby",
@@ -48,12 +49,19 @@ const LobbyHeader: React.FC = () => {
           className="border-[3px] py-[0.25rem] px-[0.5rem]"
           onClick={() => setSelectedHeader(HeaderStatus.MYINFO)}
         />
-        <Button
-          color={inviteList.length > 0 ? "yellow" : selectedHeader === HeaderStatus.NOTIFICATION ? "pink" : "skyblue"}
-          title="알림"
-          className="border-[3px] py-[0.25rem] px-[0.5rem]"
-          onClick={() => setSelectedHeader(HeaderStatus.NOTIFICATION)}
-        />
+        <div className="relative">
+          {inviteList.length > 0 && (
+            <motion.div className="absolute -top-2 -left-2 bg-pink text-white text-[0.75rem] w-[30%] aspect-square flex items-center justify-center rounded-full border-2 border-white">
+              {inviteList.length}
+            </motion.div>
+          )}
+          <Button
+            color={inviteList.length > 0 ? "yellow" : selectedHeader === HeaderStatus.NOTIFICATION ? "pink" : "skyblue"}
+            title="알림"
+            className="border-[3px] py-[0.25rem] px-[0.5rem]"
+            onClick={() => setSelectedHeader(HeaderStatus.NOTIFICATION)}
+          />
+        </div>
         <Button
           color={selectedHeader === HeaderStatus.ROOM ? "pink" : "skyblue"}
           title="방 생성"
