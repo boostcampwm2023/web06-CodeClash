@@ -48,25 +48,25 @@
 # ⚒️ 주요 기능
 
 > 로그인과 로비 접속
-![bandicam 2023-12-12 20-20-01-282 (1)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/c5b430d1-a375-4760-a38f-8f10586003d5)
+> ![bandicam 2023-12-12 20-20-01-282 (1)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/c5b430d1-a375-4760-a38f-8f10586003d5)
 
 > 방 입장
-![bandicam 2023-12-12 20-20-01-282 (2)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/4e3145a6-c656-4fd6-be80-82c201c348cd)
+> ![bandicam 2023-12-12 20-20-01-282 (2)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/4e3145a6-c656-4fd6-be80-82c201c348cd)
 
 > 채팅
-![bandicam 2023-12-12 20-20-01-282 (3)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ce30dc2c-2f23-4238-b61e-039fb8cc1c18)
+> ![bandicam 2023-12-12 20-20-01-282 (3)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/ce30dc2c-2f23-4238-b61e-039fb8cc1c18)
 
 > 게임 시작
-![bandicam 2023-12-12 20-20-01-282 (4)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/8a6db8fc-5733-447b-b9c6-44bcd87a102e)
+> ![bandicam 2023-12-12 20-20-01-282 (4)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/8a6db8fc-5733-447b-b9c6-44bcd87a102e)
 
 > 코드 작성
-![bandicam 2023-12-12 20-20-01-282 (5)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/dd791286-964c-4647-84a2-79e39f57f2eb)
+> ![bandicam 2023-12-12 20-20-01-282 (5)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/dd791286-964c-4647-84a2-79e39f57f2eb)
 
 > 제출 및 실행
-![bandicam 2023-12-12 20-20-01-282 (6)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/bf5b1d33-32a6-4a08-b3ba-2f4ca1ecc68a)
+> ![bandicam 2023-12-12 20-20-01-282 (6)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/bf5b1d33-32a6-4a08-b3ba-2f4ca1ecc68a)
 
 > 게임 마무리 및 결과
-![bandicam 2023-12-12 20-20-01-282 (7)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/abccb269-8b4f-4d9f-bfab-c0dfcf14653c)
+> ![bandicam 2023-12-12 20-20-01-282 (7)](https://github.com/boostcampwm2023/web06-CodeClash/assets/77053595/abccb269-8b4f-4d9f-bfab-c0dfcf14653c)
 
 # 🔥 기술적 도전
 
@@ -75,13 +75,11 @@
 > 저희 백엔드는 모든 인원이 팀 프로젝트가 처음입니다. 또한 저희는 프로젝트 동안 사용한 기술들을 대부분 처음 접해봤습니다.
 > 모든 상황이 도전인 백엔드는 어려움도 많고 난황도 많았지만, 학습 + 성장 + 기술적 도전등, 세마리의 토끼를 모두 잡을 수 있었습니다.
 
-### ⏺ 채점 서버 구현
+### ⏺ [채점 서버 구현](https://github.com/boostcampwm2023/web06-CodeClash/wiki/scoring-server-%EA%B8%B0%EB%A1%9D)
 
 -   채점 서버는 클라이언트가 제출한 코드를 실행해야만 합니다. 어떻게 제출한 코드의 악의적인 시스템콜을 막을 수 있을지 굉장히 많이 고민하였습니다.
 -   어떻게하면 한정된 자원으로 빠르게 채점하여 결과를 응답할 수 있을지 고민하였습니다.
 
-> 자세한 내용은 이 문서를 참조해주세요! [채점 서버 생존 일지](https://github.com/boostcampwm2023/web06-CodeClash/wiki/scoring-server-%EA%B8%B0%EB%A1%9D)
- 
 ### ⏺ 웹소켓 통신
 
 -   웹 게임의 특성상 사용자가 브라우저를 갑자기 꺼 버리거나, 새로고침을 하는 등 돌발 상황이 많습니다. 그런 예외 상황들을 잘 처리하는 것을 고민하였습니다.
@@ -91,12 +89,12 @@
 
 > 이번 프로젝트를 진행하면서 고민했던 것은 구현과 더불어 학습, 성장과의 조화입니다. 지금까지 구현에 치중되어 학습과 성장을 소홀히 했던 과거를 잊고 이번 프로젝트에서는 구현과 학습, 성장을 동시에 할 수 있도록 노력했습니다.
 
-### ⏺ 로그인 구현
+### ⏺ [로그인 구현](https://github.com/boostcampwm2023/web06-CodeClash/wiki/%EB%A1%9C%EA%B7%B8%EC%9D%B8%EC%97%90-%EA%B4%80%ED%95%98%EC%97%AC)
 
 -   JWT를 사용하여 로그인을 구현하였습니다. JWT의 단점으로 꼽히는 보안을 최대한 고려해봤습니다.
 -   어떻게 하면 JWT를 안전하게 관리할 수 있을지 고민하였습니다.
 
-### ⏺ 게임 플레이 환경 제공
+### ⏺ [게임 플레이 환경 제공](<https://github.com/boostcampwm2023/web06-CodeClash/wiki/%EC%95%84%EC%9D%B4%ED%85%9C%EC%9D%84-%EA%B4%80%EB%A6%AC%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95%EC%97%90-%EA%B4%80%ED%95%98%EC%97%AC(%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0%EC%A4%91)>)
 
 -   게임 플레이를 위해서는 아이템 처리, 코드 작성, 제출, 채점, 결과 표시 등 다양한 기능이 필요합니다. 이러한 기능들을 어떻게 구현할지 고민하였습니다.
 
@@ -105,7 +103,7 @@
 -   일반적인 REST API와는 다르게 웹소켓 통신은 백엔드와의 교류가 매우 많이 필요했습니다.
 -   백엔드와 실시간으로 소통하고 서로의 코드를 공유하며 소켓 이벤트를 관리했습니다.
 
-### ⏺ 공통 모달 컴포넌트 구현
+### ⏺ [공통 모달 컴포넌트 구현](https://github.com/boostcampwm2023/web06-CodeClash/wiki/%ED%8F%AC%ED%83%88%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EB%AA%A8%EB%8B%AC-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8-%EC%9E%91%EC%84%B1)
 
 -   여러 컴포넌트에서 사용하는 모달 컴포넌트를 재사용 가능한 공통 컴포넌트로 구현하였습니다.
 -   React의 Portal API를 이용하여 DOM 외부의 컴포넌트를 조작할 수 있도록 하였습니다.
