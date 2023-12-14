@@ -1,5 +1,6 @@
 import { engToKor, korToEng } from "korsearch";
 import { GameItemType } from "./gameItemType";
+import { useMonaco } from "@monaco-editor/react";
 
 export const gameItemHandler = (
   setCode: React.Dispatch<React.SetStateAction<string>>,
@@ -32,6 +33,12 @@ export const gameItemHandler = (
       case GameItemType.STOLEEYE:
         stealEye(dispatch, gamePlayerCount);
         break;
+      case GameItemType.UNDO:
+        undo(dispatch);
+        break;
+      case GameItemType.DELAYINPUT:
+        delayInput(dispatch, gamePlayerCount);
+        break;
       default:
         break;
     }
@@ -45,6 +52,7 @@ const timerID: {
   crazyMusic: ReturnType<typeof setTimeout> | number;
   reverseLanguage: ReturnType<typeof setTimeout> | number;
   stealEye: ReturnType<typeof setTimeout> | number;
+  delayInput: ReturnType<typeof setTimeout> | number;
 } = {
   screenBlock: 0,
   typeRandom: 0,
@@ -52,6 +60,7 @@ const timerID: {
   crazyMusic: 0,
   reverseLanguage: 0,
   stealEye: 0,
+  delayInput: 0,
 };
 
 const swapRandomLine = (setCode: React.Dispatch<React.SetStateAction<string>>, gamePlayerCount: number) => {
@@ -185,6 +194,33 @@ const stealEye = (
     () => {
       dispatch({ type: GameItemType.STOLEEYE, act: "off" });
       timerID.stealEye = 0;
+    },
+    (1000 * 15) / Math.log2(gamePlayerCount),
+  );
+};
+
+const undo = (
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+) => {
+  dispatch({ type: GameItemType.UNDO, act: "on" });
+};
+
+const delayInput = (
+  dispatch: React.Dispatch<{
+    type: GameItemType;
+    act: "on" | "off";
+  }>,
+  gamePlayerCount: number,
+) => {
+  dispatch({ type: GameItemType.DELAYINPUT, act: "on" });
+  timerID.delayInput && clearTimeout(timerID.delayInput);
+  setTimeout(
+    () => {
+      dispatch({ type: GameItemType.DELAYINPUT, act: "off" });
+      timerID.delayInput = 0;
     },
     (1000 * 15) / Math.log2(gamePlayerCount),
   );
