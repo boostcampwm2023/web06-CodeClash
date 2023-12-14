@@ -9,6 +9,7 @@ import SlidePage from "../components/common/SlidePage";
 import { useRoomStore } from "../store/useRoom";
 import { ProblemType } from "../components/gameplay/problemType";
 import { ICreateRoomResponse } from "../components/lobby/CreateRoomModal";
+import { toast } from "../components/common/Toast/Toast";
 
 const RoomPage: React.FC = () => {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ const RoomPage: React.FC = () => {
   };
 
   const handleKick = ({ userName }: { userName: string }) => {
-    alert(userName + "으로부터 강퇴당했습니다");
+    toast(userName + "으로부터 강퇴당했습니다");
     navigate("/lobby");
   };
 
@@ -126,7 +127,7 @@ const RoomPage: React.FC = () => {
       <div className="w-[65%] h-full grid grid-cols-3 gap-2 grid-rows-2">{users}</div>
       <div className="w-[35%] h-full flex flex-col items-center gap-3 ">
         <RoomChatBox />
-        <RoomButtonBox />
+        <RoomButtonBox isGameStart={animation} />
       </div>
     </SlidePage>
   );

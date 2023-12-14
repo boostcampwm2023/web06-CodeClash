@@ -48,7 +48,7 @@ export const gameItemTypes: IGameItem[] = [
   },
   {
     type: GameItemType.TINYCODE,
-    name: "작은코드",
+    name: "폰트 줄이기",
     description: "상대방의 코드를 작게 만듭니다.",
     icon: SmallWordSvg,
   },

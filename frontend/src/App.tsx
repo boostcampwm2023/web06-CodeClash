@@ -8,12 +8,13 @@ import ProtectRoute from "./components/protectroute/ProtectRoute";
 import SocketProvider from "./components/SocketProvider";
 import MusicPlayer from "./components/player/MusicPlayer";
 import { AnimatePresence } from "framer-motion";
+import Toast from "./components/common/Toast/Toast";
 
 const App: React.FC = () => {
   const location = useLocation();
-
   return (
     <div className="bg-defaultPattern bg-cover w-screen h-screen">
+      <Toast />
       <MusicPlayer />
       <AnimatePresence initial={false} mode="wait">
         <Routes location={location} key={location.pathname}>

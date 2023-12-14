@@ -4,6 +4,7 @@ import { useLoginStore } from "../../store/useLogin";
 import Modal from "../common/Modal";
 import Button from "../common/Button";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../common/Toast/Toast";
 
 const LoginInputBox: React.FC = () => {
   const { isLogin, setLoginInitial: setLogin } = useLoginStore();
@@ -72,7 +73,7 @@ const LoginInputBox: React.FC = () => {
         navigate("/lobby");
       })
       .catch(err => {
-        alert(err?.response?.data?.message ?? "회원가입에 실패했습니다.");
+        toast(err?.response?.data?.message ?? "회원가입에 실패했습니다.");
       });
   };
 
@@ -84,7 +85,7 @@ const LoginInputBox: React.FC = () => {
         navigate("/lobby");
       })
       .catch(err => {
-        alert("아이디/비밀번호를 확인해주세요.");
+        toast("아이디/비밀번호를 확인해주세요.");
       });
   };
 

@@ -29,7 +29,7 @@ const MusicPlayer: React.FC = () => {
       title={isPlaying ? "BGM 멈춤" : "BGM 재생"}
       color={isPlaying ? "pink" : "skyblue"}
       onClick={() => setIsPlaying(play => !play)}
-      className="absolute right-0 m-2 text-[0.5rem] px-[0.4rem] py-[0.4rem] border-[2px] rounded-md z-50"
+      className="absolute right-0 m-2 text-[0.5rem] px-[0.4rem] py-[0.4rem] border-[2px] rounded-md z-40"
     ></Button>
   );
 };

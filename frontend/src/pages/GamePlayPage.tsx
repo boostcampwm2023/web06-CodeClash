@@ -5,6 +5,7 @@ import SlidePage from "../components/common/SlidePage";
 import { useRoomStore } from "../store/useRoom";
 import { useNavigate } from "react-router-dom";
 import { useSocketStore } from "../store/useSocket";
+import InitialGameExplain from "../components/gameplay/InitialGameExplain";
 
 const GamePlayPage: React.FC = () => {
   const { problemList, setAllUserReady, isStart, setIsStart, setRemoveRoomUser } = useRoomStore();
@@ -39,6 +40,7 @@ const GamePlayPage: React.FC = () => {
 
   return (
     <SlidePage className="pt-12 px-4 pb-14 w-full h-full flex flex-col items-center">
+      <InitialGameExplain />
       <GameHeaderBox title={problemList[currentProblemIdx]?.title || ""} />
       <div className="h-4"></div>
       <GamePlayBox problemInfo={problemList[currentProblemIdx]} />
