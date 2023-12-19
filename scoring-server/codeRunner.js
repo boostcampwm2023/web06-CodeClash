@@ -5,7 +5,7 @@ const queue = require("express-queue");
 const app = express();
 
 app.use(express.json());
-app.use(queue({ activeLimit: 1, queuedLimit: -1 }));
+app.use(queue({ activeLimit: 2, queuedLimit: -1 }));
 
 app.post("/v2/scoring", (req, res) => {
   const { code, testcase, timeLimit, memoryLimit, isExample } = req.body;
