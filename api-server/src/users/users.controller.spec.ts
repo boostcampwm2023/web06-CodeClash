@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { SubmissionsService } from 'src/submissions/submissions.service';
-import { INestApplication, NotFoundException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+import { UsersService } from './users.service';
+import { UsersMockService } from './__mock__/users.mock.service';
+import { SubmissionsService } from 'src/submissions/submissions.service';
+import { SubmissionsMockService } from 'src/submissions/__mock__/submissions.mock.service';
 
 describe('UsersController unit test', () => {
   let controller: UsersController;
@@ -16,33 +18,11 @@ describe('UsersController unit test', () => {
       providers: [
         {
           provide: UsersService,
-          useValue: {
-            getUserByName: jest.fn((name) => {
-              if (name == 'test') {
-                return {
-                  name: 'test',
-                  email: 'test@test.test',
-                  acceptCount: 0,
-                  failCount: 0,
-                  winCount: 0,
-                  totalCount: 0,
-                };
-              } else {
-                throw new NotFoundException('User not found');
-              }
-            }),
-          },
+          useClass: UsersMockService,
         },
         {
           provide: SubmissionsService,
-          useValue: {
-            paginateSubmissionsByUserId: jest.fn(() => {
-              return [];
-            }),
-            getCountOfSubmissionsByUserId: jest.fn(() => {
-              return 0;
-            }),
-          },
+          useClass: SubmissionsMockService,
         },
       ],
     }).compile();
