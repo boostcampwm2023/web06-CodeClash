@@ -3,9 +3,10 @@ import { UsersController } from './users.controller';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UsersService } from './users.service';
-import { UsersMockService } from './__mock__/users.mock.service';
 import { SubmissionsService } from 'src/submissions/submissions.service';
-import { SubmissionsMockService } from 'src/submissions/__mock__/submissions.mock.service';
+
+jest.mock('./users.service');
+jest.mock('src/submissions/submissions.service');
 
 describe('UsersController unit test', () => {
   let controller: UsersController;
@@ -15,16 +16,7 @@ describe('UsersController unit test', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        {
-          provide: UsersService,
-          useClass: UsersMockService,
-        },
-        {
-          provide: SubmissionsService,
-          useClass: SubmissionsMockService,
-        },
-      ],
+      providers: [UsersService, SubmissionsService],
     }).compile();
 
     app = module.createNestApplication();
