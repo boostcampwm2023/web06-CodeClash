@@ -15,4 +15,21 @@ export const UsersService = jest.fn().mockReturnValue({
       throw new NotFoundException('User not found');
     }
   }),
+
+  getUserByEmail: jest.fn((email) => {
+    return {
+      name: 'test',
+      email: 'test@test.com',
+      password: 'test',
+      role: 'admin',
+    };
+  }),
+
+  create: jest.fn((user) => {
+    return {
+      name: 'test',
+      email: 'test@test.com',
+      password: 'test',
+    };
+  }),
 });
