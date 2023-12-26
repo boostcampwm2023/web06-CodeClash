@@ -22,7 +22,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET || 'secret',
       expiresIn: isRefreshToken ? '7d' : '1d',
     });
   }
@@ -66,7 +66,7 @@ export class AuthService {
   verifyToken(token: string) {
     try {
       return this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
+        secret: process.env.JWT_SECRET || 'secret',
       });
     } catch (e) {
       throw new UnauthorizedException('token is expired or invalid token');
@@ -119,7 +119,7 @@ export class AuthService {
   ) {
     const hash = await bcrypt.hash(
       user.password,
-      parseInt(process.env.HASH_ROUND),
+      parseInt(process.env.HASH_ROUND) || 10,
     );
 
     const newUser = await this.usersService.create({
