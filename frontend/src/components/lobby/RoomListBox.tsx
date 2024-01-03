@@ -38,21 +38,10 @@ const LobbyRoomListBox: React.FC = () => {
   const navigate = useNavigate();
   const { setRoomId } = useRoomStore();
   const { gameRoomList } = useLobbyStore();
-  const { socket } = useSocketStore();
-
-  const handleEnterRoomEvent = ({ status, message }: { status: string; message: string }) => {
-    if (status === "error") {
-      alert(message);
-      navigate("/lobby");
-    }
-    if (status === "success") {
-      navigate("/room");
-    }
-  };
 
   const handleEnterRoom = (roomId: string) => {
     setRoomId(roomId);
-    socket?.emit("enter_room", { roomId }, handleEnterRoomEvent);
+    navigate("/room");
   };
 
   const compareState = (a: GameRoom, b: GameRoom) => {
